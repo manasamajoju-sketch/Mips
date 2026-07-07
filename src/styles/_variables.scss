@@ -1,0 +1,60 @@
+// ---------------------------------------------
+// Design tokens for the Event Analytics dashboard
+// ---------------------------------------------
+
+// Core palette (teal card + white content)
+$color-teal-start: #43cbdb;
+$color-teal-end: #35c3d6;
+$color-teal-deep: #2fb9cc;
+$color-teal-border: #6fdcea;
+
+$color-white: #ffffff;
+$color-white-90: rgba(255, 255, 255, 0.9);
+$color-white-70: rgba(255, 255, 255, 0.7);
+$color-white-55: rgba(255, 255, 255, 0.55);
+$color-white-35: rgba(255, 255, 255, 0.35);
+$color-white-20: rgba(255, 255, 255, 0.2);
+$color-white-12: rgba(255, 255, 255, 0.12);
+
+$color-area-fill-strong: rgba(255, 255, 255, 0.42);
+$color-area-fill-soft: rgba(255, 255, 255, 0.22);
+$color-wheel-inactive: rgba(255, 255, 255, 0.32);
+$color-wheel-active: #ffffff;
+
+// Typography
+$font-family-base: 'Helvetica Neue', Arial, 'Segoe UI', sans-serif;
+$font-family-mono: 'Courier New', Courier, monospace;
+
+$fs-title: 22px;
+$fs-nav: 17px;
+$fs-metric-lg: 56px;
+$fs-metric-label: 15px;
+$fs-side-stat: 34px;
+$fs-side-label: 15px;
+$fs-axis: 12px;
+$fs-tooltip: 13px;
+
+$fw-regular: 400;
+$fw-medium: 500;
+$fw-semibold: 600;
+$fw-bold: 700;
+
+// Spacing
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+
+// Radii
+$radius-card: 24px;
+$radius-pill: 999px;
+$radius-tooltip: 14px;
+
+// Shadows
+$shadow-card: 0 12px 30px rgba(20, 130, 145, 0.28);
+$shadow-tooltip: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+// Breakpoints
+$bp-tablet: 900px;
+$bp-mobile: 600px;

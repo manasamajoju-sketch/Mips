@@ -1,0 +1,228 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.event-analytics-card {
+  @include card-surface;
+  color: $color-white;
+  padding: $space-lg $space-xl $space-xl;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+
+  &__header {
+    @include flex(row, center, space-between);
+    margin-bottom: $space-lg;
+  }
+
+  &__title {
+    @include flex(row, center, flex-start, $space-sm);
+    font-size: $fs-title;
+    font-weight: $fw-medium;
+    margin: 0;
+  }
+
+  &__info-btn {
+    @include reset-button;
+    @include flex(row, center, center);
+    width: 22px;
+    height: 22px;
+    color: $color-white;
+    opacity: 0.85;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__type-switcher {
+    @include flex(row, center, center, $space-sm);
+    background: $color-white-12;
+    border: 1px solid $color-white-35;
+    border-radius: $radius-pill;
+    padding: 8px 18px;
+    min-width: 220px;
+  }
+
+  &__chevron-btn {
+    @include reset-button;
+    @include flex(row, center, center);
+    width: 18px;
+    height: 18px;
+    color: $color-white;
+    opacity: 0.85;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__type-label {
+    font-size: $fs-nav;
+    font-weight: $fw-regular;
+    flex: 1;
+    text-align: center;
+  }
+
+  &__expand-btn {
+    @include reset-button;
+    @include flex(row, center, center);
+    width: 24px;
+    height: 24px;
+    color: $color-white;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  &__summary {
+    @include flex(row, flex-end, flex-start, $space-xl);
+    flex-wrap: wrap;
+  }
+
+  &__metric {
+    @include flex(row, flex-end, flex-start, $space-sm);
+
+    &--front {
+      margin-left: auto;
+    }
+  }
+
+  &__metric-value {
+    font-size: $fs-metric-lg;
+    font-weight: $fw-medium;
+    line-height: 1;
+
+    &--sm {
+      font-size: $fs-side-stat;
+      align-self: center;
+    }
+  }
+
+  &__metric-label {
+    font-size: $fs-metric-label;
+    font-weight: $fw-regular;
+    line-height: 1.25;
+    padding-bottom: 6px;
+    opacity: 0.95;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid $color-white-20;
+    margin: $space-lg 0;
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) auto minmax(0, 220px) minmax(0, 1fr);
+    align-items: center;
+    gap: $space-lg;
+  }
+
+  &__chart-col {
+    min-width: 0;
+    grid-column: 1;
+  }
+
+  &__wheel-col {
+    grid-column: 3;
+    padding: 0 $space-md;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -$space-lg;
+      top: 10%;
+      bottom: 10%;
+      width: 1px;
+      background: $color-white-20;
+    }
+  }
+
+  &__stat-list {
+    grid-column: 4;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+  }
+
+  &__stat-item {
+    @include flex(row, center, flex-start, $space-sm);
+  }
+
+  &__stat-value {
+    font-size: $fs-side-stat;
+    font-weight: $fw-medium;
+    line-height: 1;
+    min-width: 44px;
+  }
+
+  &__stat-label {
+    font-size: $fs-side-label;
+    line-height: 1.2;
+    opacity: 0.95;
+  }
+
+  @media (max-width: $bp-tablet) {
+    &__body {
+      grid-template-columns: 1fr;
+    }
+
+    &__wheel-col {
+      grid-column: 1;
+      padding: $space-lg 0;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    &__stat-list {
+      grid-column: 1;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: $space-lg;
+    }
+
+    &__summary {
+      gap: $space-lg;
+    }
+
+    &__metric--front {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: $bp-mobile) {
+    padding: $space-md;
+
+    &__metric-value {
+      font-size: 40px;
+    }
+
+    &__header {
+      flex-wrap: wrap;
+      gap: $space-sm;
+    }
+  }
+}

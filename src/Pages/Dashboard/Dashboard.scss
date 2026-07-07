@@ -1,0 +1,9 @@
+@use '@/styles/variables' as *;
+
+.dashboard-page {
+  min-height: 100vh;
+  padding: $space-xl $space-lg;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
