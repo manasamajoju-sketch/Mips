@@ -1,5 +1,7 @@
 import EventAnalyticsCard from '../../Components/widgets/EventAnalyticsCard/EventAnalyticsCard'
 import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
+import EventOverviewCard from '../../Components/cards/EventOverviewCard';
+
 import './Dashboard.scss'
 
 export default function Dashboard() {
@@ -11,6 +13,7 @@ export default function Dashboard() {
         onEventTypeChange={(type) => console.log('Event type changed:', type)}
         onExpand={() => console.log('Expand event analytics')}
       />
+    <EventOverviewCard onExpand={() => console.log('Navigate to event details')} />
     </main>
   )
 }

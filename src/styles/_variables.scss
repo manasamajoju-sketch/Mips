@@ -21,6 +21,18 @@ $color-area-fill-soft: rgba(255, 255, 255, 0.22);
 $color-wheel-inactive: rgba(255, 255, 255, 0.32);
 $color-wheel-active: #ffffff;
 
+// Semantic UI tokens used by dashboard cards and charts
+$color-surface: $color-white;
+$color-text-primary: #101828;
+$color-text-secondary: #475467;
+$color-text-muted: #98a2b3;
+$color-border: #e4e7ec;
+$color-accent-teal: $color-teal-deep;
+$color-others: #17364a;
+$color-delta-positive-good: #12b76a;
+$color-delta-negative-bad: #f04438;
+$color-alert-blue: #2e90fa;
+
 // Typography
 $font-family-base: 'Helvetica Neue', Arial, 'Segoe UI', sans-serif;
 $font-family-mono: 'Courier New', Courier, monospace;
