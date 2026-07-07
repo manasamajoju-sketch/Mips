@@ -1,6 +1,6 @@
 import EventAnalyticsCard from '../../Components/widgets/EventAnalyticsCard/EventAnalyticsCard'
 import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
-import EventOverviewCard from '../../Components/cards/EventOverviewCard';
+import EventOverviewCard from '../../Components/cards/EventOverview/EventOverviewCard';
 
 import './Dashboard.scss'
 

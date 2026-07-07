@@ -1,11 +1,11 @@
-import EventTimelineChart from '../charts/EventTimelineChart/EventTimelineChart';
+import EventTimelineChart from '../../charts/EventTimelineChart/EventTimelineChart';
 import {
   EVENT_CATEGORY_COLORS,
   EVENT_CATEGORY_LABELS,
   eventOverviewSummary,
   eventTimelineData,
-} from '../../Constants/eventOverviewData';
-import type { EventOverviewSummary, EventTimelineDay } from '../../types/event';
+} from '../../../Constants/eventOverviewData';
+import type { EventOverviewSummary, EventTimelineDay } from '../../../types/event';
 import styles from './EventOverviewCard.module.scss';
 
 interface EventOverviewCardProps {

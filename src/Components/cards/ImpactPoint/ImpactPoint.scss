@@ -1,0 +1,143 @@
+.impact-point {
+  --impact-point-top-delay: 180ms;
+  --impact-point-segments-delay: 340ms;
+  --impact-point-label-delay: 560ms;
+
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    max-width: 180px;
+    max-height: 220px;
+    overflow: visible;
+  }
+
+  &__section {
+    outline: none;
+    opacity: 0;
+    transform: scale(0.96);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: impact-point-section-in 280ms ease forwards;
+    will-change: opacity, transform;
+
+    &:hover,
+    &:focus-visible {
+      .impact-point__section-shape {
+        fill: var(--impact-point-section-hover-color);
+      }
+
+      .impact-point__percentage {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  &__section--top {
+    animation-delay: var(--impact-point-top-delay);
+  }
+
+  &__section--front,
+  &__section--left,
+  &__section--right,
+  &__section--back {
+    animation-delay: var(--impact-point-segments-delay);
+  }
+
+  &__section--clickable {
+    cursor: pointer;
+
+    * {
+      cursor: pointer;
+    }
+  }
+
+  &__section-shape {
+    fill: var(--impact-point-section-color);
+    fill-opacity: 1;
+    stroke: #ffffff;
+    stroke-width: 1;
+    transition: fill 180ms ease;
+  }
+
+  &__label,
+  &__percentage {
+    font-family: 'Suisse-Mono-Thin', sans-serif !important;
+    font-size: var(--font-xs);
+    stroke-width: 0.4px;
+    paint-order: stroke;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    pointer-events: none;
+    dominant-baseline: middle;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  &__label {
+    opacity: 0;
+    fill: var(--text-primary);
+    stroke: var(--text-primary);
+    transform: translateY(6px);
+    animation: impact-point-label-in 260ms ease forwards;
+    animation-delay: var(--impact-point-label-delay);
+    will-change: opacity, transform;
+  }
+
+  &__percentage {
+    opacity: 0;
+    transform: translateY(2px);
+    fill: var(--text-primary);
+    stroke: var(--text-primary);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+}
+
+.card.blue {
+  .impact-point {
+    &__label {
+      fill: #ffffff;
+      stroke: #ffffff;
+    }
+
+    &__percentage {
+      fill: var(--text-primary) !important;
+      stroke: var(--text-primary) !important;
+    }
+  }
+}
+
+@keyframes impact-point-section-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes impact-point-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

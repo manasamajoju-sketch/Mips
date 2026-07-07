@@ -2,8 +2,9 @@ import { useState } from 'react'
 import type { EventAnalyticsData } from '../../../types/eventAnalytics'
 import { InfoIcon, ChevronLeftIcon, ChevronRightIcon, ArrowRightIcon } from '../../common/Icons'
 import SeverityChart from '../../../Components/charts/SeverityChart/SeverityChart'
-import ImpactWheel from '../../../Components/charts/ImpactWheel/ImpactWheel'
+
 import './EventAnalyticsCard.scss'
+import ImpactPoint from '../../cards/ImpactPoint/ImpactPoint'
 
 interface EventAnalyticsCardProps {
   data: EventAnalyticsData
@@ -111,7 +112,7 @@ export default function EventAnalyticsCard({
         </div>
 
         <div className="event-analytics-card__wheel-col">
-          <ImpactWheel activeZone={data.activeZone} activeZonePercent={data.activeZonePercent} />
+        <ImpactPoint sections={[]} />
         </div>
 
         <ul className="event-analytics-card__stat-list">
