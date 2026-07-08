@@ -6,6 +6,8 @@ import './Dashboard.module.scss'
 import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard';
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard';
 import EventTimelineCard from '../../Components/cards/EventTimeline/EventTimelineCard';
+import UserDemographicsCard from '../../Components/cards/UserDemographics/UserDemographicsCard';
+
 
 export default function Dashboard() {
   return (
@@ -20,6 +22,7 @@ export default function Dashboard() {
         <LocationOverviewCard onExpand={() => console.log('Navigate to location details')} />
            <TopEventsCard onEventClick={(event) => console.log('Navigate to event:', event.key)} />
                   <EventTimelineCard />
+                  <UserDemographicsCard onExpand={() => console.log('Navigate to user demographics details')} />
 
     </main>
   )

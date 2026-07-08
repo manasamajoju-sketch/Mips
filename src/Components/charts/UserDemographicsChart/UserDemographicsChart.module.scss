@@ -1,0 +1,99 @@
+@use '../../styles/variables' as *;
+
+.chart {
+  width: 100%;
+}
+
+.body {
+  display: flex;
+}
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  flex-shrink: 0;
+  padding-right: 8px;
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.yAxisSpacer {
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.plot {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+}
+
+.col {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.whisker {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  background: $color-whisker;
+  transform: translateX(-50%);
+}
+
+.diamond {
+  position: absolute;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: $color-diamond;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 1px;
+}
+
+.segment {
+  position: absolute;
+  left: 50%;
+  width: 36px;
+  border-radius: 8px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.percentLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-passive;
+}
+
+.cursor {
+  position: absolute;
+  left: calc(50% + 6px);
+  font-size: 20px;
+  color: $color-text-primary;
+}
+
+.xAxis {
+  display: flex;
+  margin-top: 8px;
+}
+
+.tick {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  color: $color-text-muted;
+  font-weight: 400;
+}
+
+.tickEmphasis {
+  color: $color-text-primary;
+  font-weight: 700;
+}
