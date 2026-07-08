@@ -5,6 +5,7 @@ import EventOverviewCard from '../../Components/cards/EventOverview/EventOvervie
 import './Dashboard.module.scss'
 import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard';
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard';
+import EventTimelineCard from '../../Components/cards/EventTimeline/EventTimelineCard';
 
 export default function Dashboard() {
   return (
@@ -18,6 +19,8 @@ export default function Dashboard() {
     <EventOverviewCard onExpand={() => console.log('Navigate to event details')} />
         <LocationOverviewCard onExpand={() => console.log('Navigate to location details')} />
            <TopEventsCard onEventClick={(event) => console.log('Navigate to event:', event.key)} />
+                  <EventTimelineCard />
+
     </main>
   )
 }
