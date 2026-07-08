@@ -2,8 +2,7 @@ import { useState } from 'react'
 import type { EventAnalyticsData } from '../../../types/eventAnalytics'
 import { InfoIcon, ChevronLeftIcon, ChevronRightIcon, ArrowRightIcon } from '../../common/Icons'
 import SeverityChart from '../../../Components/charts/SeverityChart/SeverityChart'
-
-import './EventAnalyticsCard.scss'
+import styles from './EventAnalyticsCard.module.scss'
 import ImpactPoint from '../../cards/ImpactPoint/ImpactPoint'
 
 interface EventAnalyticsCardProps {
@@ -30,28 +29,28 @@ export default function EventAnalyticsCard({
   const otherImpacts = data.impactBreakdown.filter((b) => b.zone !== 'front')
 
   return (
-    <section className="event-analytics-card">
-      <header className="event-analytics-card__header">
-        <h2 className="event-analytics-card__title">
+    <section className={styles['event-analytics-card']}>
+      <header className={styles['event-analytics-card__header']}>
+        <h2 className={styles['event-analytics-card__title']}>
           Event Analytics
-          <button type="button" className="event-analytics-card__info-btn" aria-label="More information">
+          <button type="button" className={styles['event-analytics-card__info-btn']} aria-label="More information">
             <InfoIcon />
           </button>
         </h2>
 
-        <div className="event-analytics-card__type-switcher">
+        <div className={styles['event-analytics-card__type-switcher']}>
           <button
             type="button"
-            className="event-analytics-card__chevron-btn"
+            className={styles['event-analytics-card__chevron-btn']}
             onClick={() => cycleEventType(-1)}
             aria-label="Previous event type"
           >
             <ChevronLeftIcon />
           </button>
-          <span className="event-analytics-card__type-label">{eventTypes[typeIndex]}</span>
+          <span className={styles['event-analytics-card__type-label']}>{eventTypes[typeIndex]}</span>
           <button
             type="button"
-            className="event-analytics-card__chevron-btn"
+            className={styles['event-analytics-card__chevron-btn']}
             onClick={() => cycleEventType(1)}
             aria-label="Next event type"
           >
@@ -61,7 +60,7 @@ export default function EventAnalyticsCard({
 
         <button
           type="button"
-          className="event-analytics-card__expand-btn"
+          className={styles['event-analytics-card__expand-btn']}
           onClick={onExpand}
           aria-label="View details"
         >
@@ -69,30 +68,30 @@ export default function EventAnalyticsCard({
         </button>
       </header>
 
-      <div className="event-analytics-card__summary">
-        <div className="event-analytics-card__metric">
-          <span className="event-analytics-card__metric-value">{data.minGForce}G</span>
-          <span className="event-analytics-card__metric-label">
+      <div className={styles['event-analytics-card__summary']}>
+        <div className={styles['event-analytics-card__metric']}>
+          <span className={styles['event-analytics-card__metric-value']}>{data.minGForce}G</span>
+          <span className={styles['event-analytics-card__metric-label']}>
             Minimum
             <br />
             G-Force
           </span>
         </div>
 
-        <div className="event-analytics-card__metric">
-          <span className="event-analytics-card__metric-value">{data.maxGForce}G</span>
-          <span className="event-analytics-card__metric-label">
+        <div className={styles['event-analytics-card__metric']}>
+          <span className={styles['event-analytics-card__metric-value']}>{data.maxGForce}G</span>
+          <span className={styles['event-analytics-card__metric-label']}>
             Maximum
             <br />
             G-Force
           </span>
         </div>
 
-        <div className="event-analytics-card__metric event-analytics-card__metric--front">
-          <span className="event-analytics-card__metric-value event-analytics-card__metric-value--sm">
+        <div className={`${styles['event-analytics-card__metric']} ${styles['event-analytics-card__metric--front']}`}>
+          <span className={styles['event-analytics-card__metric-value--sm']}>
             {data.frontImpacts}
           </span>
-          <span className="event-analytics-card__metric-label">
+          <span className={styles['event-analytics-card__metric-label']}>
             Front
             <br />
             Impacts
@@ -100,10 +99,10 @@ export default function EventAnalyticsCard({
         </div>
       </div>
 
-      <hr className="event-analytics-card__divider" />
+      <hr className={styles['event-analytics-card__divider']} />
 
-      <div className="event-analytics-card__body">
-        <div className="event-analytics-card__chart-col">
+      <div className={styles['event-analytics-card__body']}>
+        <div className={styles['event-analytics-card__chart-col']}>
           <SeverityChart
             data={data.severityData}
             thresholdPosition={1.5}
@@ -111,15 +110,15 @@ export default function EventAnalyticsCard({
           />
         </div>
 
-        <div className="event-analytics-card__wheel-col">
-        <ImpactPoint sections={[]} />
+        <div className={styles['event-analytics-card__wheel-col']}>
+          <ImpactPoint sections={[]} />
         </div>
 
-        <ul className="event-analytics-card__stat-list">
+        <ul className={styles['event-analytics-card__stat-list']}>
           {otherImpacts.map((item) => (
-            <li key={item.zone} className="event-analytics-card__stat-item">
-              <span className="event-analytics-card__stat-value">{item.impacts}</span>
-              <span className="event-analytics-card__stat-label">
+            <li key={item.zone} className={styles['event-analytics-card__stat-item']}>
+              <span className={styles['event-analytics-card__stat-value']}>{item.impacts}</span>
+              <span className={styles['event-analytics-card__stat-label']}>
                 {item.label}
                 <br />
                 Impacts

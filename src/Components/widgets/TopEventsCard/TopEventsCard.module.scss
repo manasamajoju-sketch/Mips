@@ -1,0 +1,179 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.top-events-card {
+  background: $color-surface;
+  border-radius: $radius-card;
+  padding: 24px 28px;
+  font-family: $font-family-base;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+
+  &__header {
+    margin-bottom: $space-lg;
+  }
+
+  &__title {
+    @include flex(row, center, flex-start, $space-sm);
+    font-size: $fs-title;
+    font-weight: $fw-medium;
+    color: $color-text-primary;
+    margin: 0;
+  }
+
+  &__info-btn {
+    @include reset-button;
+    @include flex(row, center, center);
+    width: 22px;
+    height: 22px;
+    color: $color-accent-teal;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-xl;
+  }
+
+  &__section {
+    position: relative;
+    min-width: 0;
+  }
+
+  &__divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(-1 * $space-xl / 2);
+    width: 1px;
+    background: $color-border;
+  }
+
+  &__metric {
+    @include flex(row, flex-end, flex-start, $space-sm);
+    margin-bottom: $space-md;
+  }
+
+  &__metric-value {
+    font-size: $fs-metric-lg;
+    font-weight: $fw-medium;
+    line-height: 1;
+    color: $color-text-primary;
+  }
+
+  &__metric-suffix {
+    font-size: $fs-nav;
+    margin-left: 2px;
+  }
+
+  &__metric-label {
+    display: flex;
+    flex-direction: column;
+    font-size: $fs-metric-label;
+    color: $color-text-secondary;
+    line-height: 1.25;
+    padding-bottom: 6px;
+  }
+
+  &__meta {
+    @include flex(row, center, space-between);
+    margin-bottom: $space-sm;
+  }
+
+  &__meta-group {
+    @include flex(column, flex-start, flex-start, 2px);
+
+    &--end {
+      align-items: flex-end;
+    }
+  }
+
+  &__meta-value {
+    font-size: $fs-axis;
+    color: $color-text-primary;
+  }
+
+  &__meta-label {
+    font-size: $fs-axis;
+    color: $color-text-secondary;
+  }
+
+  &__severity {
+    font-size: $fs-axis;
+    font-weight: $fw-medium;
+
+    &--low {
+      color: $color-delta-positive-good;
+    }
+
+    &--medium {
+      color: $color-alert-blue;
+    }
+
+    &--high {
+      color: $color-delta-negative-bad;
+    }
+  }
+
+  &__bottom-row {
+    @include flex(row, center, space-between);
+    margin-top: $space-sm;
+  }
+
+  &__tags {
+    @include flex(row, center, flex-start, $space-sm);
+    flex-wrap: wrap;
+  }
+
+  &__arrow-btn {
+    @include reset-button;
+    @include flex(row, center, center);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $color-border;
+    color: $color-text-primary;
+    flex-shrink: 0;
+    transition:
+      background 180ms ease,
+      transform 180ms ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      background: $color-accent-teal;
+      color: $color-white;
+      transform: translateX(2px);
+    }
+  }
+
+  @media (max-width: $bp-tablet) {
+    &__content {
+      grid-template-columns: 1fr;
+      gap: $space-lg;
+    }
+
+    &__divider {
+      display: none;
+    }
+
+    &__section:not(:last-child) {
+      padding-bottom: $space-lg;
+      border-bottom: 1px solid $color-border;
+    }
+  }
+
+  @media (max-width: $bp-mobile) {
+    padding: $space-md;
+  }
+}

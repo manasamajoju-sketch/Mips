@@ -1,0 +1,12 @@
+@use '@/styles/variables' as *;
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: $radius-pill;
+  font-size: $fs-axis;
+  font-weight: $fw-medium;
+  line-height: 1.2;
+  white-space: nowrap;
+}

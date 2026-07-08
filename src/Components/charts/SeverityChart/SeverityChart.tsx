@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import type { SeverityPoint } from '../../../types/eventAnalytics'
 import { CursorIcon } from '../../common/Icons'
-import './SeverityChart.scss'
+import styles from './SeverityChart.module.scss'
 
 interface SeverityChartProps {
   data: SeverityPoint[]
@@ -65,17 +65,17 @@ export default function SeverityChart({
   const highlight = points.find((p) => p.label === highlightLabel)
 
   return (
-    <div className="severity-chart">
+    <div className={styles['severity-chart']}>
       <svg
-        className="severity-chart__svg"
+        className={styles['severity-chart__svg']}
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Severity zone labels */}
-        <text x={PAD_LEFT} y={22} className="severity-chart__zone-label">
+        <text x={PAD_LEFT} y={22} className={styles['severity-chart__zone-label']}>
           {lowSeverityLabel}
         </text>
-        <text x={thresholdX + 10} y={22} className="severity-chart__zone-label">
+        <text x={thresholdX + 10} y={22} className={styles['severity-chart__zone-label']}>
           {highSeverityLabel}
         </text>
 
@@ -85,7 +85,7 @@ export default function SeverityChart({
           y1={PAD_TOP - 8}
           x2={thresholdX}
           y2={PAD_TOP + plotH}
-          className="severity-chart__divider"
+          className={styles['severity-chart__divider']}
         />
 
         {/* Y axis gridlines + labels */}
@@ -98,12 +98,12 @@ export default function SeverityChart({
                 y1={y}
                 x2={VIEW_W - PAD_RIGHT}
                 y2={y}
-                className="severity-chart__gridline"
+                className={styles['severity-chart__gridline']}
               />
-              <text x={0} y={y - 10} className="severity-chart__axis-label">
+              <text x={0} y={y - 10} className={styles['severity-chart__axis-label']}>
                 {tick}
               </text>
-              <text x={0} y={y + 5} className="severity-chart__axis-label">
+              <text x={0} y={y + 5} className={styles['severity-chart__axis-label']}>
                 {yAxisUnit}
               </text>
             </g>
@@ -118,17 +118,17 @@ export default function SeverityChart({
             y1={PAD_TOP - 8}
             x2={p.x}
             y2={PAD_TOP + plotH}
-            className="severity-chart__gridline severity-chart__gridline--vertical"
+            className={`${styles['severity-chart__gridline']} ${styles['severity-chart__gridline--vertical']}`}
           />
         ))}
 
         {/* Area + line */}
-        <path d={areaPath} className="severity-chart__area" />
-        <path d={linePath} className="severity-chart__line" />
+        <path d={areaPath} className={styles['severity-chart__area']} />
+        <path d={linePath} className={styles['severity-chart__line']} />
 
         {/* X axis labels */}
         {points.map((p) => (
-          <text key={p.label} x={p.x} y={VIEW_H - 6} textAnchor="middle" className="severity-chart__axis-label">
+          <text key={p.label} x={p.x} y={VIEW_H - 6} textAnchor="middle" className={styles['severity-chart__axis-label']}>
             {p.label}
           </text>
         ))}
@@ -136,14 +136,14 @@ export default function SeverityChart({
 
       {highlight && (
         <div
-          className="severity-chart__tooltip"
+          className={styles['severity-chart__tooltip']}
           style={{
             left: `${(highlight.x / VIEW_W) * 100}%`,
             top: `${(highlight.y / VIEW_H) * 100}%`,
           }}
         >
-          <span className="severity-chart__tooltip-bubble">{highlight.events}</span>
-          <CursorIcon className="severity-chart__tooltip-cursor" />
+          <span className={styles['severity-chart__tooltip-bubble']}>{highlight.events}</span>
+          <CursorIcon className={styles['severity-chart__tooltip-cursor']} />
         </div>
       )}
     </div>

@@ -2,7 +2,9 @@ import EventAnalyticsCard from '../../Components/widgets/EventAnalyticsCard/Even
 import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
 import EventOverviewCard from '../../Components/cards/EventOverview/EventOverviewCard';
 
-import './Dashboard.scss'
+import './Dashboard.module.scss'
+import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard';
+import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard';
 
 export default function Dashboard() {
   return (
@@ -14,6 +16,8 @@ export default function Dashboard() {
         onExpand={() => console.log('Expand event analytics')}
       />
     <EventOverviewCard onExpand={() => console.log('Navigate to event details')} />
+        <LocationOverviewCard onExpand={() => console.log('Navigate to location details')} />
+           <TopEventsCard onEventClick={(event) => console.log('Navigate to event:', event.key)} />
     </main>
   )
 }

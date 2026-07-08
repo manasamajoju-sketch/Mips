@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
-
-import './ImpactPoint.scss'
+import styles from './ImpactPoint.module.scss'
 
 export type ImpactPointSectionKey = 'front' | 'left' | 'top' | 'right' | 'back'
 
@@ -153,18 +152,24 @@ function ImpactPoint({
     const isClickable = Boolean(onSectionClick)
 
     const commonProps = {
-      className: 'impact-point__section-shape',
+      className: styles['impact-point__section-shape'],
       style: {
         '--impact-point-section-color': sectionColor,
         '--impact-point-section-hover-color': sectionHoverColor,
       } as CSSProperties,
     }
 
+    const sectionClassName = [
+      styles['impact-point__section'],
+      styles[`impact-point__section--${key}`],
+      isClickable ? styles['impact-point__section--clickable'] : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
+
     return (
       <g
-        className={`impact-point__section impact-point__section--${key}${
-          isClickable ? ' impact-point__section--clickable' : ''
-        }`}
+        className={sectionClassName}
         onClick={onSectionClick && section ? () => onSectionClick(section) : undefined}
         role={isClickable ? 'button' : undefined}
         tabIndex={isClickable ? 0 : undefined}
@@ -187,7 +192,7 @@ function ImpactPoint({
 
         {showLabels && (
           <text
-            className="impact-point__label"
+            className={styles['impact-point__label']}
             x={labelPosition.x}
             y={labelPosition.y}
             textAnchor={labelPosition.textAnchor}
@@ -198,7 +203,7 @@ function ImpactPoint({
 
         {showPercentOnHover && section?.value != null && (
           <text
-            className="impact-point__percentage"
+            className={styles['impact-point__percentage']}
             x={percentPosition.x}
             y={percentPosition.y}
             textAnchor={percentPosition.textAnchor}
@@ -216,9 +221,9 @@ function ImpactPoint({
   }
 
   return (
-    <div className={`impact-point${className ? ` ${className}` : ''}`}>
+    <div className={[styles['impact-point'], className].filter(Boolean).join(' ')}>
       <svg
-        className="impact-point__svg"
+        className={styles['impact-point__svg']}
         width="102"
         height="128"
         viewBox="-20 -14 142 156"
