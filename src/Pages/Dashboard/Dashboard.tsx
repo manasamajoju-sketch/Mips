@@ -7,6 +7,8 @@ import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard';
 import EventTimelineCard from '../../Components/cards/EventTimeline/EventTimelineCard';
 import UserDemographicsCard from '../../Components/cards/UserDemographics/UserDemographicsCard';
+import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard';
+
 
 
 export default function Dashboard() {
@@ -23,6 +25,7 @@ export default function Dashboard() {
            <TopEventsCard onEventClick={(event) => console.log('Navigate to event:', event.key)} />
                   <EventTimelineCard />
                   <UserDemographicsCard onExpand={() => console.log('Navigate to user demographics details')} />
+                  <EventTimeHeatmapCard />
 
     </main>
   )
