@@ -1,9 +1,9 @@
-import type { DemographicCategory } from '../../types/userDemographics';
+import type { DemographicCategory } from '../../../types/userDemographics';
 import {
   DEMOGRAPHICS_SCALE_MAX,
   DEMOGRAPHICS_SCALE_MIN,
   GENDER_COLORS,
-} from '../../constants/userDemographicsData';
+} from '../../../Constants/userDemographicsData';
 import styles from './UserDemographicsChart.module.scss';
 
 const CHART_HEIGHT = 300;
