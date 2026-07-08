@@ -1,4 +1,4 @@
-import styles from './Pill.module.scss'
+import styles from './pill.module.scss'
 
 interface PillProps {
   text: string

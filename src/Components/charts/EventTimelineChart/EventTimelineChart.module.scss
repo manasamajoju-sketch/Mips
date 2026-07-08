@@ -1,152 +1,145 @@
 @use '../../../styles/variables' as *;
 
-.card {
-  background: $color-surface;
-  border-radius: $radius-card;
-  padding: 14px 16px;
-  font-family: $font-family-base;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
+.chart {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
-.header {
+.body {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: $color-text-primary;
-  margin-bottom: 8px;
+  flex: 1;
+  min-height: 0;
+  gap: $space-sm;
+}
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
   flex: 0 0 auto;
-
-  i {
-    font-size: 13px;
-    color: $color-accent-teal;
-  }
+  width: 28px;
+  padding-bottom: 4px;
+  font-size: 10px;
+  color: $color-text-muted;
+  line-height: 1;
 }
 
-.timeline {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+.yAxisSpacer {
+  flex: 0 0 auto;
+  width: 28px;
 }
 
-.line {
-  position: absolute;
-  left: 50%;
-  top: 10px;
-  bottom: 18px;
-  width: 1px;
-  background: $color-border;
-  transform: translateX(-50%);
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 16px 1fr;
-  align-items: center;
-  min-height: 0;
-  padding: 6px 0;
-  position: relative;
-}
-
-.rowLast {
-  padding-bottom: 0;
-}
-
-.highlight {
-  position: absolute;
-  left: -4px;
-  right: -4px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 34px;
-  background: $color-urgent-bg;
-  border: 1.5px solid $color-urgent;
-  border-radius: 10px;
-  z-index: 0;
-}
-
-.country {
-  text-align: right;
-  padding-right: 10px;
-  position: relative;
-  z-index: 1;
+.plot {
+  display: flex;
+  align-items: flex-end;
+  flex: 1;
   min-width: 0;
+  gap: 3px;
+  padding-bottom: 4px;
 }
 
-.countryName {
-  font-size: 11px;
-  font-weight: 700;
-  color: $color-text-primary;
-  white-space: nowrap;
+.col {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+}
+
+.pill {
+  width: 60%;
+  max-width: 8px;
+  min-width: 3px;
+  display: flex;
+  flex-direction: column-reverse;
+  border-radius: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  transition: opacity 150ms ease;
 }
 
-.countryUrgent .countryName {
-  color: $color-urgent;
+.pillActive {
+  opacity: 1;
+  filter: drop-shadow(0 1px 2px rgba(16, 24, 40, 0.25));
 }
 
-.time {
+.segment {
+  width: 100%;
+  min-height: 1px;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 20px;
+  padding: 2px 6px;
+  border-radius: $radius-pill;
+  color: $color-white;
+  font-size: 10px;
+  font-weight: $fw-semibold;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: $shadow-tooltip;
+}
+
+.cursor {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: $color-text-primary;
+  pointer-events: none;
+}
+
+.xAxis {
+  display: flex;
+  flex: 0 0 auto;
+  margin-top: 6px;
+}
+
+.tick {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
   font-size: 9px;
   color: $color-text-muted;
-  margin-top: 1px;
-}
-
-.markerCol {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: $color-accent-teal;
-  flex-shrink: 0;
-}
-
-.dotUrgent {
-  background: $color-urgent;
-}
-
-.detail {
-  padding-left: 10px;
-  position: relative;
-  z-index: 1;
-  min-width: 0;
-}
-
-.eventLabel {
-  font-size: 11px;
-  font-weight: 400;
-  color: $color-text-primary;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.statusLabel {
+.tickMonth {
   font-size: 9px;
-  font-weight: 700;
-  font-style: italic;
-  margin-top: 1px;
+  font-weight: $fw-semibold;
+  color: $color-text-secondary;
 }
 
-.statusSafe {
-  color: $color-accent-teal;
-}
+@media (max-width: $bp-mobile) {
+  .plot {
+    gap: 2px;
+  }
 
-.statusUrgent {
-  color: $color-urgent;
+  .badge,
+  .tick,
+  .tickMonth {
+    font-size: 8px;
+  }
 }

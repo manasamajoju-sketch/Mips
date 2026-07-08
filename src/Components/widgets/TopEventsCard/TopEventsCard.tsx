@@ -21,6 +21,9 @@ export default function TopEventsCard({ events = topEventsMock, onEventClick }: 
             <InfoIcon />
           </button>
         </h2>
+        <button type="button" className={styles['top-events-card__arrow-btn']} aria-label="View all events">
+          <ArrowRightIcon />
+        </button>
       </header>
 
       <div className={styles['top-events-card__content']}>
@@ -62,15 +65,6 @@ export default function TopEventsCard({ events = topEventsMock, onEventClick }: 
                   <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
                 ))}
               </div>
-
-              <button
-                type="button"
-                className={styles['top-events-card__arrow-btn']}
-                onClick={() => onEventClick?.(event)}
-                aria-label={`View ${event.metricLabel.replace('\n', ' ')} event details`}
-              >
-                <ArrowRightIcon />
-              </button>
             </div>
 
             {index < events.length - 1 && <div className={styles['top-events-card__divider']} aria-hidden="true" />}

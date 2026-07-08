@@ -16,7 +16,7 @@
 
   &__header {
     @include flex(row, center, space-between);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     gap: $space-sm;
   }
 
@@ -45,7 +45,6 @@
     @include flex(row, center, center);
     background: $color-border;
     border-radius: $radius-pill;
-    padding: 4px;
   }
 
   &__toggle-btn {

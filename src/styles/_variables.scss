@@ -42,9 +42,9 @@ $color-passive: #14A6BE;
 $font-family-base: 'Helvetica Neue', Arial, 'Segoe UI', sans-serif;
 $font-family-mono: 'Courier New', Courier, monospace;
 
-$fs-title: 22px;
+$fs-title: 14px;
 $fs-nav: 17px;
-$fs-metric-lg: 56px;
+$fs-metric-lg: 24px;
 $fs-metric-label: 15px;
 $fs-side-stat: 34px;
 $fs-side-label: 15px;
@@ -57,8 +57,10 @@ $fw-semibold: 600;
 $fw-bold: 700;
 
 // Spacing
+$space-xxs: 1px;
 $space-xs: 4px;
 $space-sm: 8px;
+$space-mmd: 14px;
 $space-md: 16px;
 $space-lg: 24px;
 $space-xl: 32px;

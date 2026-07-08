@@ -27,6 +27,12 @@ export default function EventAnalyticsCard({
   }
 
   const otherImpacts = data.impactBreakdown.filter((b) => b.zone !== 'front')
+  const totalImpacts = data.impactBreakdown.reduce((sum, b) => sum + b.impacts, 0) || 1
+  const impactSections = data.impactBreakdown.map((b) => ({
+    key: b.zone,
+    label: b.label,
+    value: (b.impacts / totalImpacts) * 100,
+  }))
 
   return (
     <section className={styles['event-analytics-card']}>
@@ -111,7 +117,7 @@ export default function EventAnalyticsCard({
         </div>
 
         <div className={styles['event-analytics-card__wheel-col']}>
-          <ImpactPoint sections={[]} />
+          <ImpactPoint sections={impactSections} alwaysShowPercent />
         </div>
 
         <ul className={styles['event-analytics-card__stat-list']}>

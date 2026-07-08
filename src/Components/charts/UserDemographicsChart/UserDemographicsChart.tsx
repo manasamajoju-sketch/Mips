@@ -6,39 +6,37 @@ import {
 } from '../../../Constants/userDemographicsData';
 import styles from './UserDemographicsChart.module.scss';
 
-const CHART_HEIGHT = 300;
-
 interface UserDemographicsChartProps {
   categories: DemographicCategory[];
 }
 
 interface CategoryColumnProps {
   category: DemographicCategory;
-  pixelsPerUnit: number;
 }
 
-function CategoryColumn({ category, pixelsPerUnit }: CategoryColumnProps) {
-  const bottomPx = (category.min - DEMOGRAPHICS_SCALE_MIN) * pixelsPerUnit;
-  const topPx = (category.max - DEMOGRAPHICS_SCALE_MIN) * pixelsPerUnit;
-  const whiskerHeight = topPx - bottomPx;
+function CategoryColumn({ category }: CategoryColumnProps) {
+  const range = DEMOGRAPHICS_SCALE_MAX - DEMOGRAPHICS_SCALE_MIN;
+  const bottomPct = ((category.min - DEMOGRAPHICS_SCALE_MIN) / range) * 100;
+  const topPct = ((category.max - DEMOGRAPHICS_SCALE_MIN) / range) * 100;
+  const whiskerHeightPct = topPct - bottomPct;
 
   return (
     <div className={styles.col}>
-      <div className={styles.whisker} style={{ bottom: `${bottomPx}px`, height: `${whiskerHeight}px` }} />
-      <div className={styles.diamond} style={{ bottom: `${bottomPx - 4}px` }} />
-      <div className={styles.diamond} style={{ bottom: `${topPx - 4}px` }} />
+      <div className={styles.whisker} style={{ bottom: `${bottomPct}%`, height: `${whiskerHeightPct}%` }} />
+      <div className={styles.diamond} style={{ bottom: `calc(${bottomPct}% - 4px)` }} />
+      <div className={styles.diamond} style={{ bottom: `calc(${topPct}% - 4px)` }} />
 
       {category.segments.map((segment, index) => {
-        const segBottom = bottomPx + segment.start * whiskerHeight;
-        const segHeight = (segment.end - segment.start) * whiskerHeight;
+        const segBottomPct = bottomPct + segment.start * whiskerHeightPct;
+        const segHeightPct = (segment.end - segment.start) * whiskerHeightPct;
 
         return (
           <div
             key={`${category.id}-${segment.key}-${index}`}
             className={styles.segment}
             style={{
-              bottom: `${segBottom}px`,
-              height: `${segHeight}px`,
+              bottom: `${segBottomPct}%`,
+              height: `${segHeightPct}%`,
               background: GENDER_COLORS[segment.key],
             }}
           >
@@ -50,7 +48,7 @@ function CategoryColumn({ category, pixelsPerUnit }: CategoryColumnProps) {
       {category.highlight && (
         <i
           className={`ti ti-pointer-filled ${styles.cursor}`}
-          style={{ bottom: `${bottomPx - 14}px` }}
+          style={{ bottom: `calc(${bottomPct}% - 14px)` }}
           aria-hidden="true"
         />
       )}
@@ -59,11 +57,9 @@ function CategoryColumn({ category, pixelsPerUnit }: CategoryColumnProps) {
 }
 
 export default function UserDemographicsChart({ categories }: UserDemographicsChartProps) {
-  const pixelsPerUnit = CHART_HEIGHT / (DEMOGRAPHICS_SCALE_MAX - DEMOGRAPHICS_SCALE_MIN);
-
   return (
     <div className={styles.chart}>
-      <div className={styles.body} style={{ height: `${CHART_HEIGHT}px` }}>
+      <div className={styles.body}>
         <div className={styles.yAxis}>
           <span>{DEMOGRAPHICS_SCALE_MAX}</span>
           <span>30</span>
@@ -71,7 +67,7 @@ export default function UserDemographicsChart({ categories }: UserDemographicsCh
         </div>
         <div className={styles.plot}>
           {categories.map((category) => (
-            <CategoryColumn key={category.id} category={category} pixelsPerUnit={pixelsPerUnit} />
+            <CategoryColumn key={category.id} category={category} />
           ))}
         </div>
       </div>

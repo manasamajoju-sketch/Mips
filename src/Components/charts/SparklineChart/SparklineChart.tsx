@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import './SparklineChart.module.scss'
+import styles from './SparklineChart.module.scss'
 
 export interface SparklineSeries<T> {
   key: keyof T
@@ -49,26 +49,33 @@ export default function SparklineChart<T extends { x: string }>({
   }, [data, series, plotW, plotH, yMax])
 
   return (
-    <div className="sparkline-chart">
-      {showKey && (
-        <div className="sparkline-chart__key">
+    <div className={styles['sparkline-chart']}>
+      {/* {showKey && (
+        <div className={styles['sparkline-chart__key']}>
           {series.map((s) => (
-            <span key={String(s.key)} className="sparkline-chart__key-item">
-              <span className="sparkline-chart__key-dot" style={{ backgroundColor: s.color }} />
+            <span key={String(s.key)} className={styles['sparkline-chart__key-item']}>
+              <span className={styles['sparkline-chart__key-dot']} style={{ backgroundColor: s.color }} />
               {s.label}
             </span>
           ))}
         </div>
-      )}
+      )} */}
 
       <svg
-        className="sparkline-chart__svg"
+        className={styles['sparkline-chart__svg']}
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="none"
+        fill="none"
         aria-hidden="true"
       >
         {linePaths.map((line) => (
-          <path key={String(line.key)} d={line.path} stroke={line.color} className="sparkline-chart__line" />
+          <path
+            key={String(line.key)}
+            d={line.path}
+            stroke={line.color}
+            fill="none"
+            className={styles['sparkline-chart__line']}
+          />
         ))}
       </svg>
     </div>

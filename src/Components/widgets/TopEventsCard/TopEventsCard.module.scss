@@ -15,7 +15,9 @@
   flex-direction: column;
 
   &__header {
+    @include flex(row, center, space-between);
     margin-bottom: $space-sm;
+    gap: $space-sm;
   }
 
   &__title {
@@ -42,7 +44,7 @@
   &__content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 35px;
     flex: 1;
     min-height: 0;
   }
@@ -129,7 +131,7 @@
 
   &__bottom-row {
     @include flex(row, center, space-between);
-    margin-top: 6px;
+    margin-top: 1px;
   }
 
   &__tags {

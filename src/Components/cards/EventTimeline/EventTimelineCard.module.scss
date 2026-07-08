@@ -3,37 +3,48 @@
 .card {
   background: $color-surface;
   border-radius: $radius-card;
-  padding: 24px 28px;
+  padding: 14px 16px;
   font-family: $font-family-base;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  height: 100%;
   width: 100%;
-  max-width: 520px;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 22px;
+  gap: 6px;
+  font-size: 15px;
   font-weight: 500;
   color: $color-text-primary;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
+  flex: 0 0 auto;
 
   i {
-    font-size: 18px;
+    font-size: 14px;
     color: $color-accent-teal;
   }
 }
 
 .timeline {
   position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .line {
   position: absolute;
   left: 50%;
-  top: 24px;
-  bottom: 46px;
+  top: 6px;
+  bottom: 22px;
   width: 1px;
   background: $color-border;
   transform: translateX(-50%);
@@ -41,40 +52,45 @@
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 24px 1fr;
+  grid-template-columns: 1fr 18px 1fr;
   align-items: center;
-  min-height: 92px;
+  min-height: 0;
+  flex: 1;
   position: relative;
 }
 
 .rowLast {
-  min-height: 46px;
+  flex: 0 0 auto;
 }
 
 .highlight {
   position: absolute;
-  left: -4px;
-  right: -4px;
+  left: -6px;
+  right: -6px;
   top: 50%;
   transform: translateY(-50%);
-  height: 66px;
+  height: 44px;
   background: $color-urgent-bg;
   border: 1.5px solid $color-urgent;
-  border-radius: 16px;
+  border-radius: 12px;
   z-index: 0;
 }
 
 .country {
   text-align: right;
-  padding-right: 16px;
+  padding-right: 10px;
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .countryName {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 700;
   color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .countryUrgent .countryName {
@@ -82,9 +98,10 @@
 }
 
 .time {
-  font-size: 14px;
+  font-size: 11px;
   color: $color-text-muted;
-  margin-top: 2px;
+  margin-top: 1px;
+  white-space: nowrap;
 }
 
 .markerCol {
@@ -95,10 +112,11 @@
 }
 
 .dot {
-  width: 11px;
-  height: 11px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: $color-accent-teal;
+  flex-shrink: 0;
 }
 
 .dotUrgent {
@@ -106,22 +124,27 @@
 }
 
 .detail {
-  padding-left: 16px;
+  padding-left: 10px;
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .eventLabel {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 400;
   color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .statusLabel {
-  font-size: 15px;
+  font-size: 11px;
   font-weight: 700;
   font-style: italic;
-  margin-top: 2px;
+  margin-top: 1px;
+  white-space: nowrap;
 }
 
 .statusSafe {
@@ -131,76 +154,48 @@
 .statusUrgent {
   color: $color-urgent;
 }
-  @media (max-width: $bp-tablet) {
-    .card {
-      padding: 20px;
-    }
 
-    .header {
-      margin-bottom: 14px;
-    }
-
-    .title {
-      font-size: 20px;
-    }
-
-    .line {
-      top: 22px;
-      bottom: 42px;
-    }
-
-    .row {
-      min-height: 82px;
-    }
-
-    .countryName,
-    .eventLabel {
-      font-size: 16px;
-    }
-
-    .time {
-      font-size: 13px;
-    }
-
-    .statusLabel {
-      font-size: 14px;
-    }
+@media (max-width: $bp-tablet) {
+  .card {
+    padding: 16px 18px;
   }
 
-  @media (max-width: $bp-mobile) {
-    .card {
-      padding: 16px;
-    }
-
-    .header {
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-
-    .title {
-      font-size: 18px;
-    }
-
-    .line {
-      top: 20px;
-      bottom: 38px;
-    }
-
-    .row {
-      grid-template-columns: 1fr 20px 1fr;
-      min-height: 74px;
-    }
-
-    .countryName,
-    .eventLabel {
-      font-size: 15px;
-    }
-
-    .time {
-      font-size: 12px;
-    }
-
-    .statusLabel {
-      font-size: 13px;
-    }
+  .header {
+    font-size: 16px;
+    margin-bottom: 10px;
   }
+
+  .countryName,
+  .eventLabel {
+    font-size: 14px;
+  }
+
+  .time,
+  .statusLabel {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: $bp-mobile) {
+  .card {
+    padding: 14px 16px;
+  }
+
+  .header {
+    font-size: 15px;
+  }
+
+  .row {
+    grid-template-columns: 1fr 16px 1fr;
+  }
+
+  .countryName,
+  .eventLabel {
+    font-size: 13px;
+  }
+
+  .time,
+  .statusLabel {
+    font-size: 11px;
+  }
+}
