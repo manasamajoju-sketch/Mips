@@ -1,9 +1,98 @@
 @use '@/styles/variables' as *;
 
-.dashboard-page {
-  min-height: 100vh;
-  padding: $space-xl $space-lg;
+.dashboardPage {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  grid-template-areas:
+    'event-overview event-overview event-overview event-analytics event-analytics event-analytics'
+    'location-overview location-overview location-overview top-events top-events event-timeline'
+    'user-overview product-overview user-demographics event-severity event-time event-time';
+}
+
+.eventOverview {
+  grid-area: event-overview;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
+}
+
+.eventAnalytics {
+  grid-area: event-analytics;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.locationOverview {
+  grid-area: location-overview;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.topEvents {
+  grid-area: top-events;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.eventTimeline {
+  grid-area: event-timeline;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.userOverview {
+  grid-area: user-overview;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.productOverview {
+  grid-area: product-overview;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.userDemographics {
+  grid-area: user-demographics;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.eventSeverity {
+  grid-area: event-severity;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.eventTime {
+  grid-area: event-time;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
 }

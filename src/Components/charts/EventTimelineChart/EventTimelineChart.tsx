@@ -5,7 +5,7 @@ import styles from './EventTimelineChart.module.scss';
 
 const CATEGORY_KEYS: EventCategoryKey[] = ['sos', 'active', 'passive', 'others'];
 const MAX_TOTAL = 50;
-const MAX_PILL_HEIGHT = 180;
+const MAX_PILL_HEIGHT = 120;
 
 interface EventTimelineChartProps {
   data: EventTimelineDay[];

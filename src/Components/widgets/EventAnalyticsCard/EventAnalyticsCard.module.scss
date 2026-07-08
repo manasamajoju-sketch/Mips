@@ -4,14 +4,17 @@
 .event-analytics-card {
   @include card-surface;
   color: $color-white;
-  padding: $space-lg $space-xl $space-xl;
+  padding: $space-md $space-lg;
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &__header {
     @include flex(row, center, space-between);
-    margin-bottom: $space-lg;
+    margin-bottom: $space-sm;
   }
 
   &__title {
@@ -91,8 +94,9 @@
   }
 
   &__summary {
-    @include flex(row, flex-end, flex-start, $space-xl);
+    @include flex(row, flex-end, flex-start, $space-md);
     flex-wrap: wrap;
+    margin-bottom: $space-sm;
   }
 
   &__metric {
@@ -104,7 +108,7 @@
   }
 
   &__metric-value {
-    font-size: $fs-metric-lg;
+    font-size: 24px;
     font-weight: $fw-medium;
     line-height: 1;
 
@@ -125,14 +129,16 @@
   &__divider {
     border: none;
     border-top: 1px solid $color-white-20;
-    margin: $space-lg 0;
+    margin: $space-sm 0;
   }
 
   &__body {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) auto minmax(0, 220px) minmax(0, 1fr);
     align-items: center;
-    gap: $space-lg;
+    gap: $space-sm;
+    flex: 1;
+    min-height: 0;
   }
 
   &__chart-col {
@@ -163,7 +169,7 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: $space-md;
+    gap: $space-sm;
   }
 
   &__stat-item {

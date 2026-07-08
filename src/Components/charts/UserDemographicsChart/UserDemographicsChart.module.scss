@@ -2,25 +2,31 @@
 
 .chart {
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .body {
   display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .yAxis {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 28px;
+  width: 18px;
   flex-shrink: 0;
-  padding-right: 8px;
-  font-size: 13px;
+  padding-right: 4px;
+  font-size: 9px;
   color: $color-text-muted;
 }
 
 .yAxisSpacer {
-  width: 28px;
+  width: 18px;
   flex-shrink: 0;
 }
 
@@ -49,8 +55,8 @@
 .diamond {
   position: absolute;
   left: 50%;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: $color-diamond;
   transform: translateX(-50%) rotate(45deg);
   border-radius: 1px;
@@ -59,8 +65,8 @@
 .segment {
   position: absolute;
   left: 50%;
-  width: 36px;
-  border-radius: 8px;
+  width: 16px;
+  border-radius: 4px;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -68,27 +74,28 @@
 }
 
 .percentLabel {
-  font-size: 14px;
+  font-size: 8px;
   font-weight: 700;
   color: $color-passive;
 }
 
 .cursor {
   position: absolute;
-  left: calc(50% + 6px);
-  font-size: 20px;
+  left: calc(50% + 4px);
+  font-size: 12px;
   color: $color-text-primary;
 }
 
 .xAxis {
   display: flex;
-  margin-top: 8px;
+  margin-top: 4px;
+  flex: 0 0 auto;
 }
 
 .tick {
   flex: 1;
   text-align: center;
-  font-size: 15px;
+  font-size: 9px;
   color: $color-text-muted;
   font-weight: 400;
 }

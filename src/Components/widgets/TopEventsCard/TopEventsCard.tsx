@@ -4,7 +4,7 @@ import SparklineChart from '../../charts/SparklineChart/SparklineChart'
 import { topEventsMock, topEventsSparklineSeries } from '../../../Constants/topEventsMock'
 import type { TopEvent } from '../../../types/topEvents'
 
-import './TopEventsCard.module.scss'
+import styles from './TopEventsCard.module.scss'
 
 interface TopEventsCardProps {
   events?: TopEvent[]
@@ -13,41 +13,41 @@ interface TopEventsCardProps {
 
 export default function TopEventsCard({ events = topEventsMock, onEventClick }: TopEventsCardProps) {
   return (
-    <section className="top-events-card">
-      <header className="top-events-card__header">
-        <h2 className="top-events-card__title">
+    <section className={styles['top-events-card']}>
+      <header className={styles['top-events-card__header']}>
+        <h2 className={styles['top-events-card__title']}>
           Top Events
-          <button type="button" className="top-events-card__info-btn" aria-label="More information">
+          <button type="button" className={styles['top-events-card__info-btn']} aria-label="More information">
             <InfoIcon />
           </button>
         </h2>
       </header>
 
-      <div className="top-events-card__content">
+      <div className={styles['top-events-card__content']}>
         {events.map((event, index) => (
-          <div className="top-events-card__section" key={event.key}>
-            <div className="top-events-card__metric">
-              <span className="top-events-card__metric-value">
+          <div className={styles['top-events-card__section']} key={event.key}>
+            <div className={styles['top-events-card__metric']}>
+              <span className={styles['top-events-card__metric-value']}>
                 {event.metricValue}
-                <span className="top-events-card__metric-suffix">{event.metricSuffix}</span>
+                <span className={styles['top-events-card__metric-suffix']}>{event.metricSuffix}</span>
               </span>
-              <span className="top-events-card__metric-label">
+              <span className={styles['top-events-card__metric-label']}>
                 {event.metricLabel.split('\n').map((line) => (
                   <span key={line}>{line}</span>
                 ))}
               </span>
             </div>
 
-            <div className="top-events-card__meta">
-              <div className="top-events-card__meta-group">
-                <span className="top-events-card__meta-value">{event.date}</span>
-                <span className="top-events-card__meta-value">{event.time}</span>
+            <div className={styles['top-events-card__meta']}>
+              <div className={styles['top-events-card__meta-group']}>
+                <span className={styles['top-events-card__meta-value']}>{event.date}</span>
+                <span className={styles['top-events-card__meta-value']}>{event.time}</span>
               </div>
 
-              <div className="top-events-card__meta-group top-events-card__meta-group--end">
-                <span className="top-events-card__meta-label">Severity</span>
+              <div className={`${styles['top-events-card__meta-group']} ${styles['top-events-card__meta-group--end']}`}>
+                <span className={styles['top-events-card__meta-label']}>Severity</span>
                 <span
-                  className={`top-events-card__severity top-events-card__severity--${event.severity.toLowerCase()}`}
+                  className={`${styles['top-events-card__severity']} ${styles[`top-events-card__severity--${event.severity.toLowerCase()}`]}`}
                 >
                   {event.severity}
                 </span>
@@ -56,8 +56,8 @@ export default function TopEventsCard({ events = topEventsMock, onEventClick }: 
 
             <SparklineChart data={event.data} series={topEventsSparklineSeries} showKey={index === 1} />
 
-            <div className="top-events-card__bottom-row">
-              <div className="top-events-card__tags">
+            <div className={styles['top-events-card__bottom-row']}>
+              <div className={styles['top-events-card__tags']}>
                 {event.tags.map((tag) => (
                   <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
                 ))}
@@ -65,7 +65,7 @@ export default function TopEventsCard({ events = topEventsMock, onEventClick }: 
 
               <button
                 type="button"
-                className="top-events-card__arrow-btn"
+                className={styles['top-events-card__arrow-btn']}
                 onClick={() => onEventClick?.(event)}
                 aria-label={`View ${event.metricLabel.replace('\n', ' ')} event details`}
               >
@@ -73,7 +73,7 @@ export default function TopEventsCard({ events = topEventsMock, onEventClick }: 
               </button>
             </div>
 
-            {index < events.length - 1 && <div className="top-events-card__divider" aria-hidden="true" />}
+            {index < events.length - 1 && <div className={styles['top-events-card__divider']} aria-hidden="true" />}
           </div>
         ))}
       </div>

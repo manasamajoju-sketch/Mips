@@ -3,23 +3,59 @@
 .card {
   background: $color-surface;
   border-radius: $radius-card;
-  padding: 24px 28px;
+  padding: 14px 16px;
   font-family: $font-family-base;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-  max-width: 600px;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 22px;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 500;
   color: $color-text-primary;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
+  flex: 0 0 auto;
 
   i {
-    font-size: 18px;
+    font-size: 13px;
+    color: $color-accent-teal;
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.expand {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: $color-text-secondary;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  i {
+    font-size: 13px;
+  }
+
+  &:hover {
     color: $color-accent-teal;
   }
 }
@@ -27,41 +63,48 @@
 .summary {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex: 0 0 auto;
 }
 
 .summaryValue {
-  font-size: 56px;
+  font-size: 26px;
   font-weight: 500;
   line-height: 1;
   color: $color-text-primary;
 }
 
 .summaryLabel {
-  font-size: 16px;
+  font-size: 10px;
   color: $color-text-primary;
-  line-height: 1.2;
-  max-width: 70px;
+  line-height: 1.15;
 }
 
 .legend {
   display: flex;
-  gap: 32px;
-  margin-bottom: 24px;
-  font-size: 13px;
+  gap: 14px;
+  margin-bottom: 6px;
+  font-size: 9px;
   color: $color-text-secondary;
+  flex: 0 0 auto;
 }
 
 .legendItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .legendDot {
-  width: 10px;
-  height: 10px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   display: inline-block;
+  flex-shrink: 0;
+}
+
+.card > :last-child {
+  flex: 1 1 auto;
+  min-height: 0;
 }
