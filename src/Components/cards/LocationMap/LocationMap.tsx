@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useGoogleMapsScript } from '../../../Hooks/useGoogleMapsScript'
+import { useGoogleMapsScript } from '../../../hooks/useGoogleMapsScript'
 import { GOOGLE_MAPS_API_KEY, LOCATION_MAP_STYLE } from '../../../Constants/mapStyle'
 import type { MapLocation } from '../../../types/location'
 import styles from './LocationMap.module.scss'

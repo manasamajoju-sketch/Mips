@@ -167,5 +167,18 @@
     &__header {
       flex-wrap: wrap;
     }
+
+    &__title {
+      font-size: 22px;
+    }
+
+    &__total-value {
+      font-size: 42px;
+    }
+
+    &__subtitle,
+    &__breakdown-title {
+      font-size: 13px;
+    }
   }
 }

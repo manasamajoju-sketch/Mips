@@ -180,5 +180,21 @@
 
   @media (max-width: $bp-mobile) {
     padding: $space-md;
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__metric-value {
+      font-size: 30px;
+    }
+
+    &__content {
+      gap: $space-md;
+    }
+
+    &__divider {
+      display: none;
+    }
   }
 }

@@ -222,13 +222,30 @@
   @media (max-width: $bp-mobile) {
     padding: $space-md;
 
+    &__title {
+      font-size: 32px;
+    }
+
     &__metric-value {
-      font-size: 40px;
+      font-size: 34px;
     }
 
     &__header {
       flex-wrap: wrap;
       gap: $space-sm;
+    }
+
+    &__summary {
+      gap: $space-sm;
+    }
+
+    &__body {
+      grid-template-columns: 1fr;
+      gap: $space-lg;
+    }
+
+    &__wheel-col {
+      padding: 0;
     }
   }
 }

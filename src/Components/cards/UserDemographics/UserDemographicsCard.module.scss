@@ -108,3 +108,48 @@
   flex: 1 1 auto;
   min-height: 0;
 }
+@media (max-width: $bp-tablet) {
+  .card {
+    padding: 16px;
+  }
+
+  .header {
+    gap: 6px;
+  }
+
+  .summaryValue {
+    font-size: 22px;
+  }
+
+  .summaryLabel {
+    font-size: 11px;
+  }
+
+  .legend {
+    gap: 12px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: $bp-mobile) {
+  .card {
+    padding: 14px;
+  }
+
+  .header {
+    gap: 4px;
+  }
+
+  .summaryValue {
+    font-size: 20px;
+  }
+
+  .summaryLabel {
+    font-size: 10px;
+  }
+
+  .legend {
+    gap: 8px;
+    font-size: 9px;
+  }
+}
