@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useGoogleMapsScript } from '../../../hooks/useGoogleMapsScript'
 import { GOOGLE_MAPS_API_KEY, LOCATION_MAP_STYLE } from '../../../Constants/mapStyle'
+import { EVENT_CATEGORY_COLORS, EVENT_CATEGORY_LABELS } from '../../../Constants/eventOverviewData'
 import type { MapLocation } from '../../../types/location'
 import styles from './LocationMap.module.scss'
 
@@ -8,19 +9,59 @@ interface LocationMapProps {
   locations: MapLocation[]
 }
 
-const MIN_MARKER_RADIUS = 6
-const MAX_MARKER_RADIUS = 22
+const DEFAULT_ZOOM = 0
+const DEFAULT_CENTER = { lat: 20, lng: 0 }
 
-function getMarkerRadius(count: number, maxCount: number): number {
-  if (maxCount <= 0) return MIN_MARKER_RADIUS
-  const ratio = count / maxCount
-  return MIN_MARKER_RADIUS + ratio * (MAX_MARKER_RADIUS - MIN_MARKER_RADIUS)
+// Keeps the map from panning/zooming out far enough to show the world
+// wrapped multiple times side by side.
+const WORLD_BOUNDS: google.maps.LatLngBoundsLiteral = { north: 95, south: -95, west: -180, east: 180 }
+
+// Builds the same conic-gradient ring the reference project uses for its
+// DOM-based donut markers (CSS conic-gradient, not an SVG/canvas chart).
+function getBreakdownConicGradient(breakdown: MapLocation['breakdown']): string {
+  const total = breakdown.reduce((sum, slice) => sum + slice.value, 0)
+  if (total <= 0) return ''
+
+  let currentAngle = 0
+  const stops = breakdown.map((slice) => {
+    const startAngle = currentAngle
+    const endAngle = currentAngle + (slice.value / total) * 360
+    currentAngle = endAngle
+    return `${slice.color} ${startAngle}deg ${endAngle}deg`
+  })
+
+  return `conic-gradient(${stops.join(', ')})`
+}
+
+function createMarkerElement(location: MapLocation): HTMLButtonElement {
+  const element = document.createElement('button')
+  element.type = 'button'
+  element.className = styles.marker
+  element.style.position = 'absolute'
+  element.style.left = '0'
+  element.style.top = '0'
+
+  const dot = document.createElement('span')
+  dot.className = styles.dot
+
+  const ring = document.createElement('span')
+  ring.className = styles.ring
+  ring.style.background = getBreakdownConicGradient(location.breakdown)
+  dot.appendChild(ring)
+
+  const text = document.createElement('span')
+  text.className = styles.count
+  text.textContent = String(location.count)
+  dot.appendChild(text)
+
+  element.appendChild(dot)
+  return element
 }
 
 export default function LocationMap({ locations }: LocationMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<google.maps.Map | null>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
+  const overlaysRef = useRef<google.maps.OverlayView[]>([])
   const { isLoaded, error } = useGoogleMapsScript(GOOGLE_MAPS_API_KEY)
 
   // Create the map once the script is ready.
@@ -28,11 +69,16 @@ export default function LocationMap({ locations }: LocationMapProps) {
     if (!isLoaded || !containerRef.current || mapRef.current) return
 
     mapRef.current = new google.maps.Map(containerRef.current, {
-      center: { lat: 20, lng: 0 },
-      zoom: 0.02,
-      minZoom: 1,
+      center: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
+      minZoom: 2,
       maxZoom: 4,
+      restriction: {
+        latLngBounds: WORLD_BOUNDS,
+        strictBounds: true,
+      },
       disableDefaultUI: true,
+      zoomControl: true,
       gestureHandling: 'greedy',
       keyboardShortcuts: false,
       styles: LOCATION_MAP_STYLE,
@@ -40,40 +86,55 @@ export default function LocationMap({ locations }: LocationMapProps) {
     })
   }, [isLoaded])
 
-  // Draw markers and fit bounds whenever the location set changes.
+  // Draw donut markers as custom OverlayView DOM elements, positioned via
+  // the map projection. Does not reset zoom/center on every update, so it
+  // doesn't fight a user's manual pan/zoom.
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return
+    const map = mapRef.current
 
-    markersRef.current.forEach((marker) => marker.setMap(null))
-    markersRef.current = []
+    overlaysRef.current.forEach((overlay) => overlay.setMap(null))
+    overlaysRef.current = []
 
     if (locations.length === 0) return
 
-    const maxCount = Math.max(...locations.map((location) => location.count))
+    const bounds = new google.maps.LatLngBounds()
 
     locations.forEach((location) => {
       const position = { lat: location.lat, lng: location.lng }
-      const radius = getMarkerRadius(location.count, maxCount)
+      const element = createMarkerElement(location)
 
-      const marker = new google.maps.Marker({
-        map: mapRef.current!,
-        position,
-        title: `${location.country}: ${location.count}`,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: radius,
-          fillColor: '#2fb9cc',
-          fillOpacity: 0.35,
-          strokeColor: '#2fb9cc',
-          strokeWeight: 1.5,
-        },
+      element.addEventListener('click', () => {
+        map.panTo(position)
+        map.setZoom(5)
       })
 
-      markersRef.current.push(marker)
+      const overlay = new google.maps.OverlayView()
+
+      overlay.onAdd = () => {
+        overlay.getPanes()?.overlayMouseTarget.appendChild(element)
+      }
+
+      overlay.draw = () => {
+        const projection = overlay.getProjection()
+        const point = projection?.fromLatLngToDivPixel(new google.maps.LatLng(position.lat, position.lng))
+        if (!point) return
+        element.style.transform = `translate3d(${point.x}px, ${point.y}px, 0) translate(-50%, -50%)`
+      }
+
+      overlay.onRemove = () => {
+        element.remove()
+      }
+
+      overlay.setMap(map)
+      overlaysRef.current.push(overlay)
+      bounds.extend(position)
     })
 
-    mapRef.current.setCenter({ lat: 20, lng: 0 })
-    mapRef.current.setZoom(0.02)
+    // Re-frame to the new marker set (e.g. after the Events/Users toggle
+    // swaps locations) — fitBounds respects minZoom/maxZoom, so it can't
+    // collapse to the broken near-zero zoom that caused the repeat-world bug.
+    map.fitBounds(bounds, 48)
   }, [isLoaded, locations])
 
   if (error) {
@@ -85,8 +146,18 @@ export default function LocationMap({ locations }: LocationMapProps) {
   }
 
   return (
-    <div className={styles.map} ref={containerRef}>
+    <div className={styles.map}>
+      <div className={styles.canvas} ref={containerRef} />
       {!isLoaded && <div className={styles.loading}>Loading map…</div>}
+
+      <div className={styles.legend}>
+        {EVENT_CATEGORY_LABELS.map((category) => (
+          <span key={category.key} className={styles.legendItem}>
+            <span className={styles.legendDot} style={{ backgroundColor: EVENT_CATEGORY_COLORS[category.key] }} />
+            {category.label}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }

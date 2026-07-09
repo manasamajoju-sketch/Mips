@@ -15,17 +15,18 @@ import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventT
 import { dashboardService } from '../../Services/dashboardService';
 import { eventTimelineFallbackEntries } from '../../Constants/eventTimelineData';
 import { mapLatestEventsToTimelineEntries, type EventTimelineApiResponse, type EventTimelineEntry } from '../../types/eventTimeline';
-import { eventOverviewFallbackSummary } from '../../Constants/eventOverviewData';
-import { mapEventOverviewResponse, type EventOverviewApiResponse, type EventOverviewSummary } from '../../types/event';
+import { eventOverviewFallbackSummary, eventTimelineData } from '../../Constants/eventOverviewData';
+import { mapEventOverviewResponse, mapEventTimeseriesResponse, type EventOverviewApiResponse, type EventOverviewSummary, type EventTimeseriesApiResponse } from '../../types/event';
 
 export default function Dashboard() {
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>(eventTimelineFallbackEntries)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
+  const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
 
   useEffect(() => {
     let isMounted = true
 
-    dashboardService.getEventOverview()
+    dashboardService.getEventOverview('7d')
       .then((response: unknown) => {
         if (!isMounted) return
         const typedResponse = response as EventOverviewApiResponse
@@ -34,6 +35,17 @@ export default function Dashboard() {
       .catch(() => {
         if (!isMounted) return
         setOverviewSummary(eventOverviewFallbackSummary)
+      })
+
+    dashboardService.getEventTimeseries('30d')
+      .then((response: unknown) => {
+        if (!isMounted) return
+        const typedResponse = response as EventTimeseriesApiResponse
+        setOverviewChartData(mapEventTimeseriesResponse(typedResponse))
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setOverviewChartData(eventTimelineData)
       })
 
     dashboardService.getLatestEvents()
@@ -55,7 +67,7 @@ export default function Dashboard() {
   return (
     <main className={styles.dashboardPage}>
       <div className={styles.eventOverview}>
-        <EventOverviewCard summary={overviewSummary} onExpand={() => console.log('Navigate to event details')} />
+        <EventOverviewCard summary={overviewSummary} chartData={overviewChartData} onExpand={() => console.log('Navigate to event details')} />
       </div>
 
       <div className={styles.eventAnalytics}>

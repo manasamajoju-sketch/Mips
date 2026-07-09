@@ -9,9 +9,9 @@ export const userOverviewData: UserOverviewCategory[] = [
 ]
 
 export const userOverviewStacks: UserOverviewStack[] = [
-  { key: 'mipsUsers', label: 'MIPS', color: EVENT_CATEGORY_COLORS.sos },
-  { key: 'total', label: 'Total', color: EVENT_CATEGORY_COLORS.active },
-  { key: 'usersWithEvents', label: '1+ events', color: EVENT_CATEGORY_COLORS.passive },
+  { key: 'mipsUsers', label: 'MIPS', color: EVENT_CATEGORY_COLORS.sos, textColor: '#101828' },
+  { key: 'total', label: 'Total', color: EVENT_CATEGORY_COLORS.active, textColor: '#101828' },
+  { key: 'usersWithEvents', label: '1+ events', color: EVENT_CATEGORY_COLORS.passive, textColor: '#FFFFFF' },
 ]
 
 export const userOverviewTotal = userOverviewData.reduce((sum, item) => sum + item.total, 0)

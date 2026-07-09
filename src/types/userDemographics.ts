@@ -17,8 +17,6 @@ export interface DemographicCategory {
   segments: DemographicSegment[];
   // bolder, dark axis label (e.g. the more prominent categories in the design)
   emphasizeLabel?: boolean;
-  // pre-selected/hovered state, shows percent labels and the pointer cursor
-  highlight?: boolean;
 }
 
 export interface UserDemographicsSummary {

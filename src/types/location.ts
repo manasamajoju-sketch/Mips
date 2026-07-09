@@ -1,4 +1,23 @@
+import type { EventCategoryKey } from './event'
+
 export type LocationDataType = 'events' | 'users'
+
+// What the backend should send: raw counts per category, per location.
+export interface LocationApiRecord {
+  id: string
+  country: string
+  lat: number
+  lng: number
+  counts: Record<EventCategoryKey, number>
+}
+
+// Render-ready shape, built from LocationApiRecord via toMapLocation().
+export interface MapLocationBreakdownSlice {
+  key: EventCategoryKey
+  label: string
+  value: number
+  color: string
+}
 
 export interface MapLocation {
   id: string
@@ -6,6 +25,7 @@ export interface MapLocation {
   lat: number
   lng: number
   count: number
+  breakdown: MapLocationBreakdownSlice[]
 }
 
 export interface LocationBreakdownItem {

@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { SeverityPoint } from '../../../types/eventAnalytics'
-import { CursorIcon } from '../../common/Icons'
 import styles from './SeverityChart.module.scss'
 
 interface SeverityChartProps {

@@ -4,11 +4,11 @@ import { ENDPOINTS } from "./endPoints";
 
 export const dashboardService = {
 
-  getEventOverview: () =>
-    apiClient(ENDPOINTS.events.overview),
+  getEventOverview: (window: string = '7d') =>
+    apiClient(`${ENDPOINTS.events.overview}?window=${encodeURIComponent(window)}`),
 
-  getEventTimeseries: () =>
-    apiClient(ENDPOINTS.events.timeseries),
+  getEventTimeseries: (window: string = '30d') =>
+    apiClient(`${ENDPOINTS.events.timeseries}?window=${encodeURIComponent(window)}`),
 
   getLatestEvents: () =>
     apiClient(ENDPOINTS.events.latest),

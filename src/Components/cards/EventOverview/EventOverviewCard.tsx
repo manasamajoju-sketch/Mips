@@ -13,11 +13,13 @@ import styles from './EventOverviewCard.module.scss';
 
 interface EventOverviewCardProps {
   summary?: EventOverviewSummary;
+  chartData?: Array<{ date: string; month: string; sos: number; active: number; passive: number; others: number; highlight?: boolean }>;
   onExpand?: () => void;
 }
 
 export default function EventOverviewCard({
   summary,
+  chartData,
   onExpand,
 }: EventOverviewCardProps) {
   const [view, setView] = useState<EventOverviewView>('events');
@@ -45,7 +47,9 @@ export default function EventOverviewCard({
     ? EVENT_CATEGORY_LABELS.map(({ key }) => ({ key, color: EVENT_CATEGORY_COLORS[key] }))
     : SEVERITY_CATEGORY_LABELS.map(({ key }) => ({ key, color: SEVERITY_CATEGORY_COLORS[key] }));
 
-  const chartData = isEventsView ? eventTimelineData : severityTimelineData;
+  const resolvedChartData = isEventsView
+    ? (chartData ?? eventTimelineData)
+    : severityTimelineData;
   const noteText = isEventsView ? resolvedSummary.highlightNote : resolvedSummary.severityHighlightNote;
 
   return (
@@ -116,7 +120,7 @@ export default function EventOverviewCard({
         </div>
       </div>
 
-      <EventTimelineChart data={chartData as unknown as TimelinePoint[]} categories={chartCategories} />
+      <EventTimelineChart data={resolvedChartData as unknown as TimelinePoint[]} categories={chartCategories} />
     </div>
   );
 }

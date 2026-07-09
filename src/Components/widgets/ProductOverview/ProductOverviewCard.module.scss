@@ -63,13 +63,32 @@
   padding-bottom: 2px;
 }
 
+.legend {
+  @include flex(row, center, flex-start, 16px);
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  flex: 0 0 auto;
+}
+
+.legendItem {
+  @include flex(row, center, flex-start, 6px);
+  font-size: 10px;
+  color: $color-text-primary;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .barList {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 4px;
+  gap: 6px;
   overflow: hidden;
 }
 
@@ -80,9 +99,31 @@
   flex: 1 1 0;
   justify-content: center;
   min-height: 0;
+  transition: flex-grow 200ms ease;
+}
+
+.barRowActive {
+  flex-grow: 2.6;
+}
+
+.barLabelRow {
+  @include flex(row, center, flex-start, 6px);
 }
 
 .barLabel {
   font-size: 10px;
   color: $color-text-primary;
+}
+
+.delta {
+  font-size: 10px;
+  font-weight: $fw-medium;
+}
+
+.deltaUp {
+  color: $color-delta-positive-good;
+}
+
+.deltaDown {
+  color: $color-delta-negative-bad;
 }

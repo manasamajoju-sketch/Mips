@@ -5,21 +5,17 @@ import {
   DENSITY_COLORS,
   DENSITY_TEXT_COLORS,
   TIME_AXIS_TICKS,
-  defaultHoveredCell,
-  defaultSelectedDayIndex,
 } from '../../../Constants/eventTimeHeatmapData';
 import styles from './EventTimeHeatmapChart.module.scss';
 
 interface EventTimeHeatmapChartProps {
   rows: HeatmapRow[];
-  selectedDayIndex?: number;
 }
 
-export default function EventTimeHeatmapChart({
-  rows,
-  selectedDayIndex = defaultSelectedDayIndex,
-}: EventTimeHeatmapChartProps) {
-  const [hoveredCell, setHoveredCell] = useState<CellPosition | null>(defaultHoveredCell);
+export default function EventTimeHeatmapChart({ rows }: EventTimeHeatmapChartProps) {
+  // No cell or column is revealed until the user hovers something.
+  const [hoveredCell, setHoveredCell] = useState<CellPosition | null>(null);
+  const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
 
   return (
     <div className={styles.heatmap}>
@@ -35,16 +31,16 @@ export default function EventTimeHeatmapChart({
             {rows.map((row, rowIndex) => (
               <div className={styles.row} key={row.time + rowIndex}>
                 {row.cells.map((cell, dayIndex) => {
-                  const isSelectedColumn = dayIndex === selectedDayIndex;
-                  const isHovered = hoveredCell?.row === rowIndex && hoveredCell?.day === dayIndex;
-                  const showPill = Boolean(cell) && (isSelectedColumn || isHovered);
+                  const isColumnHovered = hoveredDayIndex === dayIndex;
+                  const isCellHovered = hoveredCell?.row === rowIndex && hoveredCell?.day === dayIndex;
+                  const showPill = Boolean(cell) && (isColumnHovered || isCellHovered);
 
                   return (
                     <div
                       key={dayIndex}
                       className={styles.cell}
                       onMouseEnter={() => cell && setHoveredCell({ row: rowIndex, day: dayIndex })}
-                      onMouseLeave={() => setHoveredCell(defaultHoveredCell)}
+                      onMouseLeave={() => setHoveredCell(null)}
                     >
                       {cell && showPill && (
                         <div
@@ -55,7 +51,7 @@ export default function EventTimeHeatmapChart({
                           }}
                         >
                           {cell.value}
-                          {isHovered && !isSelectedColumn && (
+                          {isCellHovered && !isColumnHovered && (
                             <i className={`ti ti-pointer-filled ${styles.cursor}`} aria-hidden="true" />
                           )}
                         </div>
@@ -72,9 +68,14 @@ export default function EventTimeHeatmapChart({
 
           <div className={styles.dayLabels}>
             {DAYS_OF_WEEK.map((day, index) => (
-              <div className={styles.dayLabel} key={day}>
+              <div
+                key={day}
+                className={`${styles.dayLabel} ${hoveredDayIndex === index ? styles.dayLabelActive : ''}`}
+                onMouseEnter={() => setHoveredDayIndex(index)}
+                onMouseLeave={() => setHoveredDayIndex(null)}
+              >
                 {day}
-                {index === selectedDayIndex && (
+                {hoveredDayIndex === index && (
                   <i className={`ti ti-pointer-filled ${styles.axisCursor}`} aria-hidden="true" />
                 )}
               </div>

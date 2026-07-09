@@ -28,8 +28,8 @@ export const userDemographicsCategories: DemographicCategory[] = [
     min: 15,
     max: 75,
     segments: [
-      { key: 'male', start: 0.35, end: 0.82 },
-      { key: 'female', start: 0.82, end: 0.93 },
+      { key: 'male', start: 0.35, end: 0.82, percentLabel: '65%' },
+      { key: 'female', start: 0.82, end: 0.93, percentLabel: '35%' },
     ],
   },
   {
@@ -39,16 +39,15 @@ export const userDemographicsCategories: DemographicCategory[] = [
     min: 15,
     max: 65,
     segments: [
-      { key: 'others', start: 0.28, end: 0.4 },
-      { key: 'male', start: 0.4, end: 0.55 },
-      { key: 'female', start: 0.55, end: 0.75 },
+      { key: 'others', start: 0.28, end: 0.4, percentLabel: '10%' },
+      { key: 'male', start: 0.4, end: 0.55, percentLabel: '35%' },
+      { key: 'female', start: 0.55, end: 0.75, percentLabel: '55%' },
     ],
   },
   {
     id: 'moto',
     label: 'Moto',
     emphasizeLabel: true,
-    highlight: true,
     min: 15,
     max: 68,
     segments: [
@@ -63,9 +62,9 @@ export const userDemographicsCategories: DemographicCategory[] = [
     min: 15,
     max: 75,
     segments: [
-      { key: 'others', start: 0.35, end: 0.42 },
-      { key: 'male', start: 0.42, end: 0.55 },
-      { key: 'female', start: 0.55, end: 0.92 },
+      { key: 'others', start: 0.35, end: 0.42, percentLabel: '12%' },
+      { key: 'male', start: 0.42, end: 0.55, percentLabel: '28%' },
+      { key: 'female', start: 0.55, end: 0.92, percentLabel: '60%' },
     ],
   },
 ];

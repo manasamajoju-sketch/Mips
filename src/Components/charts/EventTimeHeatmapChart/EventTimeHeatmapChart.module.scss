@@ -100,6 +100,21 @@
   font-size: 8px;
   color: $color-text-muted;
   position: relative;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 0;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover {
+    color: $color-text-primary;
+    background: $color-border;
+  }
+}
+
+.dayLabelActive {
+  color: $color-text-primary;
+  font-weight: $fw-semibold;
+  background: $color-border;
 }
 
 .axisCursor {

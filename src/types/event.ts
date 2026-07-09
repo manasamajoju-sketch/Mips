@@ -44,12 +44,38 @@ export interface EventOverviewSeriesPoint {
   highSeverity: number;
 }
 
+export interface EventTimeseriesApiPoint {
+  bucket: string;
+  total: number;
+  byType?: Record<string, number>;
+}
+
+export interface EventTimeseriesApiResponse {
+  success: boolean;
+  data: EventTimeseriesApiPoint[];
+  meta: {
+    cached: boolean;
+    stale?: boolean;
+    generatedAt: string;
+    range?: {
+      from: string;
+      to: string;
+    };
+  };
+}
+
+export interface EventOverviewMetric {
+  current?: number | string;
+  previous?: number | string;
+  pctChange?: number | string;
+}
+
 export interface EventOverviewApiResponse {
   success: boolean;
   data: {
     window: string;
-    totalEvents: string | number;
-    highSeverityEvents: string | number;
+    totalEvents: string | number | EventOverviewMetric;
+    highSeverityEvents: string | number | EventOverviewMetric;
     range: EventOverviewRange;
     previousRange: EventOverviewRange;
     series: EventOverviewSeriesPoint[];
@@ -71,14 +97,35 @@ export interface EventOverviewSummary {
   progress: number;
 }
 
-export function mapEventOverviewResponse(response: EventOverviewApiResponse): EventOverviewSummary {
-  const totalEvents = Number(response.data.totalEvents) || 0;
-  const highSeverityEvents = Number(response.data.highSeverityEvents) || 0;
+function parseMetricValue(metric: string | number | EventOverviewMetric | undefined) {
+  if (typeof metric === 'number' || typeof metric === 'string') {
+    return {
+      current: Number(metric) || 0,
+      pctChange: 0,
+    };
+  }
 
-  const previousTotal = 0;
-  const previousHighSeverity = 0;
-  const totalEventsDeltaPct = previousTotal > 0 ? ((totalEvents - previousTotal) / previousTotal) * 100 : 0;
-  const highSeverityDeltaPct = previousHighSeverity > 0 ? ((highSeverityEvents - previousHighSeverity) / previousHighSeverity) * 100 : 0;
+  if (metric && typeof metric === 'object') {
+    return {
+      current: Number(metric.current ?? 0) || 0,
+      pctChange: Number(metric.pctChange ?? 0) || 0,
+    };
+  }
+
+  return {
+    current: 0,
+    pctChange: 0,
+  };
+}
+
+export function mapEventOverviewResponse(response: EventOverviewApiResponse): EventOverviewSummary {
+  const totalEventsMetric = parseMetricValue(response.data.totalEvents);
+  const highSeverityMetric = parseMetricValue(response.data.highSeverityEvents);
+
+  const totalEvents = totalEventsMetric.current;
+  const totalEventsDeltaPct = totalEventsMetric.pctChange;
+  const highSeverityEvents = highSeverityMetric.current;
+  const highSeverityDeltaPct = highSeverityMetric.pctChange;
 
   return {
     totalEvents,
@@ -89,4 +136,22 @@ export function mapEventOverviewResponse(response: EventOverviewApiResponse): Ev
     severityHighlightNote: `High severity activity reached ${highSeverityEvents} in ${response.data.window}`,
     progress: Math.min(100, Math.round((highSeverityEvents / Math.max(totalEvents, 1)) * 100)),
   };
+}
+
+export function mapEventTimeseriesResponse(response: EventTimeseriesApiResponse) {
+  return response.data.map((point) => {
+    const date = new Date(point.bucket);
+    const day = date.getDate().toString();
+    const month = date.toLocaleString('en-US', { month: 'short' });
+
+    return {
+      date: day,
+      month,
+      sos: Number(point.byType?.sos ?? 0),
+      active: Number(point.byType?.major_impact ?? 0),
+      passive: Number(point.byType?.passive ?? 0),
+      others: Number(point.byType?.others ?? 0),
+      highlight: point.total > 0,
+    };
+  });
 }

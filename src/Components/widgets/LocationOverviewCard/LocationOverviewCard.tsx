@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { InfoIcon, ArrowRightIcon } from '../../common/Icons'
+import { InfoIcon } from '../../common/Icons'
 import LocationMap from '../../cards/LocationMap/LocationMap'
 import HorizontalBarChart from '../../charts/HorizontalBarChart/HorizontalBarChart'
 import { locationOverviewByType } from '../../../Constants/locationOverviewMock'
@@ -10,7 +10,7 @@ interface LocationOverviewCardProps {
   onExpand?: () => void
 }
 
-export default function LocationOverviewCard({ onExpand }: LocationOverviewCardProps) {
+export default function LocationOverviewCard({}: LocationOverviewCardProps) {
   const [dataType, setDataType] = useState<LocationDataType>('events')
   const config = locationOverviewByType[dataType]
 
@@ -38,7 +38,7 @@ export default function LocationOverviewCard({ onExpand }: LocationOverviewCardP
             </button>
           ))}
         </div>
-
+{/* 
         <button
           type="button"
           className={styles['location-overview-card__expand-btn']}
@@ -46,7 +46,7 @@ export default function LocationOverviewCard({ onExpand }: LocationOverviewCardP
           aria-label="View location details"
         >
           <ArrowRightIcon />
-        </button>
+        </button> */}
       </header>
 
       <div className={styles['location-overview-card__body']}>
