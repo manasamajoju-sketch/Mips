@@ -1,64 +1,77 @@
 import { useState } from 'react';
-import type { EventCategoryKey, EventTimelineDay } from '../../../types/event';
-import { EVENT_CATEGORY_COLORS } from '../../../Constants/eventOverviewData';
 import styles from './EventTimelineChart.module.scss';
 
-const CATEGORY_KEYS: EventCategoryKey[] = ['sos', 'active', 'passive', 'others'];
 const MAX_TOTAL = 50;
 const MAX_PILL_HEIGHT = 120;
 
+export interface TimelineCategory {
+  key: string;
+  color: string;
+}
+
+export interface TimelinePoint {
+  date: string;
+  month: string;
+  highlight?: boolean;
+  [categoryKey: string]: string | number | boolean | undefined;
+}
+
 interface EventTimelineChartProps {
-  data: EventTimelineDay[];
-  initialHighlightIndex?: number;
+  data: TimelinePoint[];
+  categories: TimelineCategory[];
+  maxTotal?: number;
 }
 
 interface DayColumnProps {
-  day: EventTimelineDay;
+  point: TimelinePoint;
+  categories: TimelineCategory[];
+  maxTotal: number;
   isActive: boolean;
   onHover: () => void;
   onLeave: () => void;
 }
 
-function DayColumn({ day, isActive, onHover, onLeave }: DayColumnProps) {
-  const total = CATEGORY_KEYS.reduce((sum, key) => sum + (day[key] || 0), 0);
+const MIN_LABEL_HEIGHT = 14;
+
+function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: DayColumnProps) {
+  const total = categories.reduce((sum, cat) => sum + (Number(point[cat.key]) || 0), 0);
 
   if (total === 0) {
     return <div className={styles.col} />;
   }
 
-  const pillHeight = Math.min((total / MAX_TOTAL) * MAX_PILL_HEIGHT, MAX_PILL_HEIGHT);
+  const pillHeight = Math.min((total / maxTotal) * MAX_PILL_HEIGHT, MAX_PILL_HEIGHT);
 
   return (
     <div className={styles.col} onMouseEnter={onHover} onMouseLeave={onLeave}>
-      {isActive && (
-        <div className={styles.tooltip}>
-          {CATEGORY_KEYS.map((key) => (
-            <span key={key} className={styles.badge} style={{ background: EVENT_CATEGORY_COLORS[key] }}>
-              {day[key]}
-            </span>
-          ))}
-        </div>
-      )}
       <div
         className={`${styles.pill} ${isActive ? styles.pillActive : ''}`}
         style={{ height: `${pillHeight}px` }}
       >
-        {CATEGORY_KEYS.map((key) => (
-          <div
-            key={key}
-            className={styles.segment}
-            style={{ background: EVENT_CATEGORY_COLORS[key], flex: `${Math.max(day[key], 0.3)} 0 0` }}
-          />
-        ))}
+        {categories.map((cat) => {
+          const value = Number(point[cat.key]) || 0;
+          const segmentHeight = (value / total) * pillHeight;
+          const showLabel = isActive && segmentHeight >= MIN_LABEL_HEIGHT;
+
+          return (
+            <div
+              key={cat.key}
+              className={styles.segment}
+              style={{ background: cat.color, flex: `${Math.max(value, 0.3)} 0 0` }}
+            >
+              {showLabel && <span className={styles.segmentLabel}>{value}</span>}
+            </div>
+          );
+        })}
       </div>
       {isActive && <i className={`ti ti-pointer-filled ${styles.cursor}`} aria-hidden="true" />}
     </div>
   );
 }
 
-export default function EventTimelineChart({ data, initialHighlightIndex }: EventTimelineChartProps) {
-  const defaultIndex = initialHighlightIndex ?? data.findIndex((d) => d.highlight);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(defaultIndex >= 0 ? defaultIndex : null);
+export default function EventTimelineChart({ data, categories, maxTotal = MAX_TOTAL }: EventTimelineChartProps) {
+  // No default/initial highlight - hoveredIndex is only ever set by a real mouse hover.
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div className={styles.chart}>
@@ -69,13 +82,15 @@ export default function EventTimelineChart({ data, initialHighlightIndex }: Even
           <span>00</span>
         </div>
         <div className={styles.plot}>
-          {data.map((day, index) => (
+          {data.map((point, index) => (
             <DayColumn
-              key={`${day.month}-${day.date}-${index}`}
-              day={day}
+              key={`${point.month}-${point.date}-${index}`}
+              point={point}
+              categories={categories}
+              maxTotal={maxTotal}
               isActive={hoveredIndex === index}
               onHover={() => setHoveredIndex(index)}
-              onLeave={() => setHoveredIndex(defaultIndex >= 0 ? defaultIndex : null)}
+              onLeave={() => setHoveredIndex(null)}
             />
           ))}
         </div>
@@ -83,10 +98,10 @@ export default function EventTimelineChart({ data, initialHighlightIndex }: Even
       <div className={styles.xAxis}>
         <div className={styles.yAxisSpacer} />
         <div className={styles.plot}>
-          {data.map((day, index) => (
+          {data.map((point, index) => (
             <div className={styles.tick} key={`tick-${index}`}>
-              {day.date}
-              {day.month && <div className={styles.tickMonth}>{day.month}</div>}
+              {point.date}
+              {point.month && <div className={styles.tickMonth}>{point.month}</div>}
             </div>
           ))}
         </div>

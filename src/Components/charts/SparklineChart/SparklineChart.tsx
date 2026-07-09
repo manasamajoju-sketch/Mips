@@ -20,7 +20,6 @@ const PAD = 4
 export default function SparklineChart<T extends { x: string }>({
   data,
   series,
-  showKey = true,
 }: SparklineChartProps<T>) {
   const yMax = useMemo(
     () => Math.max(1, ...data.flatMap((point) => series.map((s) => Number(point[s.key]) || 0))),

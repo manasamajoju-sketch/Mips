@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useGoogleMapsScript } from '../../../Hooks/useGoogleMapsScript'
+import { useGoogleMapsScript } from '../../../hooks/useGoogleMapsScript'
 import { GOOGLE_MAPS_API_KEY, LOCATION_MAP_STYLE } from '../../../Constants/mapStyle'
 import type { MapLocation } from '../../../types/location'
 import styles from './LocationMap.module.scss'
@@ -29,8 +29,9 @@ export default function LocationMap({ locations }: LocationMapProps) {
 
     mapRef.current = new google.maps.Map(containerRef.current, {
       center: { lat: 20, lng: 0 },
-      zoom: 2,
+      zoom: 0.02,
       minZoom: 1,
+      maxZoom: 4,
       disableDefaultUI: true,
       gestureHandling: 'greedy',
       keyboardShortcuts: false,
@@ -49,7 +50,6 @@ export default function LocationMap({ locations }: LocationMapProps) {
     if (locations.length === 0) return
 
     const maxCount = Math.max(...locations.map((location) => location.count))
-    const bounds = new google.maps.LatLngBounds()
 
     locations.forEach((location) => {
       const position = { lat: location.lat, lng: location.lng }
@@ -70,10 +70,10 @@ export default function LocationMap({ locations }: LocationMapProps) {
       })
 
       markersRef.current.push(marker)
-      bounds.extend(position)
     })
 
-    mapRef.current.fitBounds(bounds, 32)
+    mapRef.current.setCenter({ lat: 20, lng: 0 })
+    mapRef.current.setZoom(0.02)
   }, [isLoaded, locations])
 
   if (error) {

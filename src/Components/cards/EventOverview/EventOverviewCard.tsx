@@ -1,26 +1,52 @@
-import EventTimelineChart from '../../charts/EventTimelineChart/EventTimelineChart';
+import { useState } from 'react';
+import EventTimelineChart, { type TimelinePoint } from '../../charts/EventTimelineChart/EventTimelineChart';
 import {
   EVENT_CATEGORY_COLORS,
   EVENT_CATEGORY_LABELS,
-  eventOverviewSummary,
+  SEVERITY_CATEGORY_COLORS,
+  SEVERITY_CATEGORY_LABELS,
   eventTimelineData,
+  severityTimelineData,
 } from '../../../Constants/eventOverviewData';
-import type { EventOverviewSummary, EventTimelineDay } from '../../../types/event';
+import type { EventOverviewSummary, EventOverviewView } from '../../../types/event';
 import styles from './EventOverviewCard.module.scss';
 
 interface EventOverviewCardProps {
-  data?: EventTimelineDay[];
   summary?: EventOverviewSummary;
   onExpand?: () => void;
 }
 
 export default function EventOverviewCard({
-  data = eventTimelineData,
-  summary = eventOverviewSummary,
+  summary,
   onExpand,
 }: EventOverviewCardProps) {
-  const isEventsDown = summary.totalEventsDeltaPct < 0;
-  const isSeverityUp = summary.highSeverityDeltaPct > 0;
+  const [view, setView] = useState<EventOverviewView>('events');
+
+  const resolvedSummary: EventOverviewSummary = summary ?? {
+    totalEvents: 0,
+    totalEventsDeltaPct: 0,
+    highSeverityEvents: 0,
+    highSeverityDeltaPct: 0,
+    highlightNote: 'No event data available',
+    severityHighlightNote: 'No high severity data available',
+    progress: 0,
+  };
+
+  const isEventsDown = resolvedSummary.totalEventsDeltaPct < 0;
+  const isSeverityUp = resolvedSummary.highSeverityDeltaPct > 0;
+  const isEventsView = view === 'events';
+  const deltaLabel = isEventsView ? 'L30D' : 'L90D';
+
+  const legendItems = isEventsView
+    ? EVENT_CATEGORY_LABELS.map(({ key, label }) => ({ key, label, color: EVENT_CATEGORY_COLORS[key] }))
+    : SEVERITY_CATEGORY_LABELS.map(({ key, label }) => ({ key, label, color: SEVERITY_CATEGORY_COLORS[key] }));
+
+  const chartCategories = isEventsView
+    ? EVENT_CATEGORY_LABELS.map(({ key }) => ({ key, color: EVENT_CATEGORY_COLORS[key] }))
+    : SEVERITY_CATEGORY_LABELS.map(({ key }) => ({ key, color: SEVERITY_CATEGORY_COLORS[key] }));
+
+  const chartData = isEventsView ? eventTimelineData : severityTimelineData;
+  const noteText = isEventsView ? resolvedSummary.highlightNote : resolvedSummary.severityHighlightNote;
 
   return (
     <div className={styles.card}>
@@ -40,49 +66,57 @@ export default function EventOverviewCard({
       </div>
 
       <div className={styles.stats}>
-        <div className={styles.stat}>
+        <button
+          type="button"
+          className={`${styles.statBlock} ${isEventsView ? styles.statBlockActive : ''}`}
+          onClick={() => setView('events')}
+          aria-pressed={isEventsView}
+        >
           <div className={styles.statRow}>
-            <span className={styles.statValue}>{summary.totalEvents.toLocaleString()}</span>
+            <span className={styles.statValue}>{resolvedSummary.totalEvents.toLocaleString()}</span>
             <span className={`${styles.delta} ${isEventsDown ? styles.deltaDown : styles.deltaUp}`}>
-              {summary.totalEventsDeltaPct > 0 ? '+' : ''}
-              {summary.totalEventsDeltaPct}% <span className={styles.deltaLabel}>L30D</span>
+              {resolvedSummary.totalEventsDeltaPct > 0 ? '+' : ''}
+              {resolvedSummary.totalEventsDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
             </span>
           </div>
           <div className={styles.statLabel}>Events</div>
-        </div>
+          <span className={styles.statUnderline} />
+        </button>
 
-        <div className={`${styles.stat} ${styles.statRight}`}>
+        <button
+          type="button"
+          className={`${styles.statBlock} ${styles.statRight} ${!isEventsView ? styles.statBlockActive : ''}`}
+          onClick={() => setView('severity')}
+          aria-pressed={!isEventsView}
+        >
           <div className={`${styles.statRow} ${styles.statRowRight}`}>
             <span className={`${styles.delta} ${isSeverityUp ? styles.deltaUp : styles.deltaDown}`}>
-              {summary.highSeverityDeltaPct > 0 ? '+' : ''}
-              {summary.highSeverityDeltaPct}% <span className={styles.deltaLabel}>L30D</span>
+              {resolvedSummary.highSeverityDeltaPct > 0 ? '+' : ''}
+              {resolvedSummary.highSeverityDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
             </span>
-            <span className={styles.statValue}>{summary.highSeverityEvents}</span>
+            <span className={styles.statValue}>{resolvedSummary.highSeverityEvents}</span>
           </div>
           <div className={styles.statLabel}>High severity events, HIC</div>
-        </div>
-      </div>
-
-      <div className={styles.progress}>
-        <div className={styles.progressFill} style={{ width: `${(summary.progress || 0) * 100}%` }} />
+          <span className={styles.statUnderline} />
+        </button>
       </div>
 
       <div className={styles.meta}>
         <div className={styles.note}>
           <i className="ti ti-alert-triangle" aria-hidden="true" />
-          <span>{summary.highlightNote}</span>
+          <span>{noteText}</span>
         </div>
         <div className={styles.legend}>
-          {EVENT_CATEGORY_LABELS.map(({ key, label }) => (
+          {legendItems.map(({ key, label, color }) => (
             <span className={styles.legendItem} key={key}>
-              <span className={styles.legendDot} style={{ background: EVENT_CATEGORY_COLORS[key] }} />
+              <span className={styles.legendDot} style={{ background: color }} />
               {label}
             </span>
           ))}
         </div>
       </div>
 
-      <EventTimelineChart data={data} />
+      <EventTimelineChart data={chartData as unknown as TimelinePoint[]} categories={chartCategories} />
     </div>
   );
 }

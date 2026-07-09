@@ -1,5 +1,4 @@
 import type { EventTimelineEntry } from '../../../types/eventTimeline';
-import { eventTimelineEntries } from '../../../Constants/eventTimelineData';
 import styles from './EventTimelineCard.module.scss';
 
 interface EventTimelineCardProps {
@@ -37,7 +36,7 @@ function TimelineRow({ entry, isLast }: TimelineRowProps) {
   );
 }
 
-export default function EventTimelineCard({ entries = eventTimelineEntries }: EventTimelineCardProps) {
+export default function EventTimelineCard({ entries = [] }: EventTimelineCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>

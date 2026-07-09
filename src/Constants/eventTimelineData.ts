@@ -1,6 +1,7 @@
 import type { EventTimelineEntry } from '../types/eventTimeline';
 
-export const eventTimelineEntries: EventTimelineEntry[] = [
+// Fallback/mock timeline used only when the live latest-events API is unavailable.
+export const eventTimelineFallbackEntries: EventTimelineEntry[] = [
   {
     id: 'evt-1',
     country: 'Netherlands',
@@ -43,3 +44,5 @@ export const eventTimelineEntries: EventTimelineEntry[] = [
     statusLabel: 'Marked Safe',
   },
 ];
+
+export const eventTimelineEntries = eventTimelineFallbackEntries;

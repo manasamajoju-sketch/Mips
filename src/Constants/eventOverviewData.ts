@@ -3,6 +3,9 @@ import type {
   EventCategoryLabel,
   EventOverviewSummary,
   EventTimelineDay,
+  SeverityCategoryKey,
+  SeverityCategoryLabel,
+  SeverityTimelineWeek,
 } from '../types/event';
 
 export const EVENT_CATEGORY_COLORS: Record<EventCategoryKey, string> = {
@@ -56,11 +59,44 @@ export const eventTimelineData: EventTimelineDay[] = [
   { date: '22', month: 'Jun', sos: 16, active: 9, passive: 9, others: 6 },
 ];
 
-export const eventOverviewSummary: EventOverviewSummary = {
+// Fallback/mock summary used only when the live overview API is unavailable.
+export const eventOverviewFallbackSummary: EventOverviewSummary = {
   totalEvents: 4872,
   totalEventsDeltaPct: -5,
   highSeverityEvents: 87,
   highSeverityDeltaPct: 5,
   highlightNote: 'June 11 had the highest events recorded this month.',
+  severityHighlightNote: 'Jun 2 - Jun 8 had the highest high severity events recorded in last 90 days.',
   progress: 0.32,
 };
+
+export const eventOverviewSummary = eventOverviewFallbackSummary;
+
+export const SEVERITY_CATEGORY_COLORS: Record<SeverityCategoryKey, string> = {
+  high: '#7DDBEA',
+  medium: '#14A6BE',
+  low: '#17364A',
+};
+
+export const SEVERITY_CATEGORY_LABELS: SeverityCategoryLabel[] = [
+  { key: 'high', label: 'High Severity (HIC)' },
+  { key: 'medium', label: 'Medium Severity (HIC)' },
+  { key: 'low', label: 'Low Severity (HIC)' },
+];
+
+// Each entry represents one week (last ~90 days) for the "High severity" view.
+export const severityTimelineData: SeverityTimelineWeek[] = [
+  { date: '24 Mar', month: '30 Mar', high: 5, medium: 8, low: 7 },
+  { date: '31 Mar', month: '06 Apr', high: 6, medium: 9, low: 8 },
+  { date: '07 Apr', month: '13 Apr', high: 4, medium: 7, low: 6 },
+  { date: '14 Apr', month: '20 Apr', high: 5, medium: 8, low: 7 },
+  { date: '21 Apr', month: '27 Apr', high: 6, medium: 9, low: 8 },
+  { date: '28 Apr', month: '04 May', high: 5, medium: 9, low: 9 },
+  { date: '05 May', month: '11 May', high: 7, medium: 10, low: 9 },
+  { date: '12 May', month: '18 May', high: 6, medium: 9, low: 8 },
+  { date: '19 May', month: '25 May', high: 8, medium: 11, low: 10 },
+  { date: '26 May', month: '01 Jun', high: 6, medium: 9, low: 8 },
+  { date: '02 Jun', month: '08 Jun', high: 10, medium: 15, low: 10, highlight: true },
+  { date: '09 Jun', month: '15 Jun', high: 7, medium: 10, low: 9 },
+  { date: '16 Jun', month: '22 Jun', high: 6, medium: 9, low: 8 },
+];

@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { SeverityPoint } from '../../../types/eventAnalytics'
 import { CursorIcon } from '../../common/Icons'
 import styles from './SeverityChart.module.scss'
@@ -9,7 +10,7 @@ interface SeverityChartProps {
   thresholdPosition: number
   lowSeverityLabel?: string
   highSeverityLabel?: string
-  /** Label of the point to call out with a tooltip + cursor */
+  /** Label of the point to highlight by default, before the user hovers the chart */
   highlightLabel?: string
   yAxisTicks?: number[]
   yAxisUnit?: string
@@ -31,6 +32,10 @@ export default function SeverityChart({
   yAxisTicks = [0, 25, 50],
   yAxisUnit = 'Events',
 }: SeverityChartProps) {
+  const svgRef = useRef<SVGSVGElement>(null)
+  // Index of the point the user's cursor is currently nearest to. null = not hovering the chart.
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+
   const plotW = VIEW_W - PAD_LEFT - PAD_RIGHT
   const plotH = VIEW_H - PAD_TOP - PAD_BOTTOM
   const yMax = yAxisTicks[yAxisTicks.length - 1] || 1
@@ -62,11 +67,43 @@ export default function SeverityChart({
     return PAD_LEFT + stepX * thresholdPosition
   }, [plotW, data.length, thresholdPosition])
 
-  const highlight = points.find((p) => p.label === highlightLabel)
+  // Before any real hover, fall back to the configured default (e.g. the highest point).
+  const defaultIndex = points.findIndex((p) => p.label === highlightLabel)
+  const activeIndex = hoverIndex ?? (defaultIndex >= 0 ? defaultIndex : null)
+  const activePoint = activeIndex !== null ? points[activeIndex] : null
+
+  /** Finds whichever data point's x-position is closest to the cursor, and highlights it. */
+  function handlePointerMove(event: ReactPointerEvent<SVGElement>) {
+    const svg = svgRef.current
+    if (!svg || points.length === 0) return
+
+    const rect = svg.getBoundingClientRect()
+    if (rect.width === 0) return
+
+    const scaleX = VIEW_W / rect.width
+    const localX = (event.clientX - rect.left) * scaleX
+
+    let nearestIndex = 0
+    let nearestDistance = Infinity
+    points.forEach((p, i) => {
+      const distance = Math.abs(p.x - localX)
+      if (distance < nearestDistance) {
+        nearestDistance = distance
+        nearestIndex = i
+      }
+    })
+
+    setHoverIndex(nearestIndex)
+  }
+
+  function handlePointerLeave() {
+    setHoverIndex(null)
+  }
 
   return (
     <div className={styles['severity-chart']}>
       <svg
+        ref={svgRef}
         className={styles['severity-chart__svg']}
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         xmlns="http://www.w3.org/2000/svg"
@@ -126,24 +163,46 @@ export default function SeverityChart({
         <path d={areaPath} className={styles['severity-chart__area']} />
         <path d={linePath} className={styles['severity-chart__line']} />
 
+        {/* Dot marking whichever point is currently active (hovered, or the default) */}
+        {activePoint && (
+          <circle
+            cx={activePoint.x}
+            cy={activePoint.y}
+            r={4.5}
+            className={styles['severity-chart__active-dot']}
+          />
+        )}
+
         {/* X axis labels */}
         {points.map((p) => (
           <text key={p.label} x={p.x} y={VIEW_H - 6} textAnchor="middle" className={styles['severity-chart__axis-label']}>
             {p.label}
           </text>
         ))}
+
+        {/* Full-size transparent overlay so pointer events fire across the whole chart,
+            not just where the line/area happens to be painted. Kept last so it's on top. */}
+        <rect
+          x={0}
+          y={0}
+          width={VIEW_W}
+          height={VIEW_H}
+          fill="transparent"
+          pointerEvents="all"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={handlePointerLeave}
+        />
       </svg>
 
-      {highlight && (
+      {activePoint && (
         <div
           className={styles['severity-chart__tooltip']}
           style={{
-            left: `${(highlight.x / VIEW_W) * 100}%`,
-            top: `${(highlight.y / VIEW_H) * 100}%`,
+            left: `${(activePoint.x / VIEW_W) * 100}%`,
+            top: `${(activePoint.y / VIEW_H) * 100}%`,
           }}
         >
-          <span className={styles['severity-chart__tooltip-bubble']}>{highlight.events}</span>
-          <CursorIcon className={styles['severity-chart__tooltip-cursor']} />
+          <span className={styles['severity-chart__tooltip-bubble']}>{activePoint.events}</span>
         </div>
       )}
     </div>

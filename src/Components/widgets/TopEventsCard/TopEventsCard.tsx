@@ -11,7 +11,7 @@ interface TopEventsCardProps {
   onEventClick?: (event: TopEvent) => void
 }
 
-export default function TopEventsCard({ events = topEventsMock, onEventClick }: TopEventsCardProps) {
+export default function TopEventsCard({ events = topEventsMock }: TopEventsCardProps) {
   return (
     <section className={styles['top-events-card']}>
       <header className={styles['top-events-card__header']}>

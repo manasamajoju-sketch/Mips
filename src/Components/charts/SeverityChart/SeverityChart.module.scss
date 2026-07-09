@@ -9,6 +9,9 @@
     height: auto;
     display: block;
     overflow: visible;
+    /* The custom hand-cursor icon in the tooltip stands in for the pointer, so hide the
+       native OS cursor while hovering the chart itself. */
+    cursor: none;
   }
 
   &__zone-label {
@@ -35,6 +38,7 @@
 
   &__area {
     fill: $color-area-fill-soft;
+    pointer-events: none;
   }
 
   &__line {
@@ -43,12 +47,21 @@
     stroke-width: 2.5;
     stroke-linejoin: round;
     stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  &__active-dot {
+    fill: $color-white;
+    stroke: $color-area-fill-soft;
+    stroke-width: 2;
+    pointer-events: none;
   }
 
   &__axis-label {
     fill: $color-white-70;
     font-family: $font-family-mono;
     font-size: $fs-axis;
+    pointer-events: none;
   }
 
   &__tooltip {
@@ -58,6 +71,7 @@
     flex-direction: column;
     align-items: center;
     pointer-events: none;
+    transition: left 80ms ease-out, top 80ms ease-out;
   }
 
   &__tooltip-bubble {

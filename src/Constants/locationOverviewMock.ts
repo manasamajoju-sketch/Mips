@@ -1,6 +1,6 @@
 import type { LocationOverviewConfig } from '../types/location'
 
-const SEGMENT_COLORS = ['#2fb9cc', '#3FA79A', '#8FD1C4']
+const SEGMENT_COLORS = ['#2fb9cc', '#f3ef1f', '#8FD1C4']
 
 const eventLocations = [
   { id: 'us', country: 'United States', lat: 39.8283, lng: -98.5795, count: 42 },
