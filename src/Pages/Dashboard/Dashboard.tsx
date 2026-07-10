@@ -11,7 +11,8 @@ import EventTimelineCard from '../../Components/cards/EventTimeline/EventTimelin
 import UserOverviewCard from '../../Components/widgets/UserOverviewCard/UserOverviewCard';
 import ProductOverviewCard from '../../Components/widgets/ProductOverview/ProductOverviewCard';
 import UserDemographicsCard from '../../Components/cards/UserDemographics/UserDemographicsCard';
-import EventSeverityCard from '../../Components/cards/EventSeverity/EventSeverityCard';
+// import EventSeverityCard from '../../Components/cards/EventSeverity/EventSeverityCard';
+import EventSeverityHistogramCard from '../../Components/cards/EventSeverity/EventSeverityHistogramCard';
 import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard';
 import { dashboardService } from '../../Services/dashboardService';
 import { eventTimelineFallbackEntries } from '../../Constants/eventTimelineData';
@@ -100,7 +101,8 @@ export default function Dashboard({ range }: Props) {
       <div className={styles.userOverview}><UserOverviewCard onExpand={() => console.log('Navigate to user details')} /></div>
       <div className={styles.productOverview}><ProductOverviewCard /></div>
       <div className={styles.userDemographics}><UserDemographicsCard /></div>
-      <div className={styles.eventSeverity}><EventSeverityCard /></div>
+      <div className={styles.eventSeverity}><EventSeverityHistogramCard /></div>
+      {/* <div className={styles.eventSeverity}><EventSeverityCard /></div> */}
       <div className={styles.eventTime}><EventTimeHeatmapCard /></div>
     </main>
   )
