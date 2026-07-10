@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { type TimelineRange } from '../../common/TimelineButton/TimelineButton';
 import EventTimelineChart, { type TimelinePoint } from '../../charts/EventTimelineChart/EventTimelineChart';
 import {
   EVENT_CATEGORY_COLORS,
@@ -15,12 +16,14 @@ interface EventOverviewCardProps {
   summary?: EventOverviewSummary;
   chartData?: Array<{ date: string; month: string; sos: number; active: number; passive: number; others: number; highlight?: boolean }>;
   onExpand?: () => void;
+  range?: TimelineRange;
 }
 
 export default function EventOverviewCard({
   summary,
   chartData,
   onExpand,
+  range,
 }: EventOverviewCardProps) {
   const [view, setView] = useState<EventOverviewView>('events');
 
@@ -37,7 +40,8 @@ export default function EventOverviewCard({
   const isEventsDown = resolvedSummary.totalEventsDeltaPct < 0;
   const isSeverityUp = resolvedSummary.highSeverityDeltaPct > 0;
   const isEventsView = view === 'events';
-  const deltaLabel = isEventsView ? 'L30D' : 'L90D';
+  const resolvedRange = range ?? '30d';
+  const deltaLabel = `L${resolvedRange.toUpperCase()}`;
 
   const legendItems = isEventsView
     ? EVENT_CATEGORY_LABELS.map(({ key, label }) => ({ key, label, color: EVENT_CATEGORY_COLORS[key] }))
@@ -69,41 +73,45 @@ export default function EventOverviewCard({
         </button>
       </div>
 
-      <div className={styles.stats}>
-        <button
-          type="button"
-          className={`${styles.statBlock} ${isEventsView ? styles.statBlockActive : ''}`}
-          onClick={() => setView('events')}
-          aria-pressed={isEventsView}
-        >
-          <div className={styles.statRow}>
-            <span className={styles.statValue}>{resolvedSummary.totalEvents.toLocaleString()}</span>
-            <span className={`${styles.delta} ${isEventsDown ? styles.deltaDown : styles.deltaUp}`}>
-              {resolvedSummary.totalEventsDeltaPct > 0 ? '+' : ''}
-              {resolvedSummary.totalEventsDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
-            </span>
-          </div>
-          <div className={styles.statLabel}>Events</div>
-          <span className={styles.statUnderline} />
-        </button>
+   <div className={styles.stats}>
+  <button
+    type="button"
+    className={`${styles.statBlock} ${isEventsView ? styles.statBlockActive : ''}`}
+    onClick={() => setView('events')}
+    aria-pressed={isEventsView}
+  >
+  <div className={styles.statRow}>
+  <span className={styles.statValue}>{resolvedSummary.totalEvents.toLocaleString()}</span>
+  <div className={styles.statMeta}>
+    <span className={`${styles.delta} ${isEventsDown ? styles.deltaDown : styles.deltaUp}`}>
+      {resolvedSummary.totalEventsDeltaPct > 0 ? '+' : ''}
+      {resolvedSummary.totalEventsDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
+    </span>
+    <span className={styles.statLabel}>Events</span>
+  </div>
+</div>
+<span className={styles.statUnderline} />
+  </button>
 
-        <button
-          type="button"
-          className={`${styles.statBlock} ${styles.statRight} ${!isEventsView ? styles.statBlockActive : ''}`}
-          onClick={() => setView('severity')}
-          aria-pressed={!isEventsView}
-        >
-          <div className={`${styles.statRow} ${styles.statRowRight}`}>
-            <span className={`${styles.delta} ${isSeverityUp ? styles.deltaUp : styles.deltaDown}`}>
-              {resolvedSummary.highSeverityDeltaPct > 0 ? '+' : ''}
-              {resolvedSummary.highSeverityDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
-            </span>
-            <span className={styles.statValue}>{resolvedSummary.highSeverityEvents}</span>
-          </div>
-          <div className={styles.statLabel}>High severity events, HIC</div>
-          <span className={styles.statUnderline} />
-        </button>
-      </div>
+  <button
+    type="button"
+    className={`${styles.statBlock} ${styles.statRight} ${!isEventsView ? styles.statBlockActive : ''}`}
+    onClick={() => setView('severity')}
+    aria-pressed={!isEventsView}
+  >
+  <div className={`${styles.statRow} ${styles.statRowRight}`}>
+  <span className={styles.statValue}>{resolvedSummary.highSeverityEvents}</span>
+  <div className={styles.statMeta}>
+    <span className={`${styles.delta} ${isSeverityUp ? styles.deltaUp : styles.deltaDown}`}>
+      {resolvedSummary.highSeverityDeltaPct > 0 ? '+' : ''}
+      {resolvedSummary.highSeverityDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
+    </span>
+    <span className={styles.statLabel}>High severity events, HIC</span>
+  </div>
+</div>
+<span className={styles.statUnderline} />
+  </button>
+</div>
 
       <div className={styles.meta}>
         <div className={styles.note}>
@@ -120,7 +128,11 @@ export default function EventOverviewCard({
         </div>
       </div>
 
-      <EventTimelineChart data={resolvedChartData as unknown as TimelinePoint[]} categories={chartCategories} />
+      <EventTimelineChart
+        data={resolvedChartData as unknown as TimelinePoint[]}
+        categories={chartCategories}
+        range={resolvedRange}
+      />
     </div>
   );
 }

@@ -144,13 +144,25 @@ export function mapEventTimeseriesResponse(response: EventTimeseriesApiResponse)
     const day = date.getDate().toString();
     const month = date.toLocaleString('en-US', { month: 'short' });
 
+    const byType = point.byType ?? {};
+
+    const sos = Number(byType.sos ?? 0);
+    const active = Number(byType.major_impact ?? 0);
+    const passive = Number(byType.helmet_drop ?? 0);
+    const others = Number(
+      (byType.minor_impact ?? 0) +
+        (byType.help_request ?? 0) +
+        (byType.offline_event ?? 0) +
+        (byType.no_return ?? 0)
+    );
+
     return {
       date: day,
       month,
-      sos: Number(point.byType?.sos ?? 0),
-      active: Number(point.byType?.major_impact ?? 0),
-      passive: Number(point.byType?.passive ?? 0),
-      others: Number(point.byType?.others ?? 0),
+      sos,
+      active,
+      passive,
+      others,
       highlight: point.total > 0,
     };
   });

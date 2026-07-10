@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { type TimelineRange } from '../../common/TimelineButton/TimelineButton';
 import styles from './EventTimelineChart.module.scss';
 
 const MAX_TOTAL = 50;
@@ -20,6 +21,7 @@ interface EventTimelineChartProps {
   data: TimelinePoint[];
   categories: TimelineCategory[];
   maxTotal?: number;
+  range?: TimelineRange;
 }
 
 interface DayColumnProps {
@@ -69,9 +71,10 @@ function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: 
   );
 }
 
-export default function EventTimelineChart({ data, categories, maxTotal = MAX_TOTAL }: EventTimelineChartProps) {
+export default function EventTimelineChart({ data, categories, maxTotal = MAX_TOTAL, range = '30d' }: EventTimelineChartProps) {
   // No default/initial highlight - hoveredIndex is only ever set by a real mouse hover.
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const isMonthlyRange = range === '12m';
 
   return (
     <div className={styles.chart}>
@@ -100,8 +103,14 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
         <div className={styles.plot}>
           {data.map((point, index) => (
             <div className={styles.tick} key={`tick-${index}`}>
-              {point.date}
-              {point.month && <div className={styles.tickMonth}>{point.month}</div>}
+              {isMonthlyRange ? (
+                <span className={styles.tickMonthLabel}>{point.month || point.date}</span>
+              ) : (
+                <>
+                  <span className={styles.tickDateLabel}>{point.date}</span>
+                  {point.month && <span className={styles.tickMonth}>{point.month}</span>}
+                </>
+              )}
             </div>
           ))}
         </div>

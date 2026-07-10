@@ -35,10 +35,8 @@
 
 .summary {
   display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-bottom: 2px;
-  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .summaryValue {

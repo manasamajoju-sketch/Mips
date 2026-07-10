@@ -107,16 +107,32 @@
   flex: 1 1 0;
   min-width: 0;
   text-align: center;
-  font-size: 9px;
   color: $color-text-muted;
   white-space: nowrap;
   overflow: hidden;
 }
 
+.tickDateLabel {
+  display: block;
+  font-size: 9px;
+  line-height: 1.1;
+  color: $color-text-muted;
+}
+
 .tickMonth {
+  display: block;
+  margin-top: 2px;
   font-size: 9px;
   font-weight: $fw-semibold;
   color: $color-text-secondary;
+}
+
+.tickMonthLabel {
+  display: block;
+  font-size: 10px;
+  font-weight: $fw-semibold;
+  color: $color-text-primary;
+  line-height: 1.1;
 }
 
 @media (max-width: $bp-mobile) {

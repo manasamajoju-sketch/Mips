@@ -1,0 +1,81 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sidebar {
+  width: 200px;
+  height: 100%;
+  flex-shrink: 0;
+  background: $color-surface;
+//   border-radius: $radius-card;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  padding: 12px 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: width 0.25s ease;
+  white-space: nowrap;
+
+  &.collapsed {
+    width: 56px;
+    max-width: 56px;
+    flex: 0 0 56px;
+
+    .label {
+      opacity: 0;
+      width: 0;
+    }
+
+    .tab {
+      justify-content: center;
+      padding: 10px;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+}
+
+.tab {
+  @include reset-button;
+  @include flex(row, center, flex-start, 10px);
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: $fw-medium;
+  color: $color-text-secondary;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(20, 166, 190, 0.08);
+    color: $color-accent-teal;
+  }
+}
+
+.tabActive {
+  background: rgba(20, 166, 190, 0.12);
+  color: $color-accent-teal;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 100%;
+  height: 100%;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.15s ease;
+}

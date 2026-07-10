@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { type TimelineRange } from '../../Components/common/TimelineButton/TimelineButton'
 import EventAnalyticsCard from '../../Components/widgets/EventAnalyticsCard/EventAnalyticsCard'
 import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
 import EventOverviewCard from '../../Components/cards/EventOverview/EventOverviewCard';
@@ -18,7 +19,11 @@ import { mapLatestEventsToTimelineEntries, type EventTimelineApiResponse, type E
 import { eventOverviewFallbackSummary, eventTimelineData } from '../../Constants/eventOverviewData';
 import { mapEventOverviewResponse, mapEventTimeseriesResponse, type EventOverviewApiResponse, type EventOverviewSummary, type EventTimeseriesApiResponse } from '../../types/event';
 
-export default function Dashboard() {
+interface Props {
+  range: TimelineRange
+}
+
+export default function Dashboard({ range }: Props) {
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>(eventTimelineFallbackEntries)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
   const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
@@ -26,7 +31,7 @@ export default function Dashboard() {
   useEffect(() => {
     let isMounted = true
 
-    dashboardService.getEventOverview('7d')
+    dashboardService.getEventOverview(range)
       .then((response: unknown) => {
         if (!isMounted) return
         const typedResponse = response as EventOverviewApiResponse
@@ -37,7 +42,7 @@ export default function Dashboard() {
         setOverviewSummary(eventOverviewFallbackSummary)
       })
 
-    dashboardService.getEventTimeseries('30d')
+    dashboardService.getEventTimeseries(range)
       .then((response: unknown) => {
         if (!isMounted) return
         const typedResponse = response as EventTimeseriesApiResponse
@@ -62,12 +67,17 @@ export default function Dashboard() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [range])
 
   return (
     <main className={styles.dashboardPage}>
       <div className={styles.eventOverview}>
-        <EventOverviewCard summary={overviewSummary} chartData={overviewChartData} onExpand={() => console.log('Navigate to event details')} />
+        <EventOverviewCard
+          summary={overviewSummary}
+          chartData={overviewChartData}
+          range={range}
+          onExpand={() => console.log('Navigate to event details')}
+        />
       </div>
 
       <div className={styles.eventAnalytics}>
