@@ -7,4 +7,16 @@ export const ENDPOINTS = {
     timeseries: ApiEndpoint.Events.Timeseries,
     latest: ApiEndpoint.Events.Latest,
   },
+
+  users: {
+    overview: ApiEndpoint.Users.Overview,
+  },
+
+  products: {
+    overview: ApiEndpoint.Products.Overview,
+  },
+
+  demographics: {
+    overview: ApiEndpoint.Demographics.Overview,
+  },
 } as const;

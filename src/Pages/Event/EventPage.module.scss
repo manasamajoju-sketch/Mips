@@ -1,0 +1,52 @@
+@use '@/styles/variables' as *;
+
+.page {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.heroCard {
+  grid-column: span 12;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(244,247,255,0.95));
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #4f46e5;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  color: #111827;
+}
+
+.description {
+  margin: 8px 0 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: $bp-tablet) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .heroCard {
+    grid-column: span 1;
+  }
+}

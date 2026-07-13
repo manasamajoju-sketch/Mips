@@ -5,4 +5,16 @@ export const ApiEndpoint = {
     Timeseries: "/mips/events/timeseries",
     Latest: "/mips/events/latest",
   },
+
+  Users: {
+    Overview: "/mips/overview/users",
+  },
+
+  Products: {
+    Overview: "/mips/overview/products",
+  },
+
+  Demographics: {
+    Overview: "/mips/overview/demographics",
+  },
 } as const;

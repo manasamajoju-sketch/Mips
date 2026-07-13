@@ -32,7 +32,7 @@ const rotationalPoints = [
 
 export const topEventsMock: TopEvent[] = [
   {
-    key: 'top-g-force',
+    key: 'top-g-force-1',
     metricValue: 170,
     metricSuffix: 'gF',
     metricLabel: 'Maximum\nG-Force',
@@ -41,7 +41,21 @@ export const topEventsMock: TopEvent[] = [
     severity: 'Low',
     tags: [
       { text: 'SOS Event', color: EVENT_CATEGORY_COLORS.sos },
-      { text: 'PPE', color: EVENT_CATEGORY_COLORS.sos },
+      { text: 'Construction', color: EVENT_CATEGORY_COLORS.active },
+    ],
+    data: gForcePoints,
+  },
+  {
+    key: 'top-g-force-2',
+    metricValue: 170,
+    metricSuffix: 'gF',
+    metricLabel: 'Maximum\nG-Force',
+    date: '07/02/26',
+    time: '8:34am',
+    severity: 'Low',
+    tags: [
+      { text: 'Active', color: EVENT_CATEGORY_COLORS.active },
+      { text: 'Moto', color: EVENT_CATEGORY_COLORS.passive, textColor: '#ffffff' },
     ],
     data: gForcePoints,
   },
@@ -55,6 +69,37 @@ export const topEventsMock: TopEvent[] = [
     severity: 'High',
     tags: [
       { text: 'Active Event', color: EVENT_CATEGORY_COLORS.active },
+      { text: 'Moto', color: EVENT_CATEGORY_COLORS.passive, textColor: '#ffffff' },
+    ],
+    data: rotationalPoints,
+  },
+]
+
+export const rotationalEventsMock: TopEvent[] = [
+  {
+    key: 'rotational-high',
+    metricValue: 240,
+    metricSuffix: 'rad/s',
+    metricLabel: 'Max Rotational\nVelocity',
+    date: '07/02/26',
+    time: '8:34am',
+    severity: 'High',
+    tags: [
+      { text: 'SOS Event', color: EVENT_CATEGORY_COLORS.sos },
+      { text: 'Construction', color: EVENT_CATEGORY_COLORS.active },
+    ],
+    data: rotationalPoints,
+  },
+  {
+    key: 'rotational-active',
+    metricValue: 240,
+    metricSuffix: 'rad/s',
+    metricLabel: 'Max Rotational\nVelocity',
+    date: '07/02/26',
+    time: '8:34am',
+    severity: 'Low',
+    tags: [
+      { text: 'Active', color: EVENT_CATEGORY_COLORS.active },
       { text: 'Moto', color: EVENT_CATEGORY_COLORS.passive, textColor: '#ffffff' },
     ],
     data: rotationalPoints,

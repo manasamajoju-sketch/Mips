@@ -1,13 +1,16 @@
 import { InfoIcon, ArrowRightIcon } from '../../common/Icons'
 import GroupedBarChart from '../../charts/GroupedBarChart/GroupedBarChart'
 import { userOverviewData, userOverviewStacks, userOverviewTotal } from '../../../Constants/userOverviewMock'
+import type { UserOverviewCategory } from '../../../types/userOverview'
 import styles from './UserOverviewCard.module.scss'
 
 interface UserOverviewCardProps {
   onExpand?: () => void
+  data?: UserOverviewCategory[]
+  total?: number
 }
 
-export default function UserOverviewCard({ onExpand }: UserOverviewCardProps) {
+export default function UserOverviewCard({ onExpand, data = userOverviewData, total = userOverviewTotal }: UserOverviewCardProps) {
   return (
     <section className={styles.card}>
       <header className={styles.header}>
@@ -24,11 +27,11 @@ export default function UserOverviewCard({ onExpand }: UserOverviewCardProps) {
       </header>
 
       <div className={styles.total}>
-        <span className={styles.totalValue}>{userOverviewTotal}</span>
+        <span className={styles.totalValue}>{total}</span>
         <span className={styles.totalLabel}>Total Users</span>
       </div>
 
-      <GroupedBarChart data={userOverviewData} series={userOverviewStacks} />
+      <GroupedBarChart data={data} series={userOverviewStacks} />
     </section>
   )
 }

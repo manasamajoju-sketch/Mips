@@ -23,3 +23,30 @@ export interface UserDemographicsSummary {
   medianAgeValue: string;
   medianAgeLabel: string;
 }
+
+export interface GenderBucket {
+  count: number;
+  pct: number;
+}
+
+export interface UserDemographicsBucket {
+  totalUsers: number;
+  male: GenderBucket;
+  female: GenderBucket;
+  others: GenderBucket;
+}
+
+export interface UserDemographicsOverviewData {
+  window: string;
+  range: {
+    from: string;
+    to: string;
+  };
+  buckets: Record<'Cycling' | 'Moto' | 'PPE', UserDemographicsBucket>;
+}
+
+export interface UserDemographicsApiResponse {
+  success: boolean;
+  data: UserDemographicsOverviewData;
+  meta: Record<string, unknown>;
+}

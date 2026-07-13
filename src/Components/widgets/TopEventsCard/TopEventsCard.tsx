@@ -7,16 +7,17 @@ import type { TopEvent } from '../../../types/topEvents'
 import styles from './TopEventsCard.module.scss'
 
 interface TopEventsCardProps {
+  title?: string
   events?: TopEvent[]
   onEventClick?: (event: TopEvent) => void
 }
 
-export default function TopEventsCard({ events = topEventsMock }: TopEventsCardProps) {
+export default function TopEventsCard({ title = 'Top Events', events = topEventsMock, onEventClick }: TopEventsCardProps) {
   return (
     <section className={styles['top-events-card']}>
       <header className={styles['top-events-card__header']}>
         <h2 className={styles['top-events-card__title']}>
-          Top Events
+          {title}
           <button type="button" className={styles['top-events-card__info-btn']} aria-label="More information">
             <InfoIcon />
           </button>
@@ -28,7 +29,11 @@ export default function TopEventsCard({ events = topEventsMock }: TopEventsCardP
 
       <div className={styles['top-events-card__content']}>
         {events.map((event, index) => (
-          <div className={styles['top-events-card__section']} key={event.key}>
+          <div
+            className={styles['top-events-card__section']}
+            key={event.key}
+            onClick={() => onEventClick?.(event)}
+          >
             <div className={styles['top-events-card__metric']}>
               <span className={styles['top-events-card__metric-value']}>
                 {event.metricValue}

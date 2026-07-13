@@ -11,6 +11,7 @@ import styles from './EventTimeHeatmapCard.module.scss';
 interface EventTimeHeatmapCardProps {
   rows?: HeatmapRow[];
   summary?: EventTimeHeatmapSummary;
+  title?: string;
 }
 
 function InfoIcon() {
@@ -54,11 +55,12 @@ function AlertIcon() {
 export default function EventTimeHeatmapCard({
   rows = heatmapRows,
   summary = eventTimeHeatmapSummary,
+  title = 'Event time over day & week',
 }: EventTimeHeatmapCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <span>Event time over day &amp; week</span>
+        <span>{title}</span>
         <InfoIcon />
       </div>
 

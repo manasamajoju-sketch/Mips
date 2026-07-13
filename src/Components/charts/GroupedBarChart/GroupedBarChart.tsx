@@ -100,6 +100,7 @@ export default function GroupedBarChart<T extends { category: string }>({
       <svg
         className={styles.svg}
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        // preserveAspectRatio="xMinYMin meet"
         preserveAspectRatio="none"
         role="img"
         aria-label="Grouped bar chart"

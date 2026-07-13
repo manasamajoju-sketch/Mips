@@ -12,4 +12,13 @@ export const dashboardService = {
 
   getLatestEvents: () =>
     apiClient(ENDPOINTS.events.latest),
+
+  getUserOverview: (window: string = '30d') =>
+    apiClient(`${ENDPOINTS.users.overview}?window=${encodeURIComponent(window)}`),
+
+  getProductOverview: (window: string = '30d') =>
+    apiClient(`${ENDPOINTS.products.overview}?window=${encodeURIComponent(window)}`),
+
+  getDemographicsOverview: (window: string = '30d') =>
+    apiClient(`${ENDPOINTS.demographics.overview}?window=${encodeURIComponent(window)}`),
 };

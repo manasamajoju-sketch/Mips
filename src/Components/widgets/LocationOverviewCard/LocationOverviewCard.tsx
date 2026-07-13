@@ -8,14 +8,17 @@ import styles from './LocationOverviewCard.module.scss'
 
 interface LocationOverviewCardProps {
   onExpand?: () => void
+  hideHeaderControls?: boolean
+  hideSummary?: boolean
+  compact?: boolean
 }
 
-export default function LocationOverviewCard({}: LocationOverviewCardProps) {
+export default function LocationOverviewCard({ hideHeaderControls = false, hideSummary = false, compact = false }: LocationOverviewCardProps) {
   const [dataType, setDataType] = useState<LocationDataType>('events')
   const config = locationOverviewByType[dataType]
 
   return (
-    <section className={styles['location-overview-card']}>
+    <section className={`${styles['location-overview-card']} ${compact ? styles['location-overview-card--compact'] : ''}`}>
       <header className={styles['location-overview-card__header']}>
         <h2 className={styles['location-overview-card__title']}>
           Location Overview
@@ -24,20 +27,22 @@ export default function LocationOverviewCard({}: LocationOverviewCardProps) {
           </button>
         </h2>
 
-        <div className={styles['location-overview-card__toggle']} role="group" aria-label="Data type">
-          {(['events', 'users'] as LocationDataType[]).map((type) => (
-            <button
-              key={type}
-              type="button"
-              className={`${styles['location-overview-card__toggle-btn']} ${
-                dataType === type ? styles['location-overview-card__toggle-btn--active'] : ''
-              }`}
-              onClick={() => setDataType(type)}
-            >
-              {type === 'events' ? 'Events' : 'Users'}
-            </button>
-          ))}
-        </div>
+        {!hideHeaderControls && (
+          <div className={styles['location-overview-card__toggle']} role="group" aria-label="Data type">
+            {(['events', 'users'] as LocationDataType[]).map((type) => (
+              <button
+                key={type}
+                type="button"
+                className={`${styles['location-overview-card__toggle-btn']} ${
+                  dataType === type ? styles['location-overview-card__toggle-btn--active'] : ''
+                }`}
+                onClick={() => setDataType(type)}
+              >
+                {type === 'events' ? 'Events' : 'Users'}
+              </button>
+            ))}
+          </div>
+        )}
 {/* 
         <button
           type="button"
@@ -54,30 +59,32 @@ export default function LocationOverviewCard({}: LocationOverviewCardProps) {
           <LocationMap locations={config.locations} />
         </div>
 
-        <div className={styles['location-overview-card__side']}>
-          <div className={styles['location-overview-card__total']}>
-            <span className={styles['location-overview-card__total-value']}>{config.total}</span>
-            <span className={styles['location-overview-card__total-label']}>
-              {config.totalLabel.split('\n').map((line) => (
-                <span key={line}>{line}</span>
+        {!hideSummary && (
+          <div className={styles['location-overview-card__side']}>
+            <div className={styles['location-overview-card__total']}>
+              <span className={styles['location-overview-card__total-value']}>{config.total}</span>
+              <span className={styles['location-overview-card__total-label']}>
+                {config.totalLabel.split('\n').map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </span>
+            </div>
+
+            <p className={styles['location-overview-card__subtitle']}>{config.topLabel}</p>
+
+            <ul className={styles['location-overview-card__breakdown']}>
+              {config.breakdown.map((item) => (
+                <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
+                  <div className={styles['location-overview-card__breakdown-row']}>
+                    <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>
+                    <span className={styles['location-overview-card__breakdown-pct']}>{item.percentage}%</span>
+                  </div>
+                  <HorizontalBarChart segments={item.segments} />
+                </li>
               ))}
-            </span>
+            </ul>
           </div>
-
-          <p className={styles['location-overview-card__subtitle']}>{config.topLabel}</p>
-
-          <ul className={styles['location-overview-card__breakdown']}>
-            {config.breakdown.map((item) => (
-              <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
-                <div className={styles['location-overview-card__breakdown-row']}>
-                  <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>
-                  <span className={styles['location-overview-card__breakdown-pct']}>{item.percentage}%</span>
-                </div>
-                <HorizontalBarChart segments={item.segments} />
-              </li>
-            ))}
-          </ul>
-        </div>
+        )}
       </div>
     </section>
   )

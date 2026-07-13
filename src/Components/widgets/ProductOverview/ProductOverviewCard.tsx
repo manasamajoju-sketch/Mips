@@ -5,13 +5,18 @@ import {
   productOverviewCategories,
   productOverviewSegmentColors,
 } from '../../../Constants/productOverviewMock'
+import type { ProductOverviewCategory } from '../../../types/productOverview'
 import styles from './ProductOverviewCard.module.scss'
 
-export default function ProductOverviewCard() {
+interface ProductOverviewCardProps {
+  categories?: ProductOverviewCategory[]
+}
+
+export default function ProductOverviewCard({ categories = productOverviewCategories }: ProductOverviewCardProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
 
-  const grandMips = productOverviewCategories.reduce((sum, c) => sum + c.mipsProducts, 0)
-  const grandTotal = productOverviewCategories.reduce((sum, c) => sum + c.mipsProducts + c.other, 0)
+  const grandMips = categories.reduce((sum, c) => sum + c.mipsProducts, 0)
+  const grandTotal = categories.reduce((sum, c) => sum + c.mipsProducts + c.other, 0)
   const mipsPercentage = grandTotal > 0 ? Math.round((grandMips / grandTotal) * 100) : 0
 
   return (
@@ -45,7 +50,7 @@ export default function ProductOverviewCard() {
       </div>
 
       <div className={styles.barList}>
-        {productOverviewCategories.map((category) => {
+        {categories.map((category) => {
           const isActive = hoveredKey === category.key
           const isPositive = category.delta >= 0
 

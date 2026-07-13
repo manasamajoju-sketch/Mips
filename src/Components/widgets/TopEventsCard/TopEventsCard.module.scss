@@ -22,8 +22,8 @@
 
   &__title {
     @include flex(row, center, flex-start, $space-sm);
-    font-size: $fs-title;
-    font-weight: $fw-medium;
+    font-size: 15.5px;
+    font-weight: 300;
     color: $color-text-primary;
     margin: 0;
   }

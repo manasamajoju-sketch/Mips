@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  // min-height: 220px;
 }
 
 .key {
@@ -67,14 +68,19 @@
 }
 
 .categoryLabel {
-  font-size: $fs-axis;
-  fill: $color-text-secondary;
+  font-family: $font-family-base;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: $fw-medium;
+  font-stretch: normal;
+  letter-spacing: 0.01em;
+  fill: $color-text-primary;
   transition: fill 120ms ease;
 }
 
 .categoryLabelActive {
   fill: $color-text-primary;
-  font-weight: $fw-semibold;
+  font-weight: $fw-bold;
 }
 
 .categoryHit {
