@@ -24,9 +24,7 @@ const PAD_BOTTOM = 30
 
 export default function SeverityChart({
   data,
-  thresholdPosition,
-  lowSeverityLabel = 'Low Severity',
-  highSeverityLabel = 'High Severity',
+  
   highlightLabel,
   yAxisTicks = [0, 25, 50],
   yAxisUnit = 'Events',
@@ -61,10 +59,8 @@ export default function SeverityChart({
     return `${linePath} L ${last.x.toFixed(1)} ${baseline} L ${first.x.toFixed(1)} ${baseline} Z`
   }, [points, linePath, plotH])
 
-  const thresholdX = useMemo(() => {
-    const stepX = plotW / (data.length - 1)
-    return PAD_LEFT + stepX * thresholdPosition
-  }, [plotW, data.length, thresholdPosition])
+  // thresholdPosition was previously used to render a divider and labels.
+  // Divider/labels are currently commented out; avoid computing thresholdX until needed.
 
   // Before any real hover, fall back to the configured default (e.g. the highest point).
   const defaultIndex = points.findIndex((p) => p.label === highlightLabel)

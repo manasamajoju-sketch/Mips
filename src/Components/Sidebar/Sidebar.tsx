@@ -1,4 +1,4 @@
-import { ComponentsIcon, EventsIcon, HomeIcon, UsersIcon } from '../common/Icons'
+import { EventsIcon, HomeIcon, UsersIcon } from '../common/Icons'
 import styles from './Sidebar.module.scss'
 
 export type SidebarItem = 'home' | 'events' | 'event' | 'users' | 'user' | 'components'

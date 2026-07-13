@@ -1,0 +1,51 @@
+.wrap {
+  display: flex;
+}
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-right: 8px;
+  font-size: 10px;
+  line-height: 1.3;
+  opacity: 0.85;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.plotCol {
+  flex: 1;
+  min-width: 0;
+}
+
+.svgWrap {
+  position: relative;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+}
+
+.tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: #ffffff;
+  color: #0b6c7a;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.xAxis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.85;
+}
