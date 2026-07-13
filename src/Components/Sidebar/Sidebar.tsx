@@ -15,7 +15,7 @@ const navItems: Array<{ key: SidebarItem; label: string; icon: typeof HomeIcon }
   { key: 'event', label: 'Event', icon: EventsIcon },
   { key: 'users', label: 'Users', icon: UsersIcon },
   { key: 'user', label: 'User', icon: UsersIcon },
-  { key: 'components', label: 'Components', icon: ComponentsIcon },
+  // { key: 'components', label: 'Components', icon: ComponentsIcon },
 ]
 
 export default function Sidebar({ collapsed, activeItem, onNavigate }: Props) {

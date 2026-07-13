@@ -108,21 +108,21 @@ export default function SeverityChart({
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Severity zone labels */}
-        <text x={PAD_LEFT} y={22} className={styles['severity-chart__zone-label']}>
+        {/* <text x={PAD_LEFT} y={22} className={styles['severity-chart__zone-label']}>
           {lowSeverityLabel}
         </text>
         <text x={thresholdX + 10} y={22} className={styles['severity-chart__zone-label']}>
           {highSeverityLabel}
-        </text>
+        </text> */}
 
         {/* Dashed threshold divider */}
-        <line
+        {/* <line
           x1={thresholdX}
           y1={PAD_TOP - 8}
           x2={thresholdX}
           y2={PAD_TOP + plotH}
           className={styles['severity-chart__divider']}
-        />
+        /> */}
 
         {/* Y axis gridlines + labels */}
         {yAxisTicks.map((tick) => {
