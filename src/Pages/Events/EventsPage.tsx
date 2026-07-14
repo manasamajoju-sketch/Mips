@@ -39,7 +39,7 @@ export default function EventsPage({ range }: Props) {
       .then((response: unknown) => {
         if (!isMounted) return
         const typedResponse = response as EventTimeseriesApiResponse
-        setOverviewChartData(mapEventTimeseriesResponse(typedResponse))
+        setOverviewChartData(mapEventTimeseriesResponse(typedResponse, range))
       })
       .catch(() => {
         if (!isMounted) return

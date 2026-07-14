@@ -127,6 +127,14 @@
   color: $color-text-secondary;
 }
 
+.tickWeekLabel {
+  display: block;
+  font-size: 9px;
+  font-weight: $fw-semibold;
+  color: $color-text-primary;
+  line-height: 1.1;
+}
+
 .tickMonthLabel {
   display: block;
   font-size: 10px;

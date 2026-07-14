@@ -75,14 +75,27 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
   // No default/initial highlight - hoveredIndex is only ever set by a real mouse hover.
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const isMonthlyRange = range === '12m';
+  const isNinetyDayRange = range === '90d';
+
+  // Compute a sensible max based on actual data so different ranges (daily/weekly/monthly)
+  // scale appropriately and labels fit.
+  const resolvedMaxTotal = Math.max(
+    maxTotal,
+    ...data.map((point) => categories.reduce((sum, cat) => sum + (Number(point[cat.key]) || 0), 0)),
+    1,
+  );
+
+  // Round y-axis to a friendly step (multiple of 25)
+  const yAxisMax = Math.max(1, Math.ceil(resolvedMaxTotal / 25) * 25);
+  const yAxisTicks = [yAxisMax, Math.round(yAxisMax / 2), 0].reverse();
 
   return (
     <div className={styles.chart}>
       <div className={styles.body}>
         <div className={styles.yAxis}>
-          <span>50</span>
-          <span>25</span>
-          <span>00</span>
+          {yAxisTicks.map((tick) => (
+            <span key={tick}>{tick}</span>
+          ))}
         </div>
         <div className={styles.plot}>
           {data.map((point, index) => (
@@ -90,7 +103,7 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
               key={`${point.month}-${point.date}-${index}`}
               point={point}
               categories={categories}
-              maxTotal={maxTotal}
+              maxTotal={resolvedMaxTotal}
               isActive={hoveredIndex === index}
               onHover={() => setHoveredIndex(index)}
               onLeave={() => setHoveredIndex(null)}
@@ -104,7 +117,14 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
           {data.map((point, index) => (
             <div className={styles.tick} key={`tick-${index}`}>
               {isMonthlyRange ? (
+                // For 12m view show a single bold month label
                 <span className={styles.tickMonthLabel}>{point.month || point.date}</span>
+              ) : isNinetyDayRange ? (
+                // For 90d view (weekly buckets) show the week start and end on separate lines
+                <>
+                  <span className={styles.tickWeekLabel}>{point.date}</span>
+                  {point.month && <span className={styles.tickWeekLabel}>{point.month}</span>}
+                </>
               ) : (
                 <>
                   <span className={styles.tickDateLabel}>{point.date}</span>

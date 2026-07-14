@@ -8,6 +8,7 @@ export const ENDPOINTS = {
     latest: ApiEndpoint.Events.Latest,
     impactDirection: ApiEndpoint.Events.ImpactDirection,
     irmsDistribution: ApiEndpoint.Events.IrmsDistribution,
+    severityTimeseries: ApiEndpoint.Events.SeverityTimeseries,
   },
 
   locations: {

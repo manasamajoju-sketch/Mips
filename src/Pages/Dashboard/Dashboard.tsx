@@ -17,13 +17,15 @@ import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventT
 import { dashboardService } from '../../Services/dashboardService';
 import { eventTimelineFallbackEntries } from '../../Constants/eventTimelineData';
 import { mapLatestEventsToTimelineEntries, type EventTimelineApiResponse, type EventTimelineEntry } from '../../types/eventTimeline';
-import { eventOverviewFallbackSummary, eventTimelineData } from '../../Constants/eventOverviewData';
+import { eventOverviewFallbackSummary, eventTimelineData, severityTimelineData } from '../../Constants/eventOverviewData';
 import {
   mapEventOverviewResponse,
   mapEventTimeseriesResponse,
+  mapSeverityTimeseriesResponse,
   type EventOverviewApiResponse,
   type EventOverviewSummary,
   type EventTimeseriesApiResponse,
+  type SeverityTimeseriesApiResponse,
 } from '../../types/event';
 import {
   mapImpactDirectionResponse,
@@ -61,6 +63,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>(eventTimelineFallbackEntries)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
   const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
+  const [severityChartDataState, setSeverityChartDataState] = useState(severityTimelineData)
   const [eventAnalyticsData, setEventAnalyticsData] = useState<EventAnalyticsData>(eventAnalyticsMock)
   const [selectedAnalyticsVertical, setSelectedAnalyticsVertical] = useState<string>(eventAnalyticsMock.eventType)
   const [productOverviewCategoriesState, setProductOverviewCategoriesState] = useState<ProductOverviewCategory[]>(productOverviewCategories)
@@ -87,11 +90,22 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       .then((response: unknown) => {
         if (!isMounted) return
         const typedResponse = response as EventTimeseriesApiResponse
-        setOverviewChartData(mapEventTimeseriesResponse(typedResponse))
+        setOverviewChartData(mapEventTimeseriesResponse(typedResponse, range))
       })
       .catch(() => {
         if (!isMounted) return
         setOverviewChartData(eventTimelineData)
+      })
+
+    dashboardService.getSeverityTimeseries(range)
+      .then((response: unknown) => {
+        if (!isMounted) return
+        const typedResponse = response as SeverityTimeseriesApiResponse
+        setSeverityChartDataState(mapSeverityTimeseriesResponse(typedResponse, range))
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setSeverityChartDataState(severityTimelineData)
       })
 
     dashboardService.getLatestEvents()
@@ -235,6 +249,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         <EventOverviewCard
           summary={overviewSummary}
           chartData={overviewChartData}
+          severityChartData={severityChartDataState}
           range={range}
           onExpand={() => console.log('Navigate to event details')}
         />

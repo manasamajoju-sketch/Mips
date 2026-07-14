@@ -64,6 +64,27 @@ export interface EventTimeseriesApiResponse {
   };
 }
 
+export interface SeverityTimeseriesPoint {
+  bucket: string;
+  high: number;
+  medium: number;
+  low: number;
+}
+
+export interface SeverityTimeseriesApiResponse {
+  success: boolean;
+  data: SeverityTimeseriesPoint[];
+  meta: {
+    cached: boolean;
+    stale?: boolean;
+    generatedAt: string;
+    range?: {
+      from: string;
+      to: string;
+    };
+  };
+}
+
 export interface EventOverviewMetric {
   current?: number | string;
   previous?: number | string;
@@ -138,11 +159,43 @@ export function mapEventOverviewResponse(response: EventOverviewApiResponse): Ev
   };
 }
 
-export function mapEventTimeseriesResponse(response: EventTimeseriesApiResponse) {
+export function mapEventTimeseriesResponse(
+  response: EventTimeseriesApiResponse,
+  window: '30d' | '90d' | '12m' = '30d',
+) {
   return response.data.map((point) => {
-    const date = new Date(point.bucket);
-    const day = date.getDate().toString();
-    const month = date.toLocaleString('en-US', { month: 'short' });
+    const start = new Date(point.bucket);
+
+    if (window === '90d') {
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      const startLabel = `${start.getDate()} ${start.toLocaleString('en-US', { month: 'short' })}`;
+      const endLabel = `${end.getDate()} ${end.toLocaleString('en-US', { month: 'short' })}`;
+      const byType = point.byType ?? {};
+
+      const sos = Number(byType.sos ?? 0);
+      const active = Number(byType.major_impact ?? 0);
+      const passive = Number(byType.helmet_drop ?? 0);
+      const others = Number(
+        (byType.minor_impact ?? 0) +
+          (byType.help_request ?? 0) +
+          (byType.offline_event ?? 0) +
+          (byType.no_return ?? 0),
+      );
+
+      return {
+        date: startLabel,
+        month: endLabel,
+        sos,
+        active,
+        passive,
+        others,
+        highlight: point.total > 0,
+      };
+    }
+
+    const day = start.getDate().toString();
+    const month = start.toLocaleString('en-US', { month: 'short' });
 
     const byType = point.byType ?? {};
 
@@ -153,7 +206,7 @@ export function mapEventTimeseriesResponse(response: EventTimeseriesApiResponse)
       (byType.minor_impact ?? 0) +
         (byType.help_request ?? 0) +
         (byType.offline_event ?? 0) +
-        (byType.no_return ?? 0)
+        (byType.no_return ?? 0),
     );
 
     return {
@@ -166,4 +219,38 @@ export function mapEventTimeseriesResponse(response: EventTimeseriesApiResponse)
       highlight: point.total > 0,
     };
   });
+}
+
+export function mapSeverityTimeseriesResponse(response: SeverityTimeseriesApiResponse, window: '30d' | '90d' | '12m' = '30d') {
+  return response.data.map((point) => {
+    const start = new Date(point.bucket)
+    // For weekly buckets (90d) we prefer showing start and end of week in the tick
+    if (window === '90d') {
+      const end = new Date(start)
+      end.setDate(start.getDate() + 6)
+      const startLabel = `${start.getDate()} ${start.toLocaleString('en-US', { month: 'short' })}`
+      const endLabel = `${end.getDate()} ${end.toLocaleString('en-US', { month: 'short' })}`
+      return {
+        date: startLabel,
+        month: endLabel,
+        high: Number(point.high ?? 0),
+        medium: Number(point.medium ?? 0),
+        low: Number(point.low ?? 0),
+        highlight: false,
+      }
+    }
+
+    // Daily or monthly buckets — use day and month as chart expects
+    const day = start.getDate().toString()
+    const month = start.toLocaleString('en-US', { month: 'short' })
+
+    return {
+      date: day,
+      month,
+      high: Number(point.high ?? 0),
+      medium: Number(point.medium ?? 0),
+      low: Number(point.low ?? 0),
+      highlight: false,
+    }
+  })
 }

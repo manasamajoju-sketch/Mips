@@ -20,6 +20,9 @@ export const dashboardService = {
       `${ENDPOINTS.events.irmsDistribution}?window=${encodeURIComponent(window)}&vertical=${encodeURIComponent(vertical)}`
     ),
 
+  getSeverityTimeseries: (window: string = '30d') =>
+    apiClient(`${ENDPOINTS.events.severityTimeseries}?window=${encodeURIComponent(window)}`),
+
   getLocationOverview: (
     metric: 'events' | 'users',
     region: 'continent' | 'country' | 'state' | 'city' = 'continent',
