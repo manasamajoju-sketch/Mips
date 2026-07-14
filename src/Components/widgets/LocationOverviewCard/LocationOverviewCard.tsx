@@ -68,6 +68,30 @@ function getDisplayLabel(key: string) {
   return labels[key] ?? key.replace(/([A-Z])/g, ' $1').replace(/(^\w|\s\w)/g, (match) => match.toUpperCase())
 }
 
+const REGION_INPUT_TO_NEXT: Record<string, LocationOverviewRegion> = {
+  continent: 'country',
+  country: 'state',
+  state: 'city',
+}
+
+function resolveRegionFromQueryParam(): LocationOverviewRegion {
+  if (typeof window === 'undefined') {
+    return 'continent'
+  }
+
+  const queryValue = new URLSearchParams(window.location.search).get('region')?.trim().toLowerCase()
+
+  if (!queryValue) {
+    return 'continent'
+  }
+
+  if (queryValue === 'city') {
+    return 'continent'
+  }
+
+  return REGION_INPUT_TO_NEXT[queryValue] ?? 'continent'
+}
+
 function countsToMapLocation(
   id: string,
   region: string,
@@ -104,6 +128,28 @@ function countsToMapLocation(
   }
 }
 
+function adjustDuplicateLocationCoordinates(locations: MapLocation[]) {
+  const counts = new Map<string, number>()
+
+  return locations.map((location) => {
+    const key = `${location.lat.toFixed(4)},${location.lng.toFixed(4)}`
+    const current = counts.get(key) ?? 0
+    counts.set(key, current + 1)
+
+    if (current === 0) {
+      return location
+    }
+
+    const offsetDistance = 0.65
+    const angle = (current - 1) * 0.9
+    return {
+      ...location,
+      lat: location.lat + Math.sin(angle) * offsetDistance,
+      lng: location.lng + Math.cos(angle) * offsetDistance,
+    }
+  })
+}
+
 function buildOverviewConfigFromApi(
   apiResponse: LocationOverviewApiResponse
 ): LocationOverviewConfig {
@@ -130,12 +176,18 @@ function buildOverviewConfigFromApi(
     })
     .filter((location): location is MapLocation => location !== null)
 
-  const orderedLocations = [...locations].sort((a, b) => b.count - a.count)
+  const adjustedLocations = adjustDuplicateLocationCoordinates(locations)
+  const orderedLocations = [...adjustedLocations].sort((a, b) => b.count - a.count)
   const topLocationCount = orderedLocations[0]?.count ?? 1
+  const regionLabel = apiResponse.data.region === 'country'
+    ? 'States'
+    : apiResponse.data.region === 'state'
+    ? 'Cities'
+    : 'Countries'
 
   return {
     dataType: metric,
-    totalLabel: 'Total\nCountries',
+    totalLabel: `Total\n${regionLabel}`,
     total: orderedLocations.length,
     topLabel: 'Top Locations',
     locations: orderedLocations,
@@ -150,7 +202,7 @@ function buildOverviewConfigFromApi(
 
 export default function LocationOverviewCard({ hideHeaderControls = false, hideSummary = false, compact = false }: LocationOverviewCardProps) {
   const [dataType, setDataType] = useState<LocationDataType>('events')
-  const [region, setRegion] = useState<LocationOverviewRegion>('continent')
+  const [region, setRegion] = useState<LocationOverviewRegion>(resolveRegionFromQueryParam())
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [config, setConfig] = useState<LocationOverviewConfig>({
     dataType: 'events',
