@@ -63,6 +63,29 @@ export interface IrmsDistributionApiResponse {
   }
 }
 
+export interface GForceExtremeEvent {
+  eventId: string
+  irmsMax: number
+}
+
+export interface GForceExtremesApiResponse {
+  success: boolean
+  data: {
+    vertical: string
+    max: GForceExtremeEvent | null
+    min: GForceExtremeEvent | null
+  }
+  meta: {
+    cached: boolean
+    stale?: boolean
+    generatedAt: string
+    range: {
+      from: string
+      to: string
+    }
+  }
+}
+
 const impactDirectionLabelMap: Record<ImpactDirection, string> = {
   front: 'Front',
   left: 'Left',

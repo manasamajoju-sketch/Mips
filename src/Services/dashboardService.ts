@@ -20,6 +20,11 @@ export const dashboardService = {
       `${ENDPOINTS.events.irmsDistribution}?window=${encodeURIComponent(window)}&vertical=${encodeURIComponent(vertical)}`
     ),
 
+  getGForceExtremes: (window: string = '30d', vertical: string = 'Cycling') =>
+    apiClient(
+      `${ENDPOINTS.events.gForceExtremes}?window=${encodeURIComponent(window)}&vertical=${encodeURIComponent(vertical)}`
+    ),
+
   getSeverityTimeseries: (window: string = '30d') =>
     apiClient(`${ENDPOINTS.events.severityTimeseries}?window=${encodeURIComponent(window)}`),
 

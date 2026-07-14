@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react'
-import type { EventAnalyticsData, ImpactBreakdown, SeverityPoint, IrmsDistributionApiResponse } from '../../../types/eventAnalytics'
+import type {
+  EventAnalyticsData,
+  GForceExtremesApiResponse,
+  ImpactBreakdown,
+  SeverityPoint,
+  IrmsDistributionApiResponse,
+} from '../../../types/eventAnalytics'
 import { mapIrmsDistributionResponse } from '../../../types/eventAnalytics'
 import { InfoIcon, ChevronLeftIcon, ChevronRightIcon, ArrowRightIcon } from '../../common/Icons'
+import type { TimelineRange } from '../../common/TimelineButton/TimelineButton'
 import type { ImpactPointSectionKey } from '../../cards/ImpactPoint/ImpactPoint'
 import { dashboardService } from '../../../Services/dashboardService'
 import SeverityChart from '../../../Components/charts/SeverityChart/SeverityChart'
@@ -11,34 +18,52 @@ import ImpactPoint from '../../cards/ImpactPoint/ImpactPoint'
 interface EventAnalyticsCardProps {
   data: EventAnalyticsData
   eventTypes?: string[]
+  window?: TimelineRange
   onEventTypeChange?: (eventType: string) => void
   onExpand?: () => void
+}
+
+interface GForceSummary {
+  minGForce: number | null
+  maxGForce: number | null
+}
+
+function formatGForce(value: number | null) {
+  if (value === null || !Number.isFinite(value)) return '-'
+  return Number.isInteger(value) ? String(value) : value.toFixed(1)
 }
 
 export default function EventAnalyticsCard({
   data,
   eventTypes = ['Cycling'],
+  window = '30d',
   onEventTypeChange,
   onExpand,
 }: EventAnalyticsCardProps) {
-  const [typeIndex, setTypeIndex] = useState(() => Math.max(eventTypes.indexOf(data.eventType), 0))
+  const [selectedEventType, setSelectedEventType] = useState(data.eventType)
   const [severityData, setSeverityData] = useState<SeverityPoint[]>([])
-
-  const cycleEventType = (direction: -1 | 1) => {
-    const nextIndex = (typeIndex + direction + eventTypes.length) % eventTypes.length
-    setTypeIndex(nextIndex)
-    onEventTypeChange?.(eventTypes[nextIndex])
+  const [gForceSummary, setGForceSummary] = useState<GForceSummary | null>(null)
+  const selectedTypeIndex = Math.max(eventTypes.indexOf(selectedEventType), 0)
+  const activeEventType = eventTypes[selectedTypeIndex] ?? selectedEventType
+  const displayedGForceSummary = gForceSummary ?? {
+    minGForce: data.minGForce,
+    maxGForce: data.maxGForce,
   }
 
-  useEffect(() => {
-    setTypeIndex(Math.max(eventTypes.indexOf(data.eventType), 0))
-  }, [data.eventType, eventTypes])
+  const cycleEventType = (direction: -1 | 1) => {
+    if (eventTypes.length === 0) return
+    const nextIndex = (selectedTypeIndex + direction + eventTypes.length) % eventTypes.length
+    const nextEventType = eventTypes[nextIndex]
+    if (!nextEventType) return
+    setSelectedEventType(nextEventType)
+    onEventTypeChange?.(nextEventType)
+  }
 
   useEffect(() => {
     let isMounted = true
 
     dashboardService
-      .getIrmsDistribution('30d', eventTypes[typeIndex])
+      .getIrmsDistribution(window, activeEventType)
       .then((response: unknown) => {
         if (!isMounted) return
         const typedResponse = response as IrmsDistributionApiResponse
@@ -53,7 +78,33 @@ export default function EventAnalyticsCard({
     return () => {
       isMounted = false
     }
-  }, [typeIndex, eventTypes])
+  }, [window, activeEventType])
+
+  useEffect(() => {
+    let isMounted = true
+
+    dashboardService
+      .getGForceExtremes(window, activeEventType)
+      .then((response: unknown) => {
+        if (!isMounted) return
+        const typedResponse = response as GForceExtremesApiResponse
+        setGForceSummary({
+          minGForce: typedResponse.data.min?.irmsMax ?? null,
+          maxGForce: typedResponse.data.max?.irmsMax ?? null,
+        })
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setGForceSummary({
+          minGForce: data.minGForce,
+          maxGForce: data.maxGForce,
+        })
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [activeEventType, data.maxGForce, data.minGForce, window])
 
   const otherImpacts = data.impactBreakdown.filter((b) => b.zone !== 'front')
   const totalImpacts = data.impactBreakdown.reduce((sum, b) => sum + b.impacts, 0) || 1
@@ -91,7 +142,7 @@ export default function EventAnalyticsCard({
           >
             <ChevronLeftIcon />
           </button>
-          <span className={styles['event-analytics-card__type-label']}>{eventTypes[typeIndex]}</span>
+          <span className={styles['event-analytics-card__type-label']}>{activeEventType}</span>
           <button
             type="button"
             className={styles['event-analytics-card__chevron-btn']}
@@ -114,7 +165,7 @@ export default function EventAnalyticsCard({
 
       <div className={styles['event-analytics-card__summary']}>
         <div className={styles['event-analytics-card__metric']}>
-          <span className={styles['event-analytics-card__metric-value']}>{data.minGForce}G</span>
+          <span className={styles['event-analytics-card__metric-value']}>{formatGForce(displayedGForceSummary.minGForce)}</span>
           <span className={styles['event-analytics-card__metric-label']}>
             Minimum
             <br />
@@ -123,7 +174,7 @@ export default function EventAnalyticsCard({
         </div>
 
         <div className={styles['event-analytics-card__metric']}>
-          <span className={styles['event-analytics-card__metric-value']}>{data.maxGForce}G</span>
+          <span className={styles['event-analytics-card__metric-value']}>{formatGForce(displayedGForceSummary.maxGForce)}</span>
           <span className={styles['event-analytics-card__metric-label']}>
             Maximum
             <br />

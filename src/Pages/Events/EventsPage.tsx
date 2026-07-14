@@ -66,6 +66,7 @@ export default function EventsPage({ range }: Props) {
         <EventAnalyticsCard
           data={eventAnalyticsMock}
           eventTypes={['Cycling', 'Running', 'Driving']}
+          window={range}
           onEventTypeChange={(type) => console.log('Event type changed:', type)}
           onExpand={() => console.log('Expand event analytics')}
         />

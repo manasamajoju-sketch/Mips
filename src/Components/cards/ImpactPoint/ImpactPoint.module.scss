@@ -72,11 +72,12 @@
   &__label,
   &__percentage {
     font-family: 'Suisse-Mono-Thin', sans-serif !important;
-    font-size: var(--font-xs);
+    font-size: 11px;
+    font-weight: 600;
     stroke-width: 0.4px;
     paint-order: stroke;
     line-height: 1;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
     pointer-events: none;
     dominant-baseline: middle;
     transform-box: fill-box;
@@ -84,12 +85,12 @@
   }
 
   &__label {
-    opacity: 0;
+    opacity: 1;
     fill: var(--text-primary);
-    stroke: var(--text-primary);
-    transform: translateY(6px);
-    animation: impact-point-label-in 260ms ease forwards;
-    animation-delay: var(--impact-point-label-delay);
+    stroke: var(--surface);
+    stroke-width: 1px;
+    transform: translateY(0);
+    animation: none;
     will-change: opacity, transform;
   }
 

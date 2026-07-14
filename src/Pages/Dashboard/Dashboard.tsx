@@ -259,6 +259,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         <EventAnalyticsCard
           data={eventAnalyticsData}
           eventTypes={['Cycling', 'Moto', 'PPE']}
+          window={range}
           onEventTypeChange={(type) => setSelectedAnalyticsVertical(type)}
           onExpand={() => console.log('Expand event analytics')}
         />
