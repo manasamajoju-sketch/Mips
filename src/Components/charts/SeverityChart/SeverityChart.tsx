@@ -46,10 +46,20 @@ export default function SeverityChart({
     })
   }, [data, plotW, plotH, yMax])
 
-  const linePath = useMemo(
-    () => points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' '),
-    [points],
-  )
+const linePath = useMemo(() => {
+    if (points.length === 0) return ''
+    let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1]
+      const curr = points[i]
+      const midX = (prev.x + curr.x) / 2
+      // Step at the midpoint between two data points, rather than a
+      // straight diagonal, so each value reads as a flat "bar" centered
+      // on its x-axis label (matches the new blocky design).
+      d += ` L ${midX.toFixed(1)} ${prev.y.toFixed(1)} L ${midX.toFixed(1)} ${curr.y.toFixed(1)} L ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`
+    }
+    return d
+  }, [points])
 
   const areaPath = useMemo(() => {
     if (points.length === 0) return ''

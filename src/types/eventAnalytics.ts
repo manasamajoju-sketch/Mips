@@ -39,6 +39,30 @@ export interface ImpactDirectionApiResponse {
   }
 }
 
+export interface IrmsDistributionBucket {
+  bucket: number
+  count: number
+  pct: number
+}
+
+export interface IrmsDistributionApiResponse {
+  success: boolean
+  data: {
+    vertical: string
+    totalEvents: number
+    buckets: IrmsDistributionBucket[]
+  }
+  meta: {
+    cached: boolean
+    stale?: boolean
+    generatedAt: string
+    range: {
+      from: string
+      to: string
+    }
+  }
+}
+
 const impactDirectionLabelMap: Record<ImpactDirection, string> = {
   front: 'Front',
   left: 'Left',
@@ -53,6 +77,13 @@ export function mapImpactDirectionResponse(response: ImpactDirectionApiResponse)
     zone: bucket.impactDirection,
     label: impactDirectionLabelMap[bucket.impactDirection] ?? bucket.impactDirection,
     impacts: bucket.count,
+  }))
+}
+
+export function mapIrmsDistributionResponse(response: IrmsDistributionApiResponse): SeverityPoint[] {
+  return response.data.buckets.map((bucket) => ({
+    label: String(bucket.bucket),
+    events: bucket.count,
   }))
 }
 

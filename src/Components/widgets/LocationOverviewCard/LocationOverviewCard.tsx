@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { InfoIcon } from '../../common/Icons'
 import LocationMap from '../../cards/LocationMap/LocationMap'
 import HorizontalBarChart from '../../charts/HorizontalBarChart/HorizontalBarChart'
-import { locationOverviewByType } from '../../../Constants/locationOverviewMock'
 import { dashboardService } from '../../../Services/dashboardService'
 import type {
   LocationDataType,
@@ -153,7 +152,14 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
   const [dataType, setDataType] = useState<LocationDataType>('events')
   const [region, setRegion] = useState<LocationOverviewRegion>('continent')
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const [config, setConfig] = useState<LocationOverviewConfig>(locationOverviewByType[dataType])
+  const [config, setConfig] = useState<LocationOverviewConfig>({
+    dataType: 'events',
+    totalLabel: 'Total\nCountries',
+    total: 0,
+    topLabel: 'Top Locations',
+    locations: [],
+    breakdown: [],
+  })
 
   const cleanedFilters = (filtersToClean: Record<string, string>) =>
     Object.entries(filtersToClean).reduce<Record<string, string>>((acc, [key, value]) => {
@@ -217,7 +223,6 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
 
   useEffect(() => {
     let isMounted = true
-    setConfig(locationOverviewByType[dataType])
 
     dashboardService
       .getLocationOverview(dataType, region, '30d', filters)
@@ -229,7 +234,14 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
       })
       .catch(() => {
         if (!isMounted) return
-        setConfig(locationOverviewByType[dataType])
+        setConfig({
+          dataType,
+          totalLabel: 'Total\nCountries',
+          total: 0,
+          topLabel: 'Top Locations',
+          locations: [],
+          breakdown: [],
+        })
       })
 
     return () => {

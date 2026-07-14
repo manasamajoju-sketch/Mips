@@ -243,7 +243,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       <div className={styles.eventAnalytics}>
         <EventAnalyticsCard
           data={eventAnalyticsData}
-          eventTypes={['Cycling', 'Running', 'Driving']}
+          eventTypes={['Cycling', 'Moto', 'PPE']}
           onEventTypeChange={(type) => setSelectedAnalyticsVertical(type)}
           onExpand={() => console.log('Expand event analytics')}
         />

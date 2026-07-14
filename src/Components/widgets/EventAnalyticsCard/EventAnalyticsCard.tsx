@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import type { EventAnalyticsData, ImpactBreakdown } from '../../../types/eventAnalytics'
+import type { EventAnalyticsData, ImpactBreakdown, SeverityPoint, IrmsDistributionApiResponse } from '../../../types/eventAnalytics'
+import { mapIrmsDistributionResponse } from '../../../types/eventAnalytics'
 import { InfoIcon, ChevronLeftIcon, ChevronRightIcon, ArrowRightIcon } from '../../common/Icons'
 import type { ImpactPointSectionKey } from '../../cards/ImpactPoint/ImpactPoint'
+import { dashboardService } from '../../../Services/dashboardService'
 import SeverityChart from '../../../Components/charts/SeverityChart/SeverityChart'
 import styles from './EventAnalyticsCard.module.scss'
 import ImpactPoint from '../../cards/ImpactPoint/ImpactPoint'
@@ -20,6 +22,7 @@ export default function EventAnalyticsCard({
   onExpand,
 }: EventAnalyticsCardProps) {
   const [typeIndex, setTypeIndex] = useState(() => Math.max(eventTypes.indexOf(data.eventType), 0))
+  const [severityData, setSeverityData] = useState<SeverityPoint[]>([])
 
   const cycleEventType = (direction: -1 | 1) => {
     const nextIndex = (typeIndex + direction + eventTypes.length) % eventTypes.length
@@ -30,6 +33,27 @@ export default function EventAnalyticsCard({
   useEffect(() => {
     setTypeIndex(Math.max(eventTypes.indexOf(data.eventType), 0))
   }, [data.eventType, eventTypes])
+
+  useEffect(() => {
+    let isMounted = true
+
+    dashboardService
+      .getIrmsDistribution('30d', eventTypes[typeIndex])
+      .then((response: unknown) => {
+        if (!isMounted) return
+        const typedResponse = response as IrmsDistributionApiResponse
+        const mappedData = mapIrmsDistributionResponse(typedResponse)
+        setSeverityData(mappedData)
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setSeverityData([])
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [typeIndex, eventTypes])
 
   const otherImpacts = data.impactBreakdown.filter((b) => b.zone !== 'front')
   const totalImpacts = data.impactBreakdown.reduce((sum, b) => sum + b.impacts, 0) || 1
@@ -42,6 +66,11 @@ export default function EventAnalyticsCard({
       label: b.label,
       value: (b.impacts / totalImpacts) * 100,
     }))
+
+  // Find the impact with the highest count
+  const maxImpact = data.impactBreakdown.reduce((max, current) => 
+    current.impacts > max.impacts ? current : max
+  , data.impactBreakdown[0] || { zone: 'front', label: 'Front', impacts: 0 })
 
   return (
     <section className={styles['event-analytics-card']}>
@@ -102,12 +131,12 @@ export default function EventAnalyticsCard({
           </span>
         </div>
 
-        <div className={`${styles['event-analytics-card__metric']} ${styles['event-analytics-card__metric--front']}`}>
+        <div className={`${styles['event-analytics-card__metric']} ${maxImpact.zone === 'front' ? styles['event-analytics-card__metric--front'] : ''}`}>
           <span className={styles['event-analytics-card__metric-value--sm']}>
-            {data.frontImpacts}
+            {maxImpact.impacts}
           </span>
           <span className={styles['event-analytics-card__metric-label']}>
-            Front
+            {maxImpact.label}
             <br />
             Impacts
           </span>
@@ -119,7 +148,7 @@ export default function EventAnalyticsCard({
       <div className={styles['event-analytics-card__body']}>
         <div className={styles['event-analytics-card__chart-col']}>
           <SeverityChart
-            data={data.severityData}
+            data={severityData}
             thresholdPosition={1.5}
             highlightLabel={data.highlightedPoint.label}
           />

@@ -5,6 +5,7 @@ export const ApiEndpoint = {
     Timeseries: "/mips/events/timeseries",
     Latest: "/mips/events/latest",
     ImpactDirection: "/mips/overview/impact-direction",
+    IrmsDistribution: "/mips/events/irms-distribution",
   },
 
   Locations: {

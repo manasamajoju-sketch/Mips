@@ -15,6 +15,11 @@ export const dashboardService = {
       `${ENDPOINTS.events.impactDirection}?window=${encodeURIComponent(window)}&vertical=${encodeURIComponent(vertical)}`
     ),
 
+  getIrmsDistribution: (window: string = '30d', vertical: string = 'Cycling') =>
+    apiClient(
+      `${ENDPOINTS.events.irmsDistribution}?window=${encodeURIComponent(window)}&vertical=${encodeURIComponent(vertical)}`
+    ),
+
   getLocationOverview: (
     metric: 'events' | 'users',
     region: 'continent' | 'country' | 'state' | 'city' = 'continent',
