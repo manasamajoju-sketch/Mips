@@ -10,6 +10,34 @@ export const dashboardService = {
   getEventTimeseries: (window: string = '30d') =>
     apiClient(`${ENDPOINTS.events.timeseries}?window=${encodeURIComponent(window)}`),
 
+  getImpactDirection: (window: string = '30d', vertical = 'Cycling') =>
+    apiClient(
+      `${ENDPOINTS.events.impactDirection}?window=${encodeURIComponent(window)}&vertical=${encodeURIComponent(vertical)}`
+    ),
+
+  getLocationOverview: (
+    metric: 'events' | 'users',
+    region: 'continent' | 'country' | 'state' | 'city' = 'continent',
+    window: string = '30d',
+    filters: Record<string, string> = {}
+  ) => {
+    const cleanedFilters = Object.entries(filters).reduce<Record<string, string>>((acc, [key, value]) => {
+      if (value && value.trim() !== '') {
+        acc[key] = value
+      }
+      return acc
+    }, {})
+
+    const query = new URLSearchParams({
+      metric,
+      region,
+      window,
+      ...cleanedFilters,
+    })
+
+    return apiClient(`${ENDPOINTS.locations.overview}?${query.toString()}`)
+  },
+
   getLatestEvents: () =>
     apiClient(ENDPOINTS.events.latest),
 

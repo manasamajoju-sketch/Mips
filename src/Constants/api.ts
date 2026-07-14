@@ -4,6 +4,11 @@ export const ApiEndpoint = {
     Overview: "/mips/overview/events",
     Timeseries: "/mips/events/timeseries",
     Latest: "/mips/events/latest",
+    ImpactDirection: "/mips/overview/impact-direction",
+  },
+
+  Locations: {
+    Overview: "/mips/overview/locations",
   },
 
   Users: {

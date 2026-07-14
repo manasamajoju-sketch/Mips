@@ -18,7 +18,18 @@ import { dashboardService } from '../../Services/dashboardService';
 import { eventTimelineFallbackEntries } from '../../Constants/eventTimelineData';
 import { mapLatestEventsToTimelineEntries, type EventTimelineApiResponse, type EventTimelineEntry } from '../../types/eventTimeline';
 import { eventOverviewFallbackSummary, eventTimelineData } from '../../Constants/eventOverviewData';
-import { mapEventOverviewResponse, mapEventTimeseriesResponse, type EventOverviewApiResponse, type EventOverviewSummary, type EventTimeseriesApiResponse } from '../../types/event';
+import {
+  mapEventOverviewResponse,
+  mapEventTimeseriesResponse,
+  type EventOverviewApiResponse,
+  type EventOverviewSummary,
+  type EventTimeseriesApiResponse,
+} from '../../types/event';
+import {
+  mapImpactDirectionResponse,
+  type ImpactDirectionApiResponse,
+  type EventAnalyticsData,
+} from '../../types/eventAnalytics';
 import type { UserOverviewApiResponse } from '../../types/userOverview';
 import type { ProductOverviewApiResponse, ProductOverviewCategory } from '../../types/productOverview';
 import type {
@@ -50,6 +61,8 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>(eventTimelineFallbackEntries)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
   const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
+  const [eventAnalyticsData, setEventAnalyticsData] = useState<EventAnalyticsData>(eventAnalyticsMock)
+  const [selectedAnalyticsVertical, setSelectedAnalyticsVertical] = useState<string>(eventAnalyticsMock.eventType)
   const [productOverviewCategoriesState, setProductOverviewCategoriesState] = useState<ProductOverviewCategory[]>(productOverviewCategories)
   const [userOverviewDataState, setUserOverviewDataState] = useState(userOverviewData)
   const [userOverviewTotalState, setUserOverviewTotalState] = useState(userOverviewTotal)
@@ -178,6 +191,44 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
     }
   }, [range])
 
+  useEffect(() => {
+    let isMounted = true
+    const supportedVerticals = ['Cycling', 'Moto', 'PPE']
+
+    if (supportedVerticals.includes(selectedAnalyticsVertical)) {
+      dashboardService.getImpactDirection(range, selectedAnalyticsVertical)
+        .then((response: unknown) => {
+          if (!isMounted) return
+          const typedResponse = response as ImpactDirectionApiResponse
+          const impactBreakdown = mapImpactDirectionResponse(typedResponse)
+          const frontImpacts = impactBreakdown.find((item) => item.zone === 'front')?.impacts ?? 0
+
+          setEventAnalyticsData((previous) => ({
+            ...previous,
+            eventType: selectedAnalyticsVertical,
+            frontImpacts,
+            impactBreakdown,
+          }))
+        })
+        .catch(() => {
+          if (!isMounted) return
+          setEventAnalyticsData((previous) => ({
+            ...previous,
+            eventType: selectedAnalyticsVertical,
+          }))
+        })
+    } else {
+      setEventAnalyticsData((previous) => ({
+        ...previous,
+        eventType: selectedAnalyticsVertical,
+      }))
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [range, selectedAnalyticsVertical])
+
   return (
     <main className={styles.dashboardPage}>
       <div className={styles.eventOverview}>
@@ -191,9 +242,9 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
 
       <div className={styles.eventAnalytics}>
         <EventAnalyticsCard
-          data={eventAnalyticsMock}
+          data={eventAnalyticsData}
           eventTypes={['Cycling', 'Running', 'Driving']}
-          onEventTypeChange={(type) => console.log('Event type changed:', type)}
+          onEventTypeChange={(type) => setSelectedAnalyticsVertical(type)}
           onExpand={() => console.log('Expand event analytics')}
         />
       </div>

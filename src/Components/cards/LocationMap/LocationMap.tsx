@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { useGoogleMapsScript } from '../../../hooks/useGoogleMapsScript'
 import { GOOGLE_MAPS_API_KEY, LOCATION_MAP_STYLE } from '../../../Constants/mapStyle'
-import { EVENT_CATEGORY_COLORS, EVENT_CATEGORY_LABELS } from '../../../Constants/eventOverviewData'
+import { EVENT_CATEGORY_COLORS } from '../../../Constants/eventOverviewData'
 import type { MapLocation } from '../../../types/location'
 import styles from './LocationMap.module.scss'
 
 interface LocationMapProps {
   locations: MapLocation[]
+  onLocationClick?: (location: MapLocation) => void
 }
 
 const DEFAULT_ZOOM = 0
@@ -58,7 +59,7 @@ function createMarkerElement(location: MapLocation): HTMLButtonElement {
   return element
 }
 
-export default function LocationMap({ locations }: LocationMapProps) {
+export default function LocationMap({ locations, onLocationClick }: LocationMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<google.maps.Map | null>(null)
   const overlaysRef = useRef<google.maps.OverlayView[]>([])
@@ -104,7 +105,11 @@ export default function LocationMap({ locations }: LocationMapProps) {
       const position = { lat: location.lat, lng: location.lng }
       const element = createMarkerElement(location)
 
+      element.style.cursor = onLocationClick ? 'pointer' : 'default'
       element.addEventListener('click', () => {
+        if (onLocationClick) {
+          onLocationClick(location)
+        }
         map.panTo(position)
         map.setZoom(5)
       })
@@ -151,9 +156,23 @@ export default function LocationMap({ locations }: LocationMapProps) {
       {!isLoaded && <div className={styles.loading}>Loading map…</div>}
 
       <div className={styles.legend}>
-        {EVENT_CATEGORY_LABELS.map((category) => (
+        {Array.from(
+          locations.reduce((legendMap, location) => {
+            location.breakdown.forEach((slice) => {
+              if (!legendMap.has(slice.key)) {
+                legendMap.set(slice.key, {
+                  key: slice.key,
+                  label: slice.label,
+                  color: slice.color,
+                })
+              }
+            })
+            return legendMap
+          }, new Map<string, { key: string; label: string; color: string }>())
+          .values()
+        ).map((category) => (
           <span key={category.key} className={styles.legendItem}>
-            <span className={styles.legendDot} style={{ backgroundColor: EVENT_CATEGORY_COLORS[category.key] }} />
+            <span className={styles.legendDot} style={{ backgroundColor: category.color }} />
             {category.label}
           </span>
         ))}

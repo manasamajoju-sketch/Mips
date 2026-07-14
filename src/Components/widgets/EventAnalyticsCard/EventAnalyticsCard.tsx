@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import type { EventAnalyticsData } from '../../../types/eventAnalytics'
+import { useEffect, useState } from 'react'
+import type { EventAnalyticsData, ImpactBreakdown } from '../../../types/eventAnalytics'
 import { InfoIcon, ChevronLeftIcon, ChevronRightIcon, ArrowRightIcon } from '../../common/Icons'
+import type { ImpactPointSectionKey } from '../../cards/ImpactPoint/ImpactPoint'
 import SeverityChart from '../../../Components/charts/SeverityChart/SeverityChart'
 import styles from './EventAnalyticsCard.module.scss'
 import ImpactPoint from '../../cards/ImpactPoint/ImpactPoint'
@@ -26,13 +27,21 @@ export default function EventAnalyticsCard({
     onEventTypeChange?.(eventTypes[nextIndex])
   }
 
+  useEffect(() => {
+    setTypeIndex(Math.max(eventTypes.indexOf(data.eventType), 0))
+  }, [data.eventType, eventTypes])
+
   const otherImpacts = data.impactBreakdown.filter((b) => b.zone !== 'front')
   const totalImpacts = data.impactBreakdown.reduce((sum, b) => sum + b.impacts, 0) || 1
-  const impactSections = data.impactBreakdown.map((b) => ({
-    key: b.zone,
-    label: b.label,
-    value: (b.impacts / totalImpacts) * 100,
-  }))
+  const impactSections = data.impactBreakdown
+    .filter((b): b is ImpactBreakdown & { zone: Exclude<ImpactPointSectionKey, 'other'> } =>
+      b.zone !== 'other'
+    )
+    .map((b) => ({
+      key: b.zone as ImpactPointSectionKey,
+      label: b.label,
+      value: (b.impacts / totalImpacts) * 100,
+    }))
 
   return (
     <section className={styles['event-analytics-card']}>

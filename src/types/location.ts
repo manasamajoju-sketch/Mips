@@ -1,6 +1,6 @@
-import type { EventCategoryKey } from './event'
-
 export type LocationDataType = 'events' | 'users'
+export type LocationOverviewMetric = 'events' | 'users'
+export type LocationOverviewRegion = 'continent' | 'country' | 'state' | 'city'
 
 // What the backend should send: raw counts per category, per location.
 export interface LocationApiRecord {
@@ -8,16 +8,55 @@ export interface LocationApiRecord {
   country: string
   lat: number
   lng: number
-  counts: Record<EventCategoryKey, number>
+  counts: Record<string, number>
 }
 
-// Render-ready shape, built from LocationApiRecord via toMapLocation().
+export interface LocationOverviewEventsRow {
+  region: string
+  total: number
+  byType: Record<string, number>
+}
+
+export interface LocationOverviewUsersRow {
+  region: string
+  mipsUsers: number
+  nonMipsUsers: number
+  totalUsers: number
+  mipsPercentage: number
+}
+
+export interface LocationOverviewApiResponse<T = LocationOverviewEventsRow | LocationOverviewUsersRow> {
+  success: boolean
+  data: {
+    window: string
+    metric: LocationOverviewMetric
+    region: LocationOverviewRegion
+    range: {
+      from: string
+      to: string
+    }
+    filters?: {
+      continent?: string
+      country?: string
+      state?: string
+    }
+    rows: T[]
+  }
+  meta: {
+    cached: boolean
+    stale?: boolean
+    generatedAt: string
+  }
+}
+
 export interface MapLocationBreakdownSlice {
-  key: EventCategoryKey
+  key: string
   label: string
   value: number
   color: string
 }
+
+// Render-ready shape, built from LocationApiRecord via toMapLocation().
 
 export interface MapLocation {
   id: string

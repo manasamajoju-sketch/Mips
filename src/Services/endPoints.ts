@@ -6,6 +6,11 @@ export const ENDPOINTS = {
     overview: ApiEndpoint.Events.Overview,
     timeseries: ApiEndpoint.Events.Timeseries,
     latest: ApiEndpoint.Events.Latest,
+    impactDirection: ApiEndpoint.Events.ImpactDirection,
+  },
+
+  locations: {
+    overview: ApiEndpoint.Locations.Overview,
   },
 
   users: {
