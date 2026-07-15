@@ -4,7 +4,7 @@
 .card {
   background: $color-surface;
   border-radius: $radius-card;
-  padding: 12px 14px;
+  padding: 20px 22px;
   font-family: $font-family-base;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   height: 100%;
@@ -13,7 +13,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  container-type: inline-size;
 
   > :last-child {
     flex: 1 1 auto;
@@ -28,10 +27,9 @@
 }
 
 .title {
-  @include flex(row, center, flex-start, 8px);
-  font-size: 16px;
+  @include flex(row, center, flex-start, 6px);
+  font-size: 15.5px;
   font-weight: 300;
-  line-height: 1.05;
   color: $color-text-primary;
   margin: 0;
 }
@@ -39,10 +37,9 @@
 .infoBtn {
   @include reset-button;
   @include flex(row, center, center);
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   color: $color-accent-teal;
-  flex: 0 0 auto;
 
   svg {
     width: 100%;
@@ -53,15 +50,14 @@
 .expandBtn {
   @include reset-button;
   @include flex(row, center, center);
-  width: 24px;
-  height: 22px;
-  color: $color-accent-teal;
+  width: 16px;
+  height: 16px;
+  color: $color-text-secondary;
   flex-shrink: 0;
 
   svg {
     width: 100%;
     height: 100%;
-    stroke-width: 2.6;
   }
 
   &:hover {
@@ -69,77 +65,21 @@
   }
 }
 
-.summaryRow {
-  @include flex(row, flex-end, space-between, 8px);
-  margin-bottom: 6px;
-  flex: 0 0 auto;
-  flex-wrap: wrap;
-}
-
 .total {
   @include flex(row, flex-end, flex-start, 6px);
+  margin-bottom: 6px;
   flex: 0 0 auto;
 }
 
 .totalValue {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 300;
-  line-height: 0.9;
+  line-height: 1;
   color: $color-text-primary;
 }
 
 .totalLabel {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  color: $color-text-primary;
-  padding-bottom: 4px;
-}
-
-.eventFilter {
-  @include reset-button;
-  @include flex(row, center, center, 8px);
-  min-width: 104px;
-  height: 26px;
-  padding: 0 8px;
-  border: 1.5px solid $color-text-muted;
-  border-radius: 12px;
-  color: #7c858d;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
-
-  svg {
-    width: 15px;
-    height: 15px;
-    flex: 0 0 auto;
-  }
-}
-
-.overviewChart {
-  --grouped-chart-key-gap: 10px;
-  --grouped-chart-key-item-gap: 4px;
-  --grouped-chart-key-font-size: 9px;
-  --grouped-chart-key-dot-size: 7px;
-  --grouped-chart-key-margin-bottom: 4px;
-  --grouped-chart-y-tick-font-size: 9px;
-  --grouped-chart-axis-title-font-size: 0px;
-  --grouped-chart-category-font-size: 10px;
-  --grouped-chart-value-font-size: 10px;
-}
-
-@container (max-width: 360px) {
-  .card {
-    padding: 12px 14px;
-  }
-
-  .summaryRow {
-    align-items: flex-end;
-    gap: 6px;
-  }
-
-  .eventFilter {
-    align-self: flex-end;
-  }
+  font-size: 11px;
+  color: $color-text-secondary;
+  padding-bottom: 3px;
 }

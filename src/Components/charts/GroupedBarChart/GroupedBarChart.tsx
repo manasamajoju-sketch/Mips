@@ -12,7 +12,6 @@ export interface GroupedBarSeries<T> {
 interface GroupedBarChartProps<T extends { category: string }> {
   data: T[]
   series: GroupedBarSeries<T>[]
-  className?: string
   showKey?: boolean
   xAxisLabel?: string
   yAxisLabel?: string
@@ -23,12 +22,12 @@ interface GroupedBarChartProps<T extends { category: string }> {
 }
 
 const VIEW_W = 640
-const VIEW_H = 220
-const PAD_LEFT = 30
-const PAD_RIGHT = 8
-const PAD_TOP = 8
-const PAD_BOTTOM = 28
-const GROUP_GAP = 24
+const VIEW_H = 240
+const PAD_LEFT = 52
+const PAD_RIGHT = 14
+const PAD_TOP = 12
+const PAD_BOTTOM = 46
+const GROUP_GAP = 18
 const BAR_GAP = 4
 /** Bars sit at this fraction of their full slot width until their group is hovered */
 const NARROW_RATIO = 0.45
@@ -42,7 +41,6 @@ function niceMax(value: number) {
 export default function GroupedBarChart<T extends { category: string }>({
   data,
   series,
-  className,
   showKey = true,
   xAxisLabel,
   yAxisLabel,
@@ -99,7 +97,7 @@ export default function GroupedBarChart<T extends { category: string }>({
   }, [data, series, plotW, plotH, yMax, hoveredGroup])
 
   return (
-    <div className={`${styles.chart} ${className ?? ''}`}>
+    <div className={styles.chart}>
       {showKey && (
         <div className={styles.key}>
           {series.map((s) => (
@@ -194,7 +192,7 @@ export default function GroupedBarChart<T extends { category: string }>({
                   <text
                     className={styles.valueLabel}
                     x={bar.x + bar.width / 2}
-                    y={bar.y + bar.height / 2 + 5}
+                    y={bar.y + 14}
                     textAnchor="middle"
                     fill={bar.textColor}
                   >

@@ -3,6 +3,13 @@ import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { SeverityPoint } from '../../../types/eventAnalytics'
 import styles from './SeverityChart.module.scss'
 
+const AXIS_LABEL_STYLE = {
+  fill: '#ffffff',
+  color: '#ffffff',
+  fontSize: 18,
+  fontWeight: 500,
+}
+
 interface SeverityChartProps {
   data: SeverityPoint[]
   /** Fractional index (between two data points) where the severity divider sits */
@@ -142,10 +149,10 @@ const linePath = useMemo(() => {
                 y2={y}
                 className={styles['severity-chart__gridline']}
               />
-              <text x={0} y={y - 10} className={styles['severity-chart__axis-label']}>
+              <text x={0} y={y - 10} fill="#ffffff" style={AXIS_LABEL_STYLE} className={styles['severity-chart__axis-label']}>
                 {tick}
               </text>
-              <text x={0} y={y + 5} className={styles['severity-chart__axis-label']}>
+              <text x={0} y={y + 5} fill="#ffffff" style={AXIS_LABEL_STYLE} className={styles['severity-chart__axis-label']}>
                 {yAxisUnit}
               </text>
             </g>
@@ -180,7 +187,7 @@ const linePath = useMemo(() => {
 
         {/* X axis labels */}
         {points.map((p) => (
-          <text key={p.label} x={p.x} y={VIEW_H - 6} textAnchor="middle" className={styles['severity-chart__axis-label']}>
+          <text key={p.label} x={p.x} y={VIEW_H - 6} textAnchor="middle" fill="#ffffff" style={AXIS_LABEL_STYLE} className={styles['severity-chart__axis-label']}>
             {p.label}
           </text>
         ))}

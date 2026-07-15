@@ -58,9 +58,10 @@
   }
 
   &__axis-label {
-    fill: $color-white-70;
+    fill: #ffffff;
     font-family: $font-family-mono;
-    font-size: $fs-axis;
+    font-size: 18px;
+    font-weight: $fw-medium;
     pointer-events: none;
   }
 
