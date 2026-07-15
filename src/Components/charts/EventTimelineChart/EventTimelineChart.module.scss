@@ -39,7 +39,7 @@
   align-items: flex-end;
   flex: 1;
   min-width: 0;
-  gap: 3px;
+  gap: 2px;
   padding-bottom: 4px;
 }
 
@@ -51,50 +51,50 @@
   align-items: flex-end;
   justify-content: center;
   height: 100%;
+  border-radius: 4px;
+
+  &:focus-visible {
+    outline: 2px solid $color-accent-teal;
+    outline-offset: 3px;
+    z-index: 4;
+  }
 }
 
 .pill {
-  width: 60%;
+  width: 82%;
   max-width: 8px;
   min-width: 3px;
   display: flex;
   flex-direction: column;
-  border-radius: 4px;
-  overflow: hidden;
-  transition: opacity 150ms ease, max-width 150ms ease;
+  border-radius: 6px;
+  overflow: visible;
+  transition: max-width 150ms ease, min-width 150ms ease, filter 150ms ease;
 }
 
 .pillActive {
-  opacity: 1;
   max-width: 26px;
+  min-width: 22px;
   filter: drop-shadow(0 1px 2px rgba(16, 24, 40, 0.25));
 }
 
 .segment {
   width: 100%;
+  flex-shrink: 0;
   min-height: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 6px;
   overflow: hidden;
 }
 
 .segmentLabel {
   color: $color-white;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: $fw-semibold;
   line-height: 1;
   white-space: nowrap;
-}
-
-.cursor {
-  position: absolute;
-  bottom: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;
-  color: $color-text-primary;
-  pointer-events: none;
+  text-shadow: 0 1px 1px rgba(16, 24, 40, 0.35);
 }
 
 .xAxis {
@@ -145,7 +145,24 @@
 
 @media (max-width: $bp-mobile) {
   .plot {
-    gap: 2px;
+    gap: 1px;
+  }
+
+  .pill {
+    width: 90%;
+    min-width: 3px;
+  }
+
+  .pillActive {
+    min-width: 20px;
+  }
+
+  .segment {
+    min-height: 1px;
+  }
+
+  .segmentLabel {
+    font-size: 8px;
   }
 
   .tick,

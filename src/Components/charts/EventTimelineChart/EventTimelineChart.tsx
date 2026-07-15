@@ -4,6 +4,8 @@ import styles from './EventTimelineChart.module.scss';
 
 const MAX_TOTAL = 50;
 const MAX_PILL_HEIGHT = 120;
+const MIN_ACTIVE_SEGMENT_HEIGHT = 16;
+const MIN_ACTIVE_PILL_HEIGHT = 72;
 
 export interface TimelineCategory {
   key: string;
@@ -33,46 +35,65 @@ interface DayColumnProps {
   onLeave: () => void;
 }
 
-const MIN_LABEL_HEIGHT = 14;
-
 function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: DayColumnProps) {
-  const total = categories.reduce((sum, cat) => sum + (Number(point[cat.key]) || 0), 0);
+  const categoryValues = categories.map((cat) => ({
+    ...cat,
+    value: Number(point[cat.key]) || 0,
+  }));
+  const total = categoryValues.reduce((sum, cat) => sum + cat.value, 0);
 
   if (total === 0) {
     return <div className={styles.col} />;
   }
 
-  const pillHeight = Math.min((total / maxTotal) * MAX_PILL_HEIGHT, MAX_PILL_HEIGHT);
+  const scaledPillHeight = Math.min((total / maxTotal) * MAX_PILL_HEIGHT, MAX_PILL_HEIGHT);
+  const inactivePillHeight = Math.max(scaledPillHeight, categories.length);
+  const activePillHeight = Math.min(
+    Math.max(scaledPillHeight, MIN_ACTIVE_PILL_HEIGHT),
+    MAX_PILL_HEIGHT,
+  );
+  const minimumSegmentTotal = categories.length * MIN_ACTIVE_SEGMENT_HEIGHT;
+  const remainingActiveHeight = Math.max(activePillHeight - minimumSegmentTotal, 0);
+  const activeSegmentHeights = categoryValues.map((cat) => (
+    MIN_ACTIVE_SEGMENT_HEIGHT + (total > 0 ? (cat.value / total) * remainingActiveHeight : 0)
+  ));
+  const pillHeight = isActive ? activePillHeight : inactivePillHeight;
 
   return (
-    <div className={styles.col} onMouseEnter={onHover} onMouseLeave={onLeave}>
+    <div
+      className={styles.col}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      onFocus={onHover}
+      onBlur={onLeave}
+      tabIndex={0}
+      aria-label={`${point.date} ${point.month}, ${total} events`}
+    >
       <div
         className={`${styles.pill} ${isActive ? styles.pillActive : ''}`}
         style={{ height: `${pillHeight}px` }}
       >
-        {categories.map((cat) => {
-          const value = Number(point[cat.key]) || 0;
-          const segmentHeight = (value / total) * pillHeight;
-          const showLabel = isActive && segmentHeight >= MIN_LABEL_HEIGHT;
-
+        {categoryValues.map((cat, segmentIndex) => {
           return (
             <div
               key={cat.key}
               className={styles.segment}
-              style={{ background: cat.color, flex: `${Math.max(value, 0.3)} 0 0` }}
+              style={{
+                background: cat.color,
+                flex: isActive ? '0 0 auto' : `${Math.max(cat.value, 0.1)} 0 0`,
+                height: isActive ? `${activeSegmentHeights[segmentIndex]}px` : undefined,
+              }}
             >
-              {showLabel && <span className={styles.segmentLabel}>{value}</span>}
+              {isActive && <span className={styles.segmentLabel}>{cat.value}</span>}
             </div>
           );
         })}
       </div>
-      {isActive && <i className={`ti ti-pointer-filled ${styles.cursor}`} aria-hidden="true" />}
     </div>
   );
 }
 
 export default function EventTimelineChart({ data, categories, maxTotal = MAX_TOTAL, range = '30d' }: EventTimelineChartProps) {
-  // No default/initial highlight - hoveredIndex is only ever set by a real mouse hover.
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const isMonthlyRange = range === '12m';
   const isNinetyDayRange = range === '90d';
@@ -87,7 +108,7 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
 
   // Round y-axis to a friendly step (multiple of 25)
   const yAxisMax = Math.max(1, Math.ceil(resolvedMaxTotal / 25) * 25);
-  const yAxisTicks = [yAxisMax, Math.round(yAxisMax / 2), 0].reverse();
+  const yAxisTicks = [yAxisMax, Math.round(yAxisMax / 2), 0];
 
   return (
     <div className={styles.chart}>

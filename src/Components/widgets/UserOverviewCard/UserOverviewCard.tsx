@@ -1,4 +1,4 @@
-import { InfoIcon, ArrowRightIcon } from '../../common/Icons'
+import { InfoIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from '../../common/Icons'
 import GroupedBarChart from '../../charts/GroupedBarChart/GroupedBarChart'
 import { userOverviewData, userOverviewStacks, userOverviewTotal } from '../../../Constants/userOverviewMock'
 import type { UserOverviewCategory } from '../../../types/userOverview'
@@ -26,12 +26,29 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
         </button>
       </header>
 
-      <div className={styles.total}>
-        <span className={styles.totalValue}>{total}</span>
-        <span className={styles.totalLabel}>Total Users</span>
+      <div className={styles.summaryRow}>
+        <div className={styles.total}>
+          <span className={styles.totalValue}>{total}</span>
+          <span className={styles.totalLabel}>Users</span>
+        </div>
+
+        <button type="button" className={styles.eventFilter} aria-label="Filter by all events">
+          <ChevronLeftIcon />
+          <span>All Events</span>
+          <ChevronRightIcon />
+        </button>
       </div>
 
-      <GroupedBarChart data={data} series={userOverviewStacks} />
+      <GroupedBarChart
+        className={styles.overviewChart}
+        data={data}
+        series={userOverviewStacks}
+        xAxisLabel="Vertical"
+        yAxisLabel="Users"
+        defaultActiveCategory="Cycling"
+        showGridLines={false}
+        formatYTick={(value) => String(Math.round(value)).padStart(2, '0')}
+      />
     </section>
   )
 }

@@ -12,7 +12,14 @@ export interface GroupedBarSeries<T> {
 interface GroupedBarChartProps<T extends { category: string }> {
   data: T[]
   series: GroupedBarSeries<T>[]
+  className?: string
   showKey?: boolean
+  xAxisLabel?: string
+  yAxisLabel?: string
+  defaultActiveCategory?: string
+  showAxisLines?: boolean
+  showGridLines?: boolean
+  formatYTick?: (value: number) => string
 }
 
 const VIEW_W = 640
@@ -35,9 +42,16 @@ function niceMax(value: number) {
 export default function GroupedBarChart<T extends { category: string }>({
   data,
   series,
+  className,
   showKey = true,
+  xAxisLabel,
+  yAxisLabel,
+  defaultActiveCategory,
+  showAxisLines = false,
+  showGridLines = true,
+  formatYTick = (value) => String(Math.round(value)),
 }: GroupedBarChartProps<T>) {
-  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
+  const [hoveredGroup, setHoveredGroup] = useState<string | null>(defaultActiveCategory ?? null)
 
   const plotW = VIEW_W - PAD_LEFT - PAD_RIGHT
   const plotH = VIEW_H - PAD_TOP - PAD_BOTTOM
@@ -85,7 +99,7 @@ export default function GroupedBarChart<T extends { category: string }>({
   }, [data, series, plotW, plotH, yMax, hoveredGroup])
 
   return (
-    <div className={styles.chart}>
+    <div className={`${styles.chart} ${className ?? ''}`}>
       {showKey && (
         <div className={styles.key}>
           {series.map((s) => (
@@ -105,13 +119,55 @@ export default function GroupedBarChart<T extends { category: string }>({
         role="img"
         aria-label="Grouped bar chart"
       >
+        {showAxisLines && (
+          <>
+            <line
+              className={styles.axisLine}
+              x1={PAD_LEFT}
+              x2={PAD_LEFT}
+              y1={PAD_TOP}
+              y2={PAD_TOP + plotH}
+            />
+            <line
+              className={styles.axisLine}
+              x1={PAD_LEFT}
+              x2={VIEW_W - PAD_RIGHT}
+              y1={PAD_TOP + plotH}
+              y2={PAD_TOP + plotH}
+            />
+          </>
+        )}
+
+        {yAxisLabel && (
+          <text
+            className={styles.axisTitle}
+            x={-(PAD_TOP + plotH / 2)}
+            y={14}
+            textAnchor="middle"
+            transform="rotate(-90)"
+          >
+            {yAxisLabel}
+          </text>
+        )}
+
+        {xAxisLabel && (
+          <text
+            className={styles.axisTitle}
+            x={PAD_LEFT + plotW / 2}
+            y={VIEW_H - 6}
+            textAnchor="middle"
+          >
+            {xAxisLabel}
+          </text>
+        )}
+
         {yTicks.map((tick) => {
           const y = PAD_TOP + plotH * (1 - tick / yMax)
           return (
             <g key={tick}>
-              <line className={styles.gridLine} x1={PAD_LEFT} x2={VIEW_W - PAD_RIGHT} y1={y} y2={y} />
+              {showGridLines && <line className={styles.gridLine} x1={PAD_LEFT} x2={VIEW_W - PAD_RIGHT} y1={y} y2={y} />}
               <text className={styles.yTick} x={PAD_LEFT - 8} y={y} textAnchor="end" dominantBaseline="middle">
-                {String(Math.round(tick)).padStart(2, '0')}
+                {formatYTick(tick)}
               </text>
             </g>
           )
@@ -138,7 +194,7 @@ export default function GroupedBarChart<T extends { category: string }>({
                   <text
                     className={styles.valueLabel}
                     x={bar.x + bar.width / 2}
-                    y={bar.y + 14}
+                    y={bar.y + bar.height / 2 + 5}
                     textAnchor="middle"
                     fill={bar.textColor}
                   >
@@ -157,12 +213,12 @@ export default function GroupedBarChart<T extends { category: string }>({
               height={PAD_BOTTOM}
               fill="transparent"
               onMouseEnter={() => setHoveredGroup(group.category)}
-              onMouseLeave={() => setHoveredGroup((prev) => (prev === group.category ? null : prev))}
+              onMouseLeave={() => setHoveredGroup((prev) => (prev === group.category ? defaultActiveCategory ?? null : prev))}
             />
             <text
               className={`${styles.categoryLabel} ${group.isHovered ? styles.categoryLabelActive : ''}`}
               x={group.x + group.width / 2}
-              y={VIEW_H - 10}
+              y={PAD_TOP + plotH + 18}
               textAnchor="middle"
               pointerEvents="none"
             >
