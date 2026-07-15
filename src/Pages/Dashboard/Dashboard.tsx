@@ -298,7 +298,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         <div className={styles.eventSeverity}><EventSeverityHistogramCard /></div>
       )}
       {/* <div className={styles.eventSeverity}><EventSeverityCard /></div> */}
-      <div className={styles.eventTime}><EventTimeHeatmapCard /></div>
+      <div className={styles.eventTime}><EventTimeHeatmapCard range={range} /></div>
 
     </main>
   )

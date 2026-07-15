@@ -46,6 +46,7 @@ export default function EventOverviewCard({
   const deltaLabel = `L${resolvedRange}`;
   const rangeLabel = resolvedRange === '90d' ? '90 days' : resolvedRange === '30d' ? '30 days' : '12 months';
   const visibleEventCategoryLabels = EVENT_CATEGORY_LABELS.filter(({ key }) => key !== 'others');
+  // const visibleEventCategoryLabels = EVENT_CATEGORY_LABELS;
 
   const legendItems = isEventsView
     ? visibleEventCategoryLabels.map(({ key, label }) => ({ key, label, color: EVENT_CATEGORY_COLORS[key] }))

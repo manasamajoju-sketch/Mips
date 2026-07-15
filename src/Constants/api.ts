@@ -8,6 +8,7 @@ export const ApiEndpoint = {
     SeverityTimeseries: "/mips/events/severity-timeseries",
     IrmsDistribution: "/mips/events/irms-distribution",
     GForceExtremes: "/mips/events/g-force-extremes",
+    EventTimeHeatmap: "/mips/overview/event-time-heatmap",
   },
 
   Locations: {

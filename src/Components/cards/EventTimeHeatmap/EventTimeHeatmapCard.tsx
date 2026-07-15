@@ -1,16 +1,19 @@
+import { useEffect, useState } from 'react';
 import EventTimeHeatmapChart from '../../charts/EventTimeHeatmapChart/EventTimeHeatmapChart';
 import {
   DENSITY_COLORS,
   DENSITY_LABELS,
-  eventTimeHeatmapSummary,
-  heatmapRows,
+  eventTimeHeatmapSummary as fallbackSummary,
+  heatmapRows as fallbackRows,
 } from '../../../Constants/eventTimeHeatmapData';
 import type { EventTimeHeatmapSummary, HeatmapRow } from '../../../types/eventTimeHeatmap';
+import { dashboardService } from '../../../Services/dashboardService';
+import { mapEventTimeHeatmapResponse } from '../../../types/eventTimeHeatmap';
+import type { EventTimeHeatmapApiResponse } from '../../../types/eventTimeHeatmap';
 import styles from './EventTimeHeatmapCard.module.scss';
 
 interface EventTimeHeatmapCardProps {
-  rows?: HeatmapRow[];
-  summary?: EventTimeHeatmapSummary;
+  range?: string;
   title?: string;
 }
 
@@ -53,10 +56,34 @@ function AlertIcon() {
 }
 
 export default function EventTimeHeatmapCard({
-  rows = heatmapRows,
-  summary = eventTimeHeatmapSummary,
+  range = '30d',
   title = 'Event time over day & week',
 }: EventTimeHeatmapCardProps) {
+  const [rows, setRows] = useState<HeatmapRow[]>(fallbackRows);
+  const [summary, setSummary] = useState<EventTimeHeatmapSummary>(fallbackSummary);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    dashboardService.getEventTimeHeatmap(range)
+      .then((response: unknown) => {
+        if (!isMounted) return;
+        const typedResponse = response as EventTimeHeatmapApiResponse;
+        const mapped = mapEventTimeHeatmapResponse(typedResponse);
+        setRows(mapped.rows);
+        setSummary(mapped.summary);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setRows(fallbackRows);
+        setSummary(fallbackSummary);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [range]);
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>

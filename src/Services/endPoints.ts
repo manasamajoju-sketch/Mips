@@ -10,6 +10,7 @@ export const ENDPOINTS = {
     irmsDistribution: ApiEndpoint.Events.IrmsDistribution,
     gForceExtremes: ApiEndpoint.Events.GForceExtremes,
     severityTimeseries: ApiEndpoint.Events.SeverityTimeseries,
+    eventTimeHeatmap: ApiEndpoint.Events.EventTimeHeatmap,
   },
 
   locations: {

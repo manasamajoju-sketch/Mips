@@ -62,4 +62,7 @@ export const dashboardService = {
 
   getDemographicsOverview: (window: string = '30d') =>
     apiClient(`${ENDPOINTS.demographics.overview}?window=${encodeURIComponent(window)}`),
+
+  getEventTimeHeatmap: (window: string = '30d') =>
+    apiClient(`${ENDPOINTS.events.eventTimeHeatmap}?window=${encodeURIComponent(window)}`),
 };
