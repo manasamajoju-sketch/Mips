@@ -3,6 +3,7 @@ import styles from './EventTimelineCard.module.scss';
 
 interface EventTimelineCardProps {
   entries?: EventTimelineEntry[];
+  isLoading?: boolean;
 }
 
 interface TimelineRowProps {
@@ -36,7 +37,7 @@ function TimelineRow({ entry, isLast }: TimelineRowProps) {
   );
 }
 
-export default function EventTimelineCard({ entries = [] }: EventTimelineCardProps) {
+export default function EventTimelineCard({ entries = [], isLoading = false }: EventTimelineCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -46,9 +47,15 @@ export default function EventTimelineCard({ entries = [] }: EventTimelineCardPro
 
       <div className={styles.timeline}>
         <div className={styles.line} />
-        {entries.map((entry, index) => (
-          <TimelineRow key={entry.id} entry={entry} isLast={index === entries.length - 1} />
-        ))}
+        {isLoading ? (
+          <div className={styles.emptyState}>Loading latest events…</div>
+        ) : entries.length === 0 ? (
+          <div className={styles.emptyState}>No recent events available</div>
+        ) : (
+          entries.map((entry, index) => (
+            <TimelineRow key={entry.id} entry={entry} isLast={index === entries.length - 1} />
+          ))
+        )}
       </div>
     </div>
   );

@@ -18,7 +18,6 @@ import UserDemographicsCard from '../../Components/cards/UserDemographics/UserDe
 import EventSeverityHistogramCard from '../../Components/cards/EventSeverity/EventSeverityHistogramCard';
 import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard';
 import { dashboardService } from '../../Services/dashboardService';
-import { eventTimelineFallbackEntries } from '../../Constants/eventTimelineData';
 import { mapLatestEventsToTimelineEntries, type EventTimelineApiResponse, type EventTimelineEntry } from '../../types/eventTimeline';
 import { eventOverviewFallbackSummary, eventTimelineData, severityTimelineData } from '../../Constants/eventOverviewData';
 import {
@@ -65,7 +64,8 @@ interface Props {
 export default function Dashboard({ range, hideWidgets = [], hideLocationOverviewDetails = false }: Props) {
   console.log('[Dashboard] render', range)
   const hiddenWidgets = new Set(hideWidgets)
-  const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>(eventTimelineFallbackEntries)
+  const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>([])
+  const [timelineLoading, setTimelineLoading] = useState(true)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
   const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
   const [severityChartDataState, setSeverityChartDataState] = useState(severityTimelineData)
@@ -114,6 +114,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         setSeverityChartDataState(severityTimelineData)
       })
 
+    setTimelineLoading(true)
     dashboardService.getLatestEvents()
       .then((response: unknown) => {
         if (!isMounted) return
@@ -122,7 +123,11 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .catch(() => {
         if (!isMounted) return
-        setTimelineEntries(eventTimelineFallbackEntries)
+        setTimelineEntries([])
+      })
+      .finally(() => {
+        if (!isMounted) return
+        setTimelineLoading(false)
       })
 
     dashboardService.getUserOverview(range)
@@ -346,7 +351,9 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         <TopEventsCard events={topEvents} onEventClick={(event) => console.log('Navigate to event:', event.key)} />
       </div>
       {!hiddenWidgets.has('eventTimeline') && (
-        <div className={styles.eventTimeline}><EventTimelineCard entries={timelineEntries} /></div>
+        <div className={styles.eventTimeline}>
+          <EventTimelineCard entries={timelineEntries} isLoading={timelineLoading} />
+        </div>
       )}
       {!hiddenWidgets.has('userOverview') && (
         <div className={styles.userOverview}><UserOverviewCard data={userOverviewDataState} total={userOverviewTotalState} onExpand={() => console.log('Navigate to user details')} /></div>

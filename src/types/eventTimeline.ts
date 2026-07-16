@@ -7,7 +7,7 @@ export interface EventTimelineLocation {
 
 export interface EventTimelineApiEvent {
   type: string;
-  impactLocation: EventTimelineLocation;
+  impactLocation: EventTimelineLocation | string;
   isActive: boolean;
   date: string;
 }
@@ -50,11 +50,14 @@ function formatTimeAgo(date: Date): string {
 export function mapLatestEventsToTimelineEntries(events: EventTimelineApiEvent[]): EventTimelineEntry[] {
   return events.map((event, index) => {
     const date = new Date(event.date);
-    const coordinates = event.impactLocation;
-    const country = `${coordinates.lat.toFixed(2)}, ${coordinates.lng.toFixed(2)}`;
     const eventLabel = event.type === 'major_impact' ? 'Major impact detected' : event.type.replace(/_/g, ' ');
     const status: EventTimelineStatus = event.isActive ? 'active' : 'marked_safe';
     const statusLabel = event.isActive ? 'Active' : 'Marked safe';
+
+    const coordinates = typeof event.impactLocation === 'object' ? event.impactLocation : undefined;
+    const country = typeof event.impactLocation === 'string'
+      ? event.impactLocation
+      : `${event.impactLocation.lat.toFixed(2)}, ${event.impactLocation.lng.toFixed(2)}`;
 
     return {
       id: `${event.type}-${index}-${event.date}`,
