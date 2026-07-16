@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { UserListRow } from '../../types/userList';
-import { VERTICAL_COLORS, VERTICAL_FALLBACK_STYLE, userListRows } from '../../constants/userListData';
+import { VERTICAL_COLORS, VERTICAL_FALLBACK_STYLE, userListRows } from '../../Constants/userListData';
 import styles from './UserListTable.module.scss';
 
 interface UserListTableProps {
