@@ -1,0 +1,49 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.cell {
+  fill: rgba(255, 255, 255, 0.5);
+}
+
+.cellHighlight {
+  fill: rgba(255, 255, 255, 0.95);
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.centerLabel {
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.zoneLabel {
+  position: absolute;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoneValue {
+  font-weight: 600;
+  color: #0b6c7a;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 12px;
+}

@@ -1,0 +1,46 @@
+@use '../../styles/variables' as *;
+
+.chart {
+  width: 100%;
+}
+
+.tooltip {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.1);
+  font-family: $font-family-base;
+  min-width: 130px;
+}
+
+.tooltipTitle {
+  font-size: 12px;
+  color: $color-text-primary;
+  margin-bottom: 6px;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: $color-text-primary;
+  padding: 2px 0;
+}
+
+.tooltipDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltipAxis {
+  flex: 1;
+  text-transform: uppercase;
+}
+
+.tooltipValue {
+  font-weight: 500;
+}

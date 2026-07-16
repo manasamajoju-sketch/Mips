@@ -1,0 +1,142 @@
+@use '../../styles/variables' as *;
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-card;
+  padding: 24px 32px;
+  font-family: $font-family-base;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 24px;
+  font-weight: 500;
+  color: $color-text-primary;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: $color-text-primary;
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+}
+
+.infoIcon {
+  color: $color-accent-teal;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 800;
+  font-style: italic;
+  color: $color-accent-teal;
+  letter-spacing: -1px;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #5fd4e4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarImage {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.quinId {
+  font-size: 40px;
+  font-weight: 500;
+  color: $color-text-primary;
+  word-break: break-word;
+}
+
+.divider {
+  height: 1px;
+  background: $color-border;
+  margin-bottom: 16px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 56px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: $color-text-primary;
+}
+
+.tags {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.tag {
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stats {
+  display: flex;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.statValue {
+  font-size: 44px;
+  font-weight: 500;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: $color-text-primary;
+  line-height: 1.3;
+}

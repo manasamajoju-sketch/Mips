@@ -1,0 +1,31 @@
+.chart {
+  width: 100%;
+}
+
+.dot {
+  fill: #ffffff;
+  stroke: none;
+}
+
+.activeBubble {
+  fill: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(11, 108, 122, 0.3));
+}
+
+.activeBubbleTitle {
+  font-size: 10px;
+  fill: #0b6c7a;
+  font-family: inherit;
+}
+
+.activeBubbleValue {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #0b6c7a;
+  font-family: inherit;
+}
+
+.activeStem {
+  stroke: #0b6c7a;
+  stroke-width: 1.5;
+}

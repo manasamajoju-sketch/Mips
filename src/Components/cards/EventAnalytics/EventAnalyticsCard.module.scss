@@ -1,0 +1,123 @@
+@use '../../styles/variables' as *;
+
+.card {
+  background: #12c4d6;
+  border-radius: $radius-card;
+  padding: 24px 32px;
+  font-family: $font-family-base;
+  color: #ffffff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.infoIcon {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 28px;
+}
+
+.column {
+  min-width: 0;
+}
+
+.stats {
+  display: flex;
+  gap: 36px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.statValue {
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.statLabel {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+  margin-bottom: 16px;
+}
+
+.verticalDivider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.zoneColumn {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+  min-width: 0;
+}
+
+.statList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.listStat {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.listStatValue {
+  font-size: 34px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.listStatLabel {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+@media (max-width: 720px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+
+  .verticalDivider {
+    display: none;
+  }
+
+  .zoneColumn {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
