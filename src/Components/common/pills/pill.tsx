@@ -9,7 +9,7 @@ interface PillProps {
 export default function Pill({ text, color, textColor }: PillProps) {
   return (
     <span className={styles.pill} style={{ backgroundColor: color, color: textColor }}>
-      {text}
+      <span className={styles.text}>{text}</span>
     </span>
   )
 }

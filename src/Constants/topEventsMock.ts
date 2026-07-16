@@ -39,36 +39,24 @@ export const topEventsMock: TopEvent[] = [
     date: '07/02/26',
     time: '8:34am',
     severity: 'Low',
+    type: 'impact',
     tags: [
-      { text: 'SOS Event', color: EVENT_CATEGORY_COLORS.sos },
+      { text: 'SOS', color: EVENT_CATEGORY_COLORS.sos },
       { text: 'Construction', color: EVENT_CATEGORY_COLORS.active },
     ],
     data: gForcePoints,
   },
   {
-    key: 'top-g-force-2',
-    metricValue: 170,
-    metricSuffix: 'gF',
-    metricLabel: 'Maximum\nG-Force',
-    date: '07/02/26',
-    time: '8:34am',
-    severity: 'Low',
-    tags: [
-      { text: 'Active', color: EVENT_CATEGORY_COLORS.active },
-      { text: 'Moto', color: EVENT_CATEGORY_COLORS.passive, textColor: '#ffffff' },
-    ],
-    data: gForcePoints,
-  },
-  {
-    key: 'top-rotational',
+    key: 'top-rotational-1',
     metricValue: 240,
     metricSuffix: 'rad/s',
     metricLabel: 'Max Rotational\nVelocity',
     date: '07/02/26',
     time: '8:34am',
-    severity: 'High',
+    severity: 'Low',
+    type: 'gyro',
     tags: [
-      { text: 'Active Event', color: EVENT_CATEGORY_COLORS.active },
+      { text: 'Active', color: EVENT_CATEGORY_COLORS.active },
       { text: 'Moto', color: EVENT_CATEGORY_COLORS.passive, textColor: '#ffffff' },
     ],
     data: rotationalPoints,
@@ -84,6 +72,7 @@ export const rotationalEventsMock: TopEvent[] = [
     date: '07/02/26',
     time: '8:34am',
     severity: 'High',
+    type: 'gyro',
     tags: [
       { text: 'SOS Event', color: EVENT_CATEGORY_COLORS.sos },
       { text: 'Construction', color: EVENT_CATEGORY_COLORS.active },
@@ -98,6 +87,7 @@ export const rotationalEventsMock: TopEvent[] = [
     date: '07/02/26',
     time: '8:34am',
     severity: 'Low',
+    type: 'gyro',
     tags: [
       { text: 'Active', color: EVENT_CATEGORY_COLORS.active },
       { text: 'Moto', color: EVENT_CATEGORY_COLORS.passive, textColor: '#ffffff' },
@@ -106,8 +96,16 @@ export const rotationalEventsMock: TopEvent[] = [
   },
 ]
 
-export const topEventsSparklineSeries: SparklineSeries<TopEventSparklinePoint>[] = [
-  { key: 'xAxis', label: 'X Axis', color: '#6fdcea' },
-  { key: 'yAxis', label: 'Y Axis', color: EVENT_CATEGORY_COLORS.passive },
-  { key: 'zAxis', label: 'Z Axis', color: EVENT_CATEGORY_COLORS.others },
+export const topEventsSparklineSeriesImpact: SparklineSeries<TopEventSparklinePoint>[] = [
+  { key: 'xAxis', label: 'X Impact', color: '#6fdcea' },
+  { key: 'yAxis', label: 'Y Impact', color: EVENT_CATEGORY_COLORS.passive },
+  { key: 'zAxis', label: 'Z Impact', color: EVENT_CATEGORY_COLORS.others },
 ]
+
+export const topEventsSparklineSeriesGyro: SparklineSeries<TopEventSparklinePoint>[] = [
+  { key: 'xAxis', label: 'X Rotation', color: '#6fdcea' },
+  { key: 'yAxis', label: 'Y Rotation', color: EVENT_CATEGORY_COLORS.passive },
+  { key: 'zAxis', label: 'Z Rotation', color: EVENT_CATEGORY_COLORS.others },
+]
+
+export const topEventsSparklineSeries: SparklineSeries<TopEventSparklinePoint>[] = topEventsSparklineSeriesImpact

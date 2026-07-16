@@ -5,6 +5,9 @@ import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
 import EventOverviewCard from '../../Components/cards/EventOverview/EventOverviewCard';
 import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard';
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard';
+import { topEventsMock } from '../../Constants/topEventsMock';
+import { mapTopEventsApiEventToTopEvent, selectTopEventForType } from '../../Utils/topEventsMapper';
+import { mapProcessedEventResponseToSparkline } from '../../Utils/processedEventMapper';
 
 import styles from './Dashboard.module.scss'
 import EventTimelineCard from '../../Components/cards/EventTimeline/EventTimelineCard';
@@ -32,6 +35,7 @@ import {
   type ImpactDirectionApiResponse,
   type EventAnalyticsData,
 } from '../../types/eventAnalytics';
+import type { TopEvent } from '../../types/topEvents';
 import type { UserOverviewApiResponse } from '../../types/userOverview';
 import type { ProductOverviewApiResponse, ProductOverviewCategory } from '../../types/productOverview';
 import type {
@@ -59,6 +63,7 @@ interface Props {
 }
 
 export default function Dashboard({ range, hideWidgets = [], hideLocationOverviewDetails = false }: Props) {
+  console.log('[Dashboard] render', range)
   const hiddenWidgets = new Set(hideWidgets)
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>(eventTimelineFallbackEntries)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
@@ -66,6 +71,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const [severityChartDataState, setSeverityChartDataState] = useState(severityTimelineData)
   const [eventAnalyticsData, setEventAnalyticsData] = useState<EventAnalyticsData>(eventAnalyticsMock)
   const [selectedAnalyticsVertical, setSelectedAnalyticsVertical] = useState<string>(eventAnalyticsMock.eventType)
+  const [topEvents, setTopEvents] = useState<TopEvent[]>(topEventsMock)
   const [productOverviewCategoriesState, setProductOverviewCategoriesState] = useState<ProductOverviewCategory[]>(productOverviewCategories)
   const [userOverviewDataState, setUserOverviewDataState] = useState(userOverviewData)
   const [userOverviewTotalState, setUserOverviewTotalState] = useState(userOverviewTotal)
@@ -207,6 +213,68 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
 
   useEffect(() => {
     let isMounted = true
+
+    console.log('[Dashboard] top events effect start', range)
+    Promise.allSettled([
+      dashboardService.getTopEvents(range, 'impact'),
+      dashboardService.getTopEvents(range, 'gyro'),
+    ])
+      .then(async (results) => {
+        console.log('[Dashboard] top events settled', results)
+        if (!isMounted) return
+
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+        console.log('[Dashboard] processed events delay completed')
+        if (!isMounted) return
+
+        const loadEvent = async (result: PromiseSettledResult<unknown>, type: 'impact' | 'gyro') => {
+          console.log('[Dashboard] loadEvent start', type)
+          if (result.status !== 'fulfilled') {
+            console.warn('[Dashboard] getTopEvents failed for', type, result.reason)
+            return null
+          }
+
+          const topEventsResponse = result.value as import('../../types/topEventsApi').TopEventsApiResponse
+          console.log('[Dashboard] topEventsResponse', type, topEventsResponse)
+          const topEvent = selectTopEventForType(topEventsResponse.data, type)
+          if (!topEvent) {
+            console.warn('[Dashboard] No top event found for', type, topEventsResponse.data)
+            return null
+          }
+
+          try {
+            console.log('[Dashboard] Fetching processed events for', type, topEvent.eventId)
+            const processedResponse = await dashboardService.getProcessedEvents(topEvent.eventId, type)
+            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data)
+            return { ...mapTopEventsApiEventToTopEvent(topEvent), data: sparklineData }
+          } catch (error) {
+            console.error('[Dashboard] Processed events request failed for', type, topEvent.eventId, error)
+            return mapTopEventsApiEventToTopEvent(topEvent)
+          }
+        }
+
+        const mappedEvents = await Promise.all([
+          loadEvent(results[0], 'impact'),
+          loadEvent(results[1], 'gyro'),
+        ])
+
+        const validEvents = mappedEvents.filter((event): event is TopEvent => event !== null)
+        if (validEvents.length > 0) {
+          setTopEvents(validEvents)
+        }
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setTopEvents(topEventsMock)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [range])
+
+  useEffect(() => {
+    let isMounted = true
     const supportedVerticals = ['Cycling', 'Moto', 'PPE']
 
     if (supportedVerticals.includes(selectedAnalyticsVertical)) {
@@ -275,7 +343,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       </div>
 
       <div className={styles.topEvents}>
-        <TopEventsCard onEventClick={(event) => console.log('Navigate to event:', event.key)} />
+        <TopEventsCard events={topEvents} onEventClick={(event) => console.log('Navigate to event:', event.key)} />
       </div>
       {!hiddenWidgets.has('eventTimeline') && (
         <div className={styles.eventTimeline}><EventTimelineCard entries={timelineEntries} /></div>

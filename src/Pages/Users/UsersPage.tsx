@@ -2,8 +2,6 @@ import UsersAnalyticsCard from '../../Components/widgets/UsersAnalyticsCard/User
 import UsersOverviewCard from '../../Components/widgets/UsersOverviewCard/UsersOverviewCard'
 import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard'
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard'
-import { rotationalEventsMock } from '../../Constants/topEventsMock'
-import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard'
 import HighestLifetimeImpactsCard from '../../Components/cards/HighestLifetimeImpacts/HighestLifetimeImpactsCard'
 import UserDemographicsCard from '../../Components/cards/UserDemographics/UserDemographicsCard'
 // import AllEventsTable from '../../Components/tables/AllEventsTable'

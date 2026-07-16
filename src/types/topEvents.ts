@@ -20,5 +20,6 @@ export interface TopEvent {
   time: string
   severity: 'Low' | 'Medium' | 'High'
   tags: TopEventTag[]
+  type?: 'impact' | 'gyro'
   data: TopEventSparklinePoint[]
 }

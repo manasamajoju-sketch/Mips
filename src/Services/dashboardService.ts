@@ -1,5 +1,7 @@
 import { apiClient } from "./apiClient";
 import { ENDPOINTS } from "./endPoints";
+import type { TopEventsApiResponse } from '../types/topEventsApi';
+import type { ProcessedEventsApiResponse } from '../types/processedEventsApi';
 
 
 export const dashboardService = {
@@ -65,4 +67,16 @@ export const dashboardService = {
 
   getEventTimeHeatmap: (window: string = '30d') =>
     apiClient(`${ENDPOINTS.events.eventTimeHeatmap}?window=${encodeURIComponent(window)}`),
+
+  getTopEvents: (window: string = '30d', type: 'impact' | 'gyro' = 'impact') =>
+    apiClient<TopEventsApiResponse>(
+      `${ENDPOINTS.events.topEvents}?window=${encodeURIComponent(window)}&type=${encodeURIComponent(type)}`
+    ),
+
+  getProcessedEvents: (eventId: string, type: 'impact' | 'gyro') => {
+    console.log('[dashboardService] getProcessedEvents', eventId, type)
+    return apiClient<ProcessedEventsApiResponse>(
+      `${ENDPOINTS.events.processedEvents}?eventId=${encodeURIComponent(eventId)}&type=${encodeURIComponent(type)}`
+    )
+  },
 };

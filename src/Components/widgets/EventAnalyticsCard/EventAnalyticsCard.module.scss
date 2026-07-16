@@ -4,7 +4,7 @@
 .event-analytics-card {
   @include card-surface;
   color: $color-white;
-  padding: $space-mmd $space-md;
+  padding: 20px 22px;
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
@@ -127,7 +127,7 @@
   }
 
   &__metric-label {
-    font-size: $fs-metric-label;
+    font-size: 11px;
     font-weight: $fw-regular;
     line-height: 1.25;
     padding-bottom: 6px;

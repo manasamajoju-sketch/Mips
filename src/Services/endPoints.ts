@@ -11,6 +11,8 @@ export const ENDPOINTS = {
     gForceExtremes: ApiEndpoint.Events.GForceExtremes,
     severityTimeseries: ApiEndpoint.Events.SeverityTimeseries,
     eventTimeHeatmap: ApiEndpoint.Events.EventTimeHeatmap,
+    topEvents: ApiEndpoint.Events.TopEvents,
+    processedEvents: ApiEndpoint.Events.ProcessedEvents,
   },
 
   locations: {

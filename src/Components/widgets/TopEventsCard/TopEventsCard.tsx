@@ -1,7 +1,12 @@
 import { InfoIcon, ArrowRightIcon } from '../../common/Icons'
 import Pill from '../../common/pills/pill'
 import SparklineChart from '../../charts/SparklineChart/SparklineChart'
-import { topEventsMock, topEventsSparklineSeries } from '../../../Constants/topEventsMock'
+import {
+  topEventsMock,
+  topEventsSparklineSeries,
+  topEventsSparklineSeriesGyro,
+  topEventsSparklineSeriesImpact,
+} from '../../../Constants/topEventsMock'
 import type { TopEvent } from '../../../types/topEvents'
 
 import styles from './TopEventsCard.module.scss'
@@ -22,9 +27,6 @@ export default function TopEventsCard({ title = 'Top Events', events = topEvents
             <InfoIcon />
           </button>
         </h2>
-        <button type="button" className={styles['top-events-card__arrow-btn']} aria-label="View all events">
-          <ArrowRightIcon />
-        </button>
       </header>
 
       <div className={styles['top-events-card__content']}>
@@ -62,7 +64,16 @@ export default function TopEventsCard({ title = 'Top Events', events = topEvents
               </div>
             </div>
 
-            <SparklineChart data={event.data} series={topEventsSparklineSeries} showKey={index === 1} />
+            <SparklineChart
+              data={event.data}
+              series={
+                event.type === 'gyro'
+                  ? topEventsSparklineSeriesGyro
+                  : event.type === 'impact'
+                    ? topEventsSparklineSeriesImpact
+                    : topEventsSparklineSeries
+              }
+            />
 
             <div className={styles['top-events-card__bottom-row']}>
               <div className={styles['top-events-card__tags']}>
@@ -70,6 +81,13 @@ export default function TopEventsCard({ title = 'Top Events', events = topEvents
                   <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
                 ))}
               </div>
+              <button
+                type="button"
+                className={styles['top-events-card__section-arrow-btn']}
+                aria-label={`View ${event.metricLabel.replace(/\n/g, ' ')} details`}
+              >
+                <ArrowRightIcon />
+              </button>
             </div>
 
             {index < events.length - 1 && <div className={styles['top-events-card__divider']} aria-hidden="true" />}

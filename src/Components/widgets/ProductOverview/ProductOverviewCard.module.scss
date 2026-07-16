@@ -1,5 +1,6 @@
-@use '../../../styles/variables' as *;
-@use '../../../styles/mixins' as *;
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+@use '@/styles/animations';
 
 .card {
   background: $color-surface;
@@ -74,6 +75,17 @@
   @include flex(row, center, flex-start, 6px);
   font-size: 10px;
   color: $color-text-primary;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: key-fade-in 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &:nth-child(1) {
+    animation-delay: 300ms;
+  }
+
+  &:nth-child(2) {
+    animation-delay: 500ms;
+  }
 }
 
 .legendDot {
