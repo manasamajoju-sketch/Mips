@@ -100,7 +100,7 @@
 }
 
 .statValue {
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 300;
   line-height: 1;
   color: $color-text-primary;
@@ -108,7 +108,7 @@
 
 .delta {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 300;
   white-space: nowrap;
 }
 
@@ -122,7 +122,7 @@
 
 .deltaLabel {
   color: $color-text-muted;
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .statLabel {

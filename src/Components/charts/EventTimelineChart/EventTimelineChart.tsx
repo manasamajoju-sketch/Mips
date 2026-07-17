@@ -3,9 +3,6 @@ import { type TimelineRange } from '../../common/TimelineButton/TimelineButton';
 import styles from './EventTimelineChart.module.scss';
 
 const MAX_TOTAL = 50;
-const MAX_PILL_HEIGHT = 120;
-const MIN_ACTIVE_SEGMENT_HEIGHT = 16;
-const MIN_ACTIVE_PILL_HEIGHT = 72;
 
 export interface TimelineCategory {
   key: string;
@@ -46,18 +43,11 @@ function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: 
     return <div className={styles.col} />;
   }
 
-  const scaledPillHeight = Math.min((total / maxTotal) * MAX_PILL_HEIGHT, MAX_PILL_HEIGHT);
-  const inactivePillHeight = Math.max(scaledPillHeight, categories.length);
-  const activePillHeight = Math.min(
-    Math.max(scaledPillHeight, MIN_ACTIVE_PILL_HEIGHT),
-    MAX_PILL_HEIGHT,
-  );
-  const minimumSegmentTotal = categories.length * MIN_ACTIVE_SEGMENT_HEIGHT;
-  const remainingActiveHeight = Math.max(activePillHeight - minimumSegmentTotal, 0);
-  const activeSegmentHeights = categoryValues.map((cat) => (
-    MIN_ACTIVE_SEGMENT_HEIGHT + (total > 0 ? (cat.value / total) * remainingActiveHeight : 0)
-  ));
-  const pillHeight = isActive ? activePillHeight : inactivePillHeight;
+  // Height is a fixed percentage of the .plot box and NEVER changes on
+  // hover/active. Only the pill's width and the label visibility change.
+  // Because height is constant, the pill can never grow into the x-axis,
+  // regardless of hover state or container size.
+  const pillHeightPct = Math.min((total / maxTotal) * 100, 100);
 
   return (
     <div
@@ -71,23 +61,20 @@ function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: 
     >
       <div
         className={`${styles.pill} ${isActive ? styles.pillActive : ''}`}
-        style={{ height: `${pillHeight}px` }}
+        style={{ height: `${pillHeightPct}%` }}
       >
-        {categoryValues.map((cat, segmentIndex) => {
-          return (
-            <div
-              key={cat.key}
-              className={styles.segment}
-              style={{
-                background: cat.color,
-                flex: isActive ? '0 0 auto' : `${Math.max(cat.value, 0.1)} 0 0`,
-                height: isActive ? `${activeSegmentHeights[segmentIndex]}px` : undefined,
-              }}
-            >
-              {isActive && <span className={styles.segmentLabel}>{cat.value}</span>}
-            </div>
-          );
-        })}
+        {categoryValues.map((cat) => (
+          <div
+            key={cat.key}
+            className={styles.segment}
+            style={{
+              background: cat.color,
+              flex: `${Math.max(cat.value, 0.1)} 0 0`,
+            }}
+          >
+            {isActive && <span className={styles.segmentLabel}>{cat.value}</span>}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -98,15 +85,12 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
   const isMonthlyRange = range === '12m';
   const isNinetyDayRange = range === '90d';
 
-  // Compute a sensible max based on actual data so different ranges (daily/weekly/monthly)
-  // scale appropriately and labels fit.
   const resolvedMaxTotal = Math.max(
     maxTotal,
     ...data.map((point) => categories.reduce((sum, cat) => sum + (Number(point[cat.key]) || 0), 0)),
     1,
   );
 
-  // Round y-axis to a friendly step (multiple of 25)
   const yAxisMax = Math.max(1, Math.ceil(resolvedMaxTotal / 25) * 25);
   const yAxisTicks = [yAxisMax, Math.round(yAxisMax / 2), 0];
 
@@ -138,10 +122,8 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
           {data.map((point, index) => (
             <div className={styles.tick} key={`tick-${index}`}>
               {isMonthlyRange ? (
-                // For 12m view show a single bold month label
                 <span className={styles.tickMonthLabel}>{point.month || point.date}</span>
               ) : isNinetyDayRange ? (
-                // For 90d view (weekly buckets) show the week start and end on separate lines
                 <>
                   <span className={styles.tickWeekLabel}>{point.date}</span>
                   {point.month && <span className={styles.tickWeekLabel}>{point.month}</span>}

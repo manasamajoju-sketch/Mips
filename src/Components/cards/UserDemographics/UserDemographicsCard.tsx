@@ -23,7 +23,7 @@ export default function UserDemographicsCard({
     <div className={styles.card}>
       <div className={styles.header}>
         <div className={styles.title}>
-          <span>User demographics</span>
+          <span>User Demographics</span>
           <i className="ti ti-info-circle" aria-hidden="true" />
         </div>
         {onExpand && (

@@ -83,7 +83,7 @@
     fill: #ffffff;
     font-family: $font-family-mono;
     font-size: 18px;
-    font-weight: $fw-medium;
+    font-weight: 300;
     pointer-events: none;
     opacity: 0;
     animation: severity-chart-axis-fade-in 300ms ease forwards;
@@ -106,7 +106,7 @@
   &__tooltip-bubble {
     background: $color-white;
     color: #1c1c1c;
-    font-weight: $fw-semibold;
+    font-weight: 300;
     font-size: $fs-tooltip;
     padding: 4px 12px;
     border-radius: $radius-pill;

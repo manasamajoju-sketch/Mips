@@ -57,7 +57,7 @@ function AlertIcon() {
 
 export default function EventTimeHeatmapCard({
   range = '30d',
-  title = 'Event time over day & week',
+  title = 'Event Time Over day & Week',
 }: EventTimeHeatmapCardProps) {
   const [rows, setRows] = useState<HeatmapRow[]>(fallbackRows);
   const [summary, setSummary] = useState<EventTimeHeatmapSummary>(fallbackSummary);

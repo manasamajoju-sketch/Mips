@@ -44,7 +44,7 @@
   &__value {
     padding-left: 12px;
     font-size: 13px;
-    font-weight: $fw-medium;
+    font-weight: 300;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -62,7 +62,7 @@
     padding: 0 8px;
     border-radius: $radius-pill;
     font-size: 12px;
-    font-weight: $fw-semibold;
+    font-weight: 300;
     white-space: nowrap;
     box-shadow: $shadow-tooltip;
     z-index: 1;

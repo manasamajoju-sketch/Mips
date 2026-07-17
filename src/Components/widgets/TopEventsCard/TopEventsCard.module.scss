@@ -78,7 +78,7 @@
   }
 
   &__metric-value {
-    font-size: 48px;
+    font-size: 32px;
     font-weight: 300;
     line-height: 1;
     color: $color-text-primary;
@@ -126,7 +126,7 @@
 
   &__severity {
     font-size: $fs-axis;
-    font-weight: $fw-medium;
+    font-weight: 300;
 
     &--low {
       color: $color-delta-positive-good;
@@ -242,7 +242,7 @@
     }
 
     &__metric-value {
-      font-size: 36px;
+      font-size: 40px;
     }
 
     &__content {

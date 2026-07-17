@@ -57,7 +57,7 @@
   min-height: 120px;
   color: $color-text-muted;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 300;
   text-align: center;
   padding: 16px;
 }
@@ -97,8 +97,8 @@
 }
 
 .countryName {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 300;
   color: $color-text-primary;
   white-space: nowrap;
   overflow: hidden;
@@ -143,8 +143,8 @@
 }
 
 .eventLabel {
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 14px;
+  font-weight: 300;
   color: $color-text-primary;
   white-space: nowrap;
   overflow: hidden;
@@ -153,7 +153,7 @@
 
 .statusLabel {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 300;
   font-style: italic;
   margin-top: 1px;
   white-space: nowrap;

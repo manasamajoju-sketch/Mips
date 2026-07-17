@@ -41,7 +41,7 @@ export default function EventTimelineCard({ entries = [], isLoading = false }: E
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <span>Event timeline</span>
+        <span>Event Timeline</span>
         <i className="ti ti-info-circle" aria-hidden="true" />
       </div>
 

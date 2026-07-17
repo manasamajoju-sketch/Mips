@@ -43,7 +43,7 @@ export default function EventSeverityHistogramCard({
     <div className={styles.card}>
       <header className={styles.header}>
         <h2 className={styles.title}>
-          Event severity
+          Event Severity
           <button type="button" className={styles.infoBtn} aria-label="More information">
             <InfoIcon />
           </button>

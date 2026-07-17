@@ -21,8 +21,8 @@
 
   &__title {
     @include flex(row, center, flex-start, $space-sm);
-    font-size: $fs-title;
-    font-weight: $fw-medium;
+    font-size: 15.5px;
+    font-weight: 300;
     margin: 0;
     opacity: 0;
     transform: translateY(4px);
@@ -80,7 +80,7 @@
 
   &__type-label {
     font-size: $fs-nav;
-    font-weight: $fw-regular;
+    font-weight: 300;
     flex: 1;
     text-align: center;
   }
@@ -155,7 +155,7 @@
 
   &__metric-label {
     font-size: 11px;
-    font-weight: $fw-regular;
+    font-weight: 300;
     line-height: 1.25;
     padding-bottom: 6px;
     opacity: 0.95;
@@ -243,7 +243,7 @@
 
   &__stat-value {
     font-size: $fs-side-stat;
-    font-weight: $fw-medium;
+    font-weight: 300;
     line-height: 1;
     min-width: 44px;
   }

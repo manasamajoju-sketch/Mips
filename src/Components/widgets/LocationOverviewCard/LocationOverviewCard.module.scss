@@ -136,8 +136,8 @@
   }
 
   &__total-value {
-    font-size: $fs-metric-lg;
-    font-weight: $fw-medium;
+    font-size: 32px;
+    font-weight: 300;
     line-height: 1;
     color: $color-text-primary;
   }
@@ -145,7 +145,7 @@
   &__total-label {
     display: flex;
     flex-direction: column;
-    font-size: $fs-metric-label;
+    font-size: 14px;
     color: $color-text-secondary;
     line-height: 1.25;
     padding-bottom: 6px;
@@ -229,7 +229,7 @@
     }
 
     &__title {
-      font-size: 22px;
+      font-size: 16px;
     }
 
     &__total-value {

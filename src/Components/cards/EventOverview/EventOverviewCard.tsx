@@ -65,7 +65,7 @@ export default function EventOverviewCard({
     <div className={styles.card}>
       <div className={styles.header}>
         <div className={styles.title}>
-          <span>Event overview</span>
+          <span>Event Overview</span>
           <i className="ti ti-info-circle" aria-hidden="true" />
         </div>
         <button
