@@ -15,7 +15,7 @@
   white-space: nowrap;
   opacity: 0;
   transform: scale(0);
-  animation: pill-load-in 180ms ease forwards;
+  animation: pill-load-in 320ms ease forwards;
   animation-delay: var(--pill-animation-delay);
   will-change: opacity, transform;
 }
@@ -24,7 +24,7 @@
   display: inline-block;
   opacity: 0;
   transform: translateY(4px);
-  animation: pill-text-load-in 220ms ease forwards;
+  animation: pill-text-load-in 360ms ease forwards;
   animation-delay: var(--pill-text-animation-delay);
   will-change: opacity, transform;
 }

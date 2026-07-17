@@ -92,7 +92,7 @@ export default function GroupedBarChart<T extends { category: string }>({
         }
       })
 
-      return { category: item.category, x: groupX, width: groupWidth, bars, isHovered }
+      return { category: item.category, x: groupX, width: groupWidth, bars, isHovered, groupIndex }
     })
   }, [data, series, plotW, plotH, yMax, hoveredGroup])
 
@@ -173,7 +173,7 @@ export default function GroupedBarChart<T extends { category: string }>({
 
         {groups.map((group) => (
           <g key={group.category}>
-            {group.bars.map((bar) => (
+            {group.bars.map((bar, barIndex) => (
               <g key={bar.key}>
                 <rect
                   className={styles.bar}
@@ -183,6 +183,7 @@ export default function GroupedBarChart<T extends { category: string }>({
                   height={Math.max(bar.height, 0)}
                   rx={3}
                   fill={bar.color}
+                  style={{ animationDelay: `${100 + (group.groupIndex * group.bars.length + barIndex) * 90}ms` }}
                 >
                   <title>
                     {bar.label}: {bar.value}

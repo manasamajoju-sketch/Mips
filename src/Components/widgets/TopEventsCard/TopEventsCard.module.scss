@@ -153,18 +153,18 @@
     min-height: 40px;
 
     > span:nth-child(1) {
-      --pill-animation-delay: 400ms;
-      --pill-text-animation-delay: 550ms;
+      --pill-animation-delay: 480ms;
+      --pill-text-animation-delay: 700ms;
     }
 
     > span:nth-child(2) {
-      --pill-animation-delay: 600ms;
-      --pill-text-animation-delay: 650ms;
+      --pill-animation-delay: 700ms;
+      --pill-text-animation-delay: 900ms;
     }
 
     > span:nth-child(3) {
-      --pill-animation-delay: 600ms;
-      --pill-text-animation-delay: 750ms;
+      --pill-animation-delay: 900ms;
+      --pill-text-animation-delay: 1100ms;
     }
   }
 

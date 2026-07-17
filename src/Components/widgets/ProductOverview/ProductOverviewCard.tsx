@@ -50,7 +50,7 @@ export default function ProductOverviewCard({ categories = productOverviewCatego
       </div>
 
       <div className={styles.barList}>
-        {categories.map((category) => {
+        {categories.map((category, categoryIndex) => {
           const isActive = hoveredKey === category.key
           const isPositive = category.delta >= 0
 
@@ -70,6 +70,7 @@ export default function ProductOverviewCard({ categories = productOverviewCatego
               </span>
               <HorizontalBarChart
                 active={isActive}
+                animationDelay={200 + categoryIndex * 160}
                 segments={[
                   {
                     key: `${category.key}-mips`,

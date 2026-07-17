@@ -173,7 +173,7 @@ const linePath = useMemo(() => {
 
         {/* Area + line */}
         <path d={areaPath} className={styles['severity-chart__area']} />
-        <path d={linePath} className={styles['severity-chart__line']} />
+        <path d={linePath} pathLength={1} className={styles['severity-chart__line']} />
 
         {/* Dot marking whichever point is currently active (hovered, or the default) */}
         {activePoint && (

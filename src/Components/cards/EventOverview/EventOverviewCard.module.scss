@@ -6,7 +6,7 @@
   border-radius: $radius-card;
   padding: 20px 22px;
   font-family: $font-family-base;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  // box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   height: 100%;
   width: 100%;
   display: flex;
@@ -148,13 +148,13 @@
   opacity: 0;
   transform: scaleX(0);
   transform-origin: left;
-  animation: toggle-line-load-in 320ms ease forwards 260ms;
+  animation: toggle-line-load-in 480ms ease forwards 300ms;
   transition: opacity 150ms ease;
 }
 
 .statRight .statUnderline {
   transform-origin: right;
-  animation-delay: 360ms;
+  animation-delay: 480ms;
 }
 
 .statBlockActive .statUnderline {

@@ -20,14 +20,14 @@ const navItems: Array<{ key: SidebarItem; label: string; icon: typeof HomeIcon }
 
 export default function Sidebar({ collapsed, activeItem, onNavigate }: Props) {
   return (
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+    <aside className={`${styles.sidebar} ${styles.collapsed}`}>
       <nav className={styles.tabs}>
         {navItems.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             type="button"
             className={`${styles.tab} ${activeItem === key ? styles.tabActive : ''}`}
-            title={collapsed ? label : undefined}
+            title={label}
             onClick={() => onNavigate(key)}
           >
             <span className={styles.iconWrap}>

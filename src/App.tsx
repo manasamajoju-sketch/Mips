@@ -11,7 +11,6 @@ import UserPage from './Pages/User/UserPage'
 import styles from './App.module.scss'
 
 function App() {
-  const [collapsed, setCollapsed] = useState(false)
   const [range, setRange] = useState<TimelineRange>('30d')
   const [activePage, setActivePage] = useState<SidebarItem>('home')
 
@@ -36,14 +35,12 @@ function App() {
   return (
     <div className={styles.appShell}>
       <Header
-        collapsed={collapsed}
-        onToggle={() => setCollapsed((prev) => !prev)}
         range={range}
         onRangeChange={setRange}
       />
 
       <div className={styles.body}>
-        <Sidebar collapsed={collapsed} activeItem={activePage} onNavigate={setActivePage} />
+        <Sidebar activeItem={activePage} onNavigate={setActivePage} />
 
         <main className={styles.content}>{renderContent()}</main>
       </div>

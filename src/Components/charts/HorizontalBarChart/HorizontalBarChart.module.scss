@@ -36,7 +36,7 @@
   }
 
   &--animate &__segment {
-    animation: horizontal-bar-chart-in 480ms ease forwards;
+    animation: horizontal-bar-chart-in 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transform-origin: left;
     transform: scaleX(0);
   }

@@ -4,6 +4,7 @@
 .event-analytics-card {
   @include card-surface;
   color: $color-white;
+  box-shadow: none;
   padding: 20px 22px;
   width: 100%;
   max-width: 1320px;

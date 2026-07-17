@@ -2,7 +2,9 @@
 @use '@/styles/mixins' as *;
 
 .sidebar {
-  width: 200px;
+  width: min(200px, 100%);
+  max-width: 200px;
+  min-width: 0;
   height: 100%;
   flex-shrink: 0;
   background: #eef3f5;
@@ -11,8 +13,9 @@
   padding: 12px 8px;
   box-sizing: border-box;
   overflow: hidden;
+  overflow-x: hidden;
   transition: width 0.25s ease;
-  white-space: nowrap;
+  white-space: normal;
 
   &.collapsed {
     width: 56px;
@@ -41,6 +44,7 @@
 .tab {
   @include reset-button;
   @include flex(row, center, flex-start, 10px);
+  min-width: 0;
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;

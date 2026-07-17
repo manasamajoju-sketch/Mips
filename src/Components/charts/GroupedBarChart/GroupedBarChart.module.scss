@@ -47,7 +47,7 @@
   transform: scaleY(0);
   transform-box: fill-box;
   transform-origin: bottom;
-  animation: barIn 420ms ease forwards;
+  animation: barIn 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transition: width 200ms ease, x 200ms ease;
 }
 

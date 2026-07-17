@@ -371,13 +371,13 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
             <p className={styles['location-overview-card__subtitle']}>{config.topLabel}</p>
 
             <ul className={styles['location-overview-card__breakdown']}>
-              {config.breakdown.map((item) => (
+              {config.breakdown.map((item, breakdownIndex) => (
                 <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
                   <div className={styles['location-overview-card__breakdown-row']}>
                     <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>
                     <span className={styles['location-overview-card__breakdown-pct']}>{item.percentage}%</span>
                   </div>
-                  <HorizontalBarChart segments={item.segments} />
+                  <HorizontalBarChart segments={item.segments} animationDelay={400 + breakdownIndex * 60} />
                 </li>
               ))}
             </ul>

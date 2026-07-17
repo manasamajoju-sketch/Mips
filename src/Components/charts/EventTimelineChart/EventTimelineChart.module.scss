@@ -1,4 +1,5 @@
 @use '../../../styles/variables' as *;
+@use '../../../styles/animations';
 
 .chart {
   display: flex;
@@ -27,6 +28,23 @@
   font-size: 10px;
   color: $color-text-muted;
   line-height: 1;
+
+  span {
+    opacity: 0;
+    animation: key-fade-in 320ms ease forwards;
+  }
+
+  span:nth-child(1) {
+    animation-delay: 60ms;
+  }
+
+  span:nth-child(2) {
+    animation-delay: 140ms;
+  }
+
+  span:nth-child(3) {
+    animation-delay: 220ms;
+  }
 }
 
 .yAxisSpacer {
@@ -69,6 +87,16 @@
   border-radius: 6px;
   overflow: visible;
   transition: max-width 150ms ease, min-width 150ms ease, filter 150ms ease;
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: timeline-pill-grow-in 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+// Stagger each column's pill so the chart draws in left-to-right on load.
+@for $i from 1 through 30 {
+  .col:nth-child(#{$i}) .pill {
+    animation-delay: #{120 + ($i - 1) * 12}ms;
+  }
 }
 
 .pillActive {
@@ -110,6 +138,9 @@
   color: $color-text-muted;
   white-space: nowrap;
   overflow: hidden;
+  opacity: 0;
+  animation: key-fade-in 320ms ease forwards;
+  animation-delay: 420ms;
 }
 
 .tickDateLabel {
@@ -168,5 +199,17 @@
   .tick,
   .tickMonth {
     font-size: 8px;
+  }
+}
+
+@keyframes timeline-pill-grow-in {
+  from {
+    opacity: 0;
+    transform: scaleY(0.15);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1);
   }
 }

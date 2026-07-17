@@ -1,7 +1,7 @@
 .impact-point {
-  --impact-point-top-delay: 180ms;
-  --impact-point-segments-delay: 340ms;
-  --impact-point-label-delay: 560ms;
+  --impact-point-top-delay: 260ms;
+  --impact-point-segments-delay: 480ms;
+  --impact-point-label-delay: 780ms;
 
   width: 100%;
   height: 100%;
@@ -26,7 +26,7 @@
     transform: scale(0.96);
     transform-box: fill-box;
     transform-origin: center;
-    animation: impact-point-section-in 280ms ease forwards;
+    animation: impact-point-section-in 420ms ease forwards;
     will-change: opacity, transform;
 
     &:hover,

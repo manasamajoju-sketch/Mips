@@ -1,4 +1,5 @@
 @use '../../../styles/variables' as *;
+@use '../../../styles/animations';
 
 .chart {
   width: 100%;
@@ -23,6 +24,23 @@
   padding-right: 4px;
   font-size: 9px;
   color: $color-text-muted;
+
+  span {
+    opacity: 0;
+    animation: key-fade-in 320ms ease forwards;
+  }
+
+  span:nth-child(1) {
+    animation-delay: 60ms;
+  }
+
+  span:nth-child(2) {
+    animation-delay: 140ms;
+  }
+
+  span:nth-child(3) {
+    animation-delay: 220ms;
+  }
 }
 
 .yAxisSpacer {
@@ -45,12 +63,32 @@
   cursor: pointer;
 }
 
+// Stagger each demographic column so they draw in left-to-right on load.
+@for $i from 1 through 8 {
+  .plot > .col:nth-child(#{$i}) {
+    .whisker {
+      animation-delay: #{120 + ($i - 1) * 90}ms;
+    }
+
+    .segment {
+      animation-delay: #{220 + ($i - 1) * 90}ms;
+    }
+
+    .diamond {
+      animation-delay: #{420 + ($i - 1) * 90}ms;
+    }
+  }
+}
+
 .whisker {
   position: absolute;
   left: 50%;
   width: 1px;
   background: $color-whisker;
-  transform: translateX(-50%);
+  transform-origin: center bottom;
+  opacity: 0;
+  animation: demographics-whisker-grow-in 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 120ms;
 }
 
 .diamond {
@@ -59,8 +97,10 @@
   width: 6px;
   height: 6px;
   background: $color-diamond;
-  transform: translateX(-50%) rotate(45deg);
   border-radius: 1px;
+  opacity: 0;
+  animation: demographics-diamond-in 300ms ease forwards;
+  animation-delay: 420ms;
 }
 
 .segment {
@@ -68,11 +108,14 @@
   left: 50%;
   width: 10px;
   border-radius: 4px;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: width 200ms ease, border-radius 200ms ease;
+  transform-origin: center bottom;
+  opacity: 0;
+  animation: demographics-segment-grow-in 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 220ms;
 }
 
 .segmentActive {
@@ -106,9 +149,48 @@
   font-size: 9px;
   color: $color-text-muted;
   font-weight: 400;
+  opacity: 0;
+  animation: key-fade-in 320ms ease forwards;
+  animation-delay: 500ms;
 }
 
 .tickEmphasis {
   color: $color-text-primary;
   font-weight: 700;
+}
+
+@keyframes demographics-whisker-grow-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scaleY(0.1);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+
+@keyframes demographics-diamond-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) rotate(45deg) scale(0.3);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) rotate(45deg) scale(1);
+  }
+}
+
+@keyframes demographics-segment-grow-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scaleY(0.15);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scaleY(1);
+  }
 }

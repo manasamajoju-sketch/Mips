@@ -16,6 +16,8 @@ interface HorizontalBarChartProps {
   /** When true, the bar grows taller and reveals each segment's value inline */
   active?: boolean
   valueFormatter?: (value: number) => string
+  /** Delay (ms) before the load-in grow animation starts, so multiple bars in a list can stagger */
+  animationDelay?: number
 }
 
 const defaultFormatter = (value: number) => value.toLocaleString()
@@ -25,6 +27,7 @@ export default function HorizontalBarChart({
   animate = true,
   active = false,
   valueFormatter = defaultFormatter,
+  animationDelay = 0,
 }: HorizontalBarChartProps) {
   const total = segments.reduce((sum, segment) => sum + segment.value, 0)
   const lastIndex = segments.length - 1
@@ -54,6 +57,7 @@ export default function HorizontalBarChart({
               {
                 '--segment-width': `${widthPct}%`,
                 '--segment-color': segment.color,
+                animationDelay: `${animationDelay + index * 90}ms`,
               } as CSSProperties
             }
             // title={`${segment.label}: ${segment.value}`}
