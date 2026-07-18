@@ -155,7 +155,8 @@
     min-height: 0;
     grid-column: 1;
     display: flex;
-    align-items: center;
+    align-items: stretch;
+    justify-content: center;
   }
 
   &__wheel-col {
@@ -193,14 +194,14 @@
   }
 
   &__stat-value {
-    font-size: $fs-side-stat;
+    font-size: 24px;
     font-weight: 300;
     line-height: 1;
     min-width: 44px;
   }
 
   &__stat-label {
-    font-size: $fs-side-label;
+    font-size: 12px;
     line-height: 1.2;
     opacity: 0.95;
   }

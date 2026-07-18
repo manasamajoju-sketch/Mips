@@ -42,18 +42,24 @@ export default function SeverityChart({
 
   const plotW = VIEW_W - PAD_LEFT - PAD_RIGHT
   const plotH = VIEW_H - PAD_TOP - PAD_BOTTOM
-  const yMax = yAxisTicks[yAxisTicks.length - 1] || 1
+  const dataMax = useMemo(() => Math.max(...data.map((d) => d.events), 0), [data])
+  const baseMax = yAxisTicks[yAxisTicks.length - 1] || 1
+  const yMax = Math.max(baseMax, dataMax, 1)
+  const roundedYMax = Math.max(Math.ceil(yMax / 25) * 25, 1)
+  const resolvedYAxisTicks = yAxisTicks[yAxisTicks.length - 1] < roundedYMax
+    ? [0, Math.round(roundedYMax / 2), roundedYMax]
+    : yAxisTicks
 
   const points = useMemo(() => {
     const stepX = plotW / (data.length - 1)
     return data.map((d, i) => {
       const x = PAD_LEFT + stepX * i
-      const y = PAD_TOP + plotH * (1 - Math.min(d.events, yMax) / yMax)
+      const y = PAD_TOP + plotH * (1 - Math.min(d.events, roundedYMax) / roundedYMax)
       return { x, y, ...d }
     })
-  }, [data, plotW, plotH, yMax])
+  }, [data, plotW, plotH, roundedYMax])
 
-const linePath = useMemo(() => {
+  const linePath = useMemo(() => {
     if (points.length === 0) return ''
     let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`
     for (let i = 1; i < points.length; i++) {
@@ -138,8 +144,8 @@ const linePath = useMemo(() => {
         /> */}
 
         {/* Y axis gridlines + labels */}
-        {yAxisTicks.map((tick) => {
-          const y = PAD_TOP + plotH * (1 - tick / yMax)
+        {resolvedYAxisTicks.map((tick) => {
+          const y = PAD_TOP + plotH * (1 - tick / roundedYMax)
           return (
             <g key={tick}>
               <line

@@ -70,13 +70,13 @@
 .axisTitle {
   font-family: $font-family-base;
   font-size: 11px;
-  font-weight: $fw-medium;
+  font-weight: 300;
   fill: $color-text-secondary;
 }
 
 .valueLabel {
   font-size: 13px;
-  font-weight: $fw-semibold;
+  font-weight: 300;
   animation: valueIn 150ms ease forwards;
 }
 
@@ -84,7 +84,7 @@
   font-family: $font-family-base;
   font-size: 12px;
   line-height: 1.2;
-  font-weight: $fw-medium;
+  font-weight: 300;
   font-stretch: normal;
   letter-spacing: 0;
   fill: $color-text-primary;
@@ -93,7 +93,7 @@
 
 .categoryLabelActive {
   fill: $color-text-primary;
-  font-weight: $fw-bold;
+  font-weight: 300;
 }
 
 .categoryHit {

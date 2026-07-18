@@ -65,7 +65,7 @@
 }
 
 .legend {
-  @include flex(row, center, flex-start, 16px);
+  @include flex(row, center, flex-start, 8px);
   flex-wrap: wrap;
   margin-bottom: 8px;
   flex: 0 0 auto;

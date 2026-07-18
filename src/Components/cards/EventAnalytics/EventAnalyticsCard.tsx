@@ -74,9 +74,7 @@ export default function EventAnalyticsCard({
                 <div className={styles.listStat} key={stat.key}>
                   <span className={styles.listStatValue}>{stat.count}</span>
                   <span className={styles.listStatLabel}>
-                    {line1}
-                    <br />
-                    {line2}
+                    {line1}{line2}
                   </span>
                 </div>
               );

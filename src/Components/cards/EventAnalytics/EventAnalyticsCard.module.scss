@@ -4,26 +4,36 @@
 
 .event-analytics-card {
   @include card-surface;
+  container-type: size; // tracks height too, not just width — needs a definite height, which the grid row already provides
+  container-name: eventAnalyticsCard;
   box-shadow: none;
   color: $color-white;
-  padding: 20px 22px;
+  padding: clamp(12px, 3.4cqw, 20px) clamp(14px, 3.8cqw, 22px);
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
 
   &__header {
     @include flex(row, center, space-between);
-    margin-bottom: $space-sm;
+    margin-bottom: clamp(6px, 1.8cqw, $space-sm);
+    gap: 8px;
+    flex-shrink: 0;
   }
 
   &__title {
     @include flex(row, center, flex-start, $space-sm);
-    font-size: 15.5px;
-    font-weight: 300;
+    font-size: clamp(12px, 3.2cqw, 15.5px);
+    font-weight: $fw-light;
     margin: 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     opacity: 0;
     transform: translateY(4px);
     animation: key-fade-in 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -32,19 +42,14 @@
   &__info-btn {
     @include reset-button;
     @include flex(row, center, center);
-    width: 22px;
-    height: 22px;
+    width: clamp(16px, 4cqw, 22px);
+    height: clamp(16px, 4cqw, 22px);
     color: $color-white;
     opacity: 0.85;
+    flex-shrink: 0;
 
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    &:hover {
-      opacity: 1;
-    }
+    svg { width: 100%; height: 100%; }
+    &:hover { opacity: 1; }
   }
 
   &__type-switcher {
@@ -52,8 +57,9 @@
     background: $color-white-12;
     border: 1px solid $color-white-35;
     border-radius: $radius-pill;
-       padding: 0px 20px;
-    min-width: 168px;
+    padding: 0 clamp(10px, 3cqw, 20px);
+    min-width: clamp(120px, 30cqw, 168px);
+    flex-shrink: 0;
     opacity: 0;
     transform: translateY(4px);
     animation: key-fade-in 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -67,29 +73,26 @@
     height: 18px;
     color: $color-white;
     opacity: 0.85;
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    &:hover {
-      opacity: 1;
-    }
+    flex-shrink: 0;
+    svg { width: 100%; height: 100%; }
+    &:hover { opacity: 1; }
   }
 
   &__type-label {
-    font-size: $fs-nav;
-    font-weight: 300;
+    font-size: clamp(10px, 2.6cqw, 14px);
+    font-weight: $fw-regular;
     flex: 1;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__expand-btn {
     @include reset-button;
     @include flex(row, center, center);
-    width: 28px;
-    height: 28px;
+    width: clamp(22px, 5.5cqw, 28px);
+    height: clamp(22px, 5.5cqw, 28px);
     border-radius: 50%;
     background: $color-border;
     color: $color-text-primary;
@@ -97,15 +100,8 @@
     opacity: 0;
     animation: opacity-fade-in 300ms ease forwards;
     animation-delay: 180ms;
-    transition:
-      background 180ms ease,
-      transform 180ms ease;
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-
+    transition: background 180ms ease, transform 180ms ease;
+    svg { width: 14px; height: 14px; }
     &:hover {
       background: $color-accent-teal;
       color: $color-white;
@@ -116,55 +112,49 @@
   &__summary {
     @include flex(row, flex-end, flex-start, $space-md);
     flex-wrap: wrap;
-    margin-bottom: $space-sm;
+    margin-bottom: clamp(6px, 1.8cqw, $space-sm);
+    flex-shrink: 0;
   }
 
   &__metric {
     @include flex(row, flex-end, flex-start, $space-sm);
+    min-width: 0;
     opacity: 0;
     transform: translateY(4px);
     animation: key-fade-in 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
-    &:nth-child(1) {
-      animation-delay: 220ms;
-    }
-
-    &:nth-child(2) {
-      animation-delay: 320ms;
-    }
-
-    &:nth-child(3) {
-      animation-delay: 420ms;
-    }
-
-    &--front {
-      margin-left: auto;
-    }
+    &:nth-child(1) { animation-delay: 220ms; }
+    &:nth-child(2) { animation-delay: 320ms; }
+    &:nth-child(3) { animation-delay: 420ms; }
+    &--front { margin-left: auto; }
   }
 
   &__metric-value {
-    font-size: 32px;
+    font-size: clamp(18px, 6cqh, 32px); // now scales off container HEIGHT, not width
     font-weight: 300;
     line-height: 1;
-
+    white-space: nowrap;
     &--sm {
-      font-size: $fs-side-stat;
+      font-size: clamp(12px, 3cqh, 16px);
       align-self: center;
     }
   }
 
   &__metric-label {
-    font-size: 11px;
-    font-weight: 300;
+    font-size: clamp(8px, 2cqh, 11px);
+    font-weight: $fw-regular;
     line-height: 1.25;
     padding-bottom: 6px;
     opacity: 0.95;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__divider {
     border: none;
     border-top: 1px solid $color-white-20;
     margin: $space-xxs 0;
+    flex-shrink: 0;
     transform-origin: left center;
     animation: toggle-line-load-in 380ms ease forwards;
     animation-delay: 460ms;
@@ -172,11 +162,12 @@
 
   &__body {
     display: grid;
-    grid-template-columns: minmax(0, 1.7fr) auto minmax(160px, 200px) minmax(120px, 1fr);
+    grid-template-columns: minmax(0, 1.7fr) auto minmax(140px, 200px) minmax(110px, 1fr);
     align-items: stretch;
-    gap: $space-md;
+    gap: clamp(8px, 2.4cqw, $space-md);
     flex: 1;
     min-height: 0;
+    min-width: 0;
   }
 
   &__chart-col {
@@ -185,16 +176,19 @@
     grid-column: 1;
     display: flex;
     align-items: center;
+    overflow: hidden;
   }
 
   &__wheel-col {
     grid-column: 3;
-    padding: 0 $space-md;
+    padding: 0 clamp(8px, 2cqw, $space-md);
     position: relative;
     min-height: 0;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 
     &::before {
       content: '';
@@ -212,105 +206,94 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    min-width: 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: $space-xs;
+    gap: clamp(3px, 2cqh, $space-xs);
+    overflow-y: auto; // safety valve: if 4 items genuinely can't fit a very short row, scroll rather than clip
   }
 
   &__stat-item {
     @include flex(row, center, flex-start, $space-sm);
+    min-width: 0;
+    flex-shrink: 0;
     opacity: 0;
     transform: translateY(4px);
     animation: key-fade-in 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     animation-delay: 640ms;
-
-    &:nth-child(1) {
-      animation-delay: 640ms;
-    }
-
-    &:nth-child(2) {
-      animation-delay: 700ms;
-    }
-
-    &:nth-child(3) {
-      animation-delay: 760ms;
-    }
-
-    &:nth-child(4) {
-      animation-delay: 820ms;
-    }
+    &:nth-child(1) { animation-delay: 640ms; }
+    &:nth-child(2) { animation-delay: 700ms; }
+    &:nth-child(3) { animation-delay: 760ms; }
+    &:nth-child(4) { animation-delay: 820ms; }
   }
 
   &__stat-value {
-    font-size: $fs-side-stat;
-    font-weight: 300;
+    font-size: clamp(12px, 2cqh, 16px);
+    font-weight: $fw-medium;
     line-height: 1;
-    min-width: 44px;
+    min-width: 36px;
   }
 
   &__stat-label {
-    font-size: $fs-side-label;
+    font-size: clamp(8px, 2cqh, 11px);
     line-height: 1.2;
     opacity: 0.95;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  @media (max-width: $bp-tablet) {
+  // ── Height-based compaction (mirrors EventOverviewCard's pattern) ──
+
+  @container eventAnalyticsCard (max-height: 300px) {
+    &__header { margin-bottom: 4px; }
+    &__summary { margin-bottom: 4px; }
+    &__divider { margin: 2px 0; }
+  }
+
+  @container eventAnalyticsCard (max-height: 220px) {
+    &__type-switcher { padding: 0 10px; min-width: 90px; }
+    &__metric-label br { display: none; } // collapse two-line labels to one line
+    &__stat-label br { display: none; }
+  }
+
+  @container eventAnalyticsCard (max-height: 170px) {
+    &__divider { display: none; }
+    &__info-btn { display: none; }
+  }
+
+  // Width-based structural break, unchanged in spirit from before
+  @container eventAnalyticsCard (max-width: 700px) {
     &__body {
       grid-template-columns: 1fr;
+      overflow-y: auto;
     }
-
     &__wheel-col {
       grid-column: 1;
       padding: $space-lg 0;
-
-      &::before {
-        display: none;
-      }
+      &::before { display: none; }
     }
-
     &__stat-list {
       grid-column: 1;
       flex-direction: row;
       flex-wrap: wrap;
       gap: $space-lg;
+      overflow-y: visible;
     }
+    &__summary { gap: $space-lg; }
+    &__metric--front { margin-left: 0; }
+  }
 
-    &__summary {
-      gap: $space-lg;
-    }
+  @container eventAnalyticsCard (max-width: 340px) {
+    &__header { flex-wrap: wrap; gap: $space-sm; }
+    &__type-switcher { min-width: 0; width: 100%; }
+  }
 
-    &__metric--front {
-      margin-left: 0;
-    }
+  @media (max-width: $bp-tablet) {
+    &__body { grid-template-columns: 1fr; }
   }
 
   @media (max-width: $bp-mobile) {
-    padding: $space-md;
-
-    &__title {
-      font-size: 32px;
-    }
-
-    &__metric-value {
-      font-size: 34px;
-    }
-
-    &__header {
-      flex-wrap: wrap;
-      gap: $space-sm;
-    }
-
-    &__summary {
-      gap: $space-sm;
-    }
-
-    &__body {
-      grid-template-columns: 1fr;
-      gap: $space-lg;
-    }
-
-    &__wheel-col {
-      padding: 0;
-    }
+    &__header { flex-wrap: wrap; gap: $space-sm; }
   }
 }

@@ -40,7 +40,7 @@ export default function EventSeverityCard({
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <span>Event severity</span>
+        <span>Event Severity</span>
         <InfoIcon />
       </div>
 

@@ -214,9 +214,7 @@ export default function EventAnalyticsCard({
             <li key={item.zone} className={styles['event-analytics-card__stat-item']}>
               <span className={styles['event-analytics-card__stat-value']}>{item.impacts}</span>
               <span className={styles['event-analytics-card__stat-label']}>
-                {item.label}
-                <br />
-                Impacts
+                {item.label} Impacts
               </span>
             </li>
           ))}

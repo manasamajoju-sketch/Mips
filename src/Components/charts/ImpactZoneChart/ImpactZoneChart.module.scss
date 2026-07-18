@@ -1,49 +1,37 @@
 .wrap {
+  container-type: size;
+  container-name: impactZoneChart;
   position: relative;
   width: 100%;
-}
-
-.cell {
-  fill: rgba(255, 255, 255, 0.5);
-}
-
-.cellHighlight {
-  fill: rgba(255, 255, 255, 0.95);
+  height: 100%; // fills .eac-wheelcol's real height instead of a width-derived clamp
 }
 
 .center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center; pointer-events: none;
+  max-width: 46%; text-align: center;
 }
 
 .centerLabel {
-  font-size: 15px;
-  font-weight: 300;
-  color: #ffffff;
+  font-size: clamp(10px, 8cqh, 15px);
+  font-weight: 500; color: #fff; line-height: 1.2;
 }
 
 .zoneLabel {
   position: absolute;
-  font-size: 13px;
-  font-weight: 300;
-  color: #ffffff;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-size: clamp(8px, 6cqh, 13px);
+  font-weight: 500; color: #fff; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
 }
 
 .zoneValue {
-  font-weight: 300;
-  color: #0b6c7a;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 2px 8px;
-  font-size: 12px;
+  font-weight: 600; color: #0b6c7a; background: #fff; border-radius: 10px;
+  padding: 2px 6px; font-size: clamp(7px, 5cqh, 12px);
+}
+
+.cell { fill: rgba(255, 255, 255, 0.5); }
+.cellHighlight { fill: rgba(255, 255, 255, 0.95); }
+
+@container impactZoneChart (max-height: 90px) {
+  .zoneLabel span:not(.zoneValue) { display: none; }
 }

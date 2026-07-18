@@ -20,7 +20,7 @@ const LABEL_POSITIONS: Record<string, React.CSSProperties> = {
 export default function ImpactZoneChart({ segments, centerLabel }: ImpactZoneChartProps) {
   return (
     <div className={styles.wrap}>
-      <ResponsiveContainer width="100%" height={260}>
+     <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={segments}
