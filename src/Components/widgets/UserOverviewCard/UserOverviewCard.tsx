@@ -8,9 +8,18 @@ interface UserOverviewCardProps {
   onExpand?: () => void
   data?: UserOverviewCategory[]
   total?: number
+  isLoading?: boolean
 }
 
-export default function UserOverviewCard({ onExpand, data = userOverviewData, total = userOverviewTotal }: UserOverviewCardProps) {
+export default function UserOverviewCard({ onExpand, data = userOverviewData, total = userOverviewTotal, isLoading = false }: UserOverviewCardProps) {
+  const placeholderData: UserOverviewCategory[] = [
+    { category: 'Cycling', mipsUsers: 16, total: 24, usersWithEvents: 8 },
+    { category: 'Moto', mipsUsers: 14, total: 21, usersWithEvents: 6 },
+    { category: 'PPE', mipsUsers: 12, total: 18, usersWithEvents: 5 },
+  ]
+  const chartData = isLoading ? placeholderData : data
+  const displayTotal = isLoading ? '--' : total
+
   return (
     <section className={styles.card}>
       <header className={styles.header}>
@@ -28,7 +37,7 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
 
       <div className={styles.summaryRow}>
         <div className={styles.total}>
-          <span className={styles.totalValue}>{total}</span>
+          <span className={styles.totalValue}>{displayTotal}</span>
           <span className={styles.totalLabel}>Users</span>
         </div>
 
@@ -40,7 +49,7 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
       </div>
 
       <GroupedBarChart
-        data={data}
+        data={chartData}
         series={userOverviewStacks}
         // xAxisLabel="Vertical"
         // yAxisLabel="Users"

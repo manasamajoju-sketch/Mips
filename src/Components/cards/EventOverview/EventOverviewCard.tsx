@@ -18,6 +18,7 @@ interface EventOverviewCardProps {
   severityChartData?: Array<{ date: string; month: string; high: number; medium: number; low: number; highlight?: boolean }>;
   onExpand?: () => void;
   range?: TimelineRange;
+  isLoading?: boolean;
 }
 
 export default function EventOverviewCard({
@@ -26,6 +27,7 @@ export default function EventOverviewCard({
   severityChartData,
   onExpand,
   range,
+  isLoading = false,
 }: EventOverviewCardProps) {
   const [view, setView] = useState<EventOverviewView>('events');
 
@@ -38,6 +40,9 @@ export default function EventOverviewCard({
     severityHighlightNote: 'No high severity data available',
     progress: 0,
   };
+
+  const renderStatValue = (value: number) => (isLoading ? '--' : value.toLocaleString());
+  const renderDelta = (value: number) => (isLoading ? '--' : `${value > 0 ? '+' : ''}${value}%`);
 
   const isEventsDown = resolvedSummary.totalEventsDeltaPct < 0;
   const isSeverityUp = resolvedSummary.highSeverityDeltaPct > 0;
@@ -59,7 +64,11 @@ export default function EventOverviewCard({
   const resolvedChartData = isEventsView
     ? (chartData ?? eventTimelineData)
     : (severityChartData ?? severityTimelineData);
-  const noteText = isEventsView ? resolvedSummary.highlightNote : resolvedSummary.severityHighlightNote;
+  const noteText = isLoading
+    ? 'Loading event overview data...'
+    : isEventsView
+      ? resolvedSummary.highlightNote
+      : resolvedSummary.severityHighlightNote;
 
   return (
     <div className={styles.card}>
@@ -84,13 +93,13 @@ export default function EventOverviewCard({
           className={`${styles.statBlock} ${isEventsView ? styles.statBlockActive : ''}`}
           onClick={() => setView('events')}
           aria-pressed={isEventsView}
+          disabled={isLoading}
         >
           <div className={styles.statRow}>
-            <span className={styles.statValue}>{resolvedSummary.totalEvents.toLocaleString()}</span>
+            <span className={styles.statValue}>{renderStatValue(resolvedSummary.totalEvents)}</span>
             <div className={styles.statMeta}>
               <span className={`${styles.delta} ${isEventsDown ? styles.deltaDown : styles.deltaUp}`}>
-                {resolvedSummary.totalEventsDeltaPct > 0 ? '+' : ''}
-                {resolvedSummary.totalEventsDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
+                {renderDelta(resolvedSummary.totalEventsDeltaPct)} <span className={styles.deltaLabel}>{deltaLabel}</span>
               </span>
               <span className={styles.statLabel}>
                 Events
@@ -106,13 +115,13 @@ export default function EventOverviewCard({
           className={`${styles.statBlock} ${styles.statRight} ${!isEventsView ? styles.statBlockActive : ''}`}
           onClick={() => setView('severity')}
           aria-pressed={!isEventsView}
+          disabled={isLoading}
         >
           <div className={`${styles.statRow} ${styles.statRowRight}`}>
-            <span className={styles.statValue}>{resolvedSummary.highSeverityEvents}</span>
+            <span className={styles.statValue}>{renderStatValue(resolvedSummary.highSeverityEvents)}</span>
             <div className={styles.statMeta}>
               <span className={`${styles.delta} ${isSeverityUp ? styles.deltaUp : styles.deltaDown}`}>
-                {resolvedSummary.highSeverityDeltaPct > 0 ? '+' : ''}
-                {resolvedSummary.highSeverityDeltaPct}% <span className={styles.deltaLabel}>{deltaLabel}</span>
+                {renderDelta(resolvedSummary.highSeverityDeltaPct)} <span className={styles.deltaLabel}>{deltaLabel}</span>
               </span>
               <span className={styles.statLabel}>
                 High severity events, HIC
@@ -143,6 +152,7 @@ export default function EventOverviewCard({
         data={resolvedChartData as unknown as TimelinePoint[]}
         categories={chartCategories}
         range={resolvedRange}
+        isLoading={isLoading}
       />
     </div>
   );

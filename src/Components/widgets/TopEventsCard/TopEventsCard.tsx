@@ -15,9 +15,12 @@ interface TopEventsCardProps {
   title?: string
   events?: TopEvent[]
   onEventClick?: (event: TopEvent) => void
+  isLoading?: boolean
 }
 
-export default function TopEventsCard({ title = 'Top Events', events = topEventsMock, onEventClick }: TopEventsCardProps) {
+export default function TopEventsCard({ title = 'Top Events', events = topEventsMock, onEventClick, isLoading = false }: TopEventsCardProps) {
+  const skeletonItems = Array.from({ length: 2 }, (_, index) => `loading-${index}`)
+
   return (
     <section className={styles['top-events-card']}>
       <header className={styles['top-events-card__header']}>
@@ -30,69 +33,87 @@ export default function TopEventsCard({ title = 'Top Events', events = topEvents
       </header>
 
       <div className={styles['top-events-card__content']}>
-        {events.map((event, index) => (
-          <div
-            className={styles['top-events-card__section']}
-            key={event.key}
-            onClick={() => onEventClick?.(event)}
-          >
-            <div className={styles['top-events-card__metric']}>
-              <span className={styles['top-events-card__metric-value']}>
-                {event.metricValue}
-                <span className={styles['top-events-card__metric-suffix']}>{event.metricSuffix}</span>
-              </span>
-              <span className={styles['top-events-card__metric-label']}>
-                {event.metricLabel.split('\n').map((line) => (
-                  <span key={line}>{line}</span>
-                ))}
-              </span>
-            </div>
-
-            <div className={styles['top-events-card__meta']}>
-              <div className={styles['top-events-card__meta-group']}>
-                <span className={styles['top-events-card__meta-value']}>{event.date}</span>
-                <span className={styles['top-events-card__meta-value']}>{event.time}</span>
+        {isLoading
+          ? skeletonItems.map((key) => (
+              <div className={styles['top-events-card__section']} key={key}>
+                <div className={styles['top-events-card__skeleton-row']}>
+                  <div className={styles['top-events-card__skeleton-line']} style={{ width: '42%' }} />
+                  <div className={styles['top-events-card__skeleton-line']} style={{ width: '22%' }} />
+                </div>
+                <div className={styles['top-events-card__skeleton-row']}>
+                  <div className={styles['top-events-card__skeleton-line']} style={{ width: '38%' }} />
+                  <div className={styles['top-events-card__skeleton-line']} style={{ width: '18%' }} />
+                </div>
+                <div className={styles['top-events-card__skeleton-sparkline']} />
+                <div className={styles['top-events-card__skeleton-row']}>
+                  <div className={styles['top-events-card__skeleton-pill']} />
+                  <div className={styles['top-events-card__skeleton-pill']} />
+                </div>
               </div>
-
-              <div className={`${styles['top-events-card__meta-group']} ${styles['top-events-card__meta-group--end']}`}>
-                <span className={styles['top-events-card__meta-label']}>Severity</span>
-                <span
-                  className={`${styles['top-events-card__severity']} ${styles[`top-events-card__severity--${event.severity.toLowerCase()}`]}`}
-                >
-                  {event.severity}
+            ))
+          : events.map((event, index) => (
+              <div
+                className={styles['top-events-card__section']}
+                key={event.key}
+                onClick={() => onEventClick?.(event)}
+              >
+              <div className={styles['top-events-card__metric']}>
+                <span className={styles['top-events-card__metric-value']}>
+                  {event.metricValue}
+                  <span className={styles['top-events-card__metric-suffix']}>{event.metricSuffix}</span>
+                </span>
+                <span className={styles['top-events-card__metric-label']}>
+                  {event.metricLabel.split('\n').map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
                 </span>
               </div>
-            </div>
 
-            <SparklineChart
-              data={event.data}
-              series={
-                event.type === 'gyro'
-                  ? topEventsSparklineSeriesGyro
-                  : event.type === 'impact'
-                    ? topEventsSparklineSeriesImpact
-                    : topEventsSparklineSeries
-              }
-            />
+              <div className={styles['top-events-card__meta']}>
+                <div className={styles['top-events-card__meta-group']}>
+                  <span className={styles['top-events-card__meta-value']}>{event.date}</span>
+                  <span className={styles['top-events-card__meta-value']}>{event.time}</span>
+                </div>
 
-            <div className={styles['top-events-card__bottom-row']}>
-              <div className={styles['top-events-card__tags']}>
-                {event.tags.map((tag) => (
-                  <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
-                ))}
+                <div className={`${styles['top-events-card__meta-group']} ${styles['top-events-card__meta-group--end']}`}>
+                  <span className={styles['top-events-card__meta-label']}>Severity</span>
+                  <span
+                    className={`${styles['top-events-card__severity']} ${styles[`top-events-card__severity--${event.severity.toLowerCase()}`]}`}
+                  >
+                    {event.severity}
+                  </span>
+                </div>
               </div>
-              <button
-                type="button"
-                className={styles['top-events-card__section-arrow-btn']}
-                aria-label={`View ${event.metricLabel.replace(/\n/g, ' ')} details`}
-              >
-                <ArrowRightIcon />
-              </button>
-            </div>
 
-            {index < events.length - 1 && <div className={styles['top-events-card__divider']} aria-hidden="true" />}
-          </div>
-        ))}
+              <SparklineChart
+                data={event.data}
+                series={
+                  event.type === 'gyro'
+                    ? topEventsSparklineSeriesGyro
+                    : event.type === 'impact'
+                      ? topEventsSparklineSeriesImpact
+                      : topEventsSparklineSeries
+                }
+              />
+
+              <div className={styles['top-events-card__bottom-row']}>
+                <div className={styles['top-events-card__tags']}>
+                  {event.tags.map((tag) => (
+                    <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className={styles['top-events-card__section-arrow-btn']}
+                  aria-label={`View ${event.metricLabel.replace(/\n/g, ' ')} details`}
+                >
+                  <ArrowRightIcon />
+                </button>
+              </div>
+
+              {index < events.length - 1 && <div className={styles['top-events-card__divider']} aria-hidden="true" />}
+            </div>
+          ))}
       </div>
     </section>
   )

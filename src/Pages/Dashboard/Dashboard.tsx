@@ -66,6 +66,11 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const hiddenWidgets = new Set(hideWidgets)
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>([])
   const [timelineLoading, setTimelineLoading] = useState(true)
+  const [overviewLoading, setOverviewLoading] = useState(true)
+  const [topEventsLoading, setTopEventsLoading] = useState(true)
+  const [userOverviewLoading, setUserOverviewLoading] = useState(true)
+  const [productOverviewLoading, setProductOverviewLoading] = useState(true)
+  const [demographicsLoading, setDemographicsLoading] = useState(true)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
   const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
   const [severityChartDataState, setSeverityChartDataState] = useState(severityTimelineData)
@@ -81,6 +86,14 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   useEffect(() => {
     let isMounted = true
 
+    let pendingOverviewRequests = 3
+    const resolveOverviewLoading = () => {
+      pendingOverviewRequests -= 1
+      if (pendingOverviewRequests === 0 && isMounted) {
+        setOverviewLoading(false)
+      }
+    }
+
     dashboardService.getEventOverview(range)
       .then((response: unknown) => {
         if (!isMounted) return
@@ -91,6 +104,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         if (!isMounted) return
         setOverviewSummary(eventOverviewFallbackSummary)
       })
+      .finally(resolveOverviewLoading)
 
     dashboardService.getEventTimeseries(range)
       .then((response: unknown) => {
@@ -102,6 +116,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         if (!isMounted) return
         setOverviewChartData(eventTimelineData)
       })
+      .finally(resolveOverviewLoading)
 
     dashboardService.getSeverityTimeseries(range)
       .then((response: unknown) => {
@@ -113,6 +128,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         if (!isMounted) return
         setSeverityChartDataState(severityTimelineData)
       })
+      .finally(resolveOverviewLoading)
 
     setTimelineLoading(true)
     dashboardService.getLatestEvents()
@@ -149,6 +165,10 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         setUserOverviewDataState(userOverviewData)
         setUserOverviewTotalState(userOverviewTotal)
       })
+      .finally(() => {
+        if (!isMounted) return
+        setUserOverviewLoading(false)
+      })
 
     dashboardService.getProductOverview(range)
       .then((response: unknown) => {
@@ -168,6 +188,10 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       .catch(() => {
         if (!isMounted) return
         setProductOverviewCategoriesState(productOverviewCategories)
+      })
+      .finally(() => {
+        if (!isMounted) return
+        setProductOverviewLoading(false)
       })
 
     dashboardService.getDemographicsOverview(range)
@@ -209,6 +233,10 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       .catch(() => {
         if (!isMounted) return
         setUserDemographicsCategoriesState(userDemographicsCategories)
+      })
+      .finally(() => {
+        if (!isMounted) return
+        setDemographicsLoading(false)
       })
 
     return () => {
@@ -272,6 +300,10 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         if (!isMounted) return
         setTopEvents(topEventsMock)
       })
+      .finally(() => {
+        if (!isMounted) return
+        setTopEventsLoading(false)
+      })
 
     return () => {
       isMounted = false
@@ -320,6 +352,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
     <main className={styles.dashboardPage}>
       <div className={styles.eventOverview}>
         <EventOverviewCard
+          isLoading={overviewLoading}
           summary={overviewSummary}
           chartData={overviewChartData}
           severityChartData={severityChartDataState}
@@ -348,7 +381,11 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       </div>
 
       <div className={styles.topEvents}>
-        <TopEventsCard events={topEvents} onEventClick={(event) => console.log('Navigate to event:', event.key)} />
+        <TopEventsCard
+          events={topEvents}
+          isLoading={topEventsLoading}
+          onEventClick={(event) => console.log('Navigate to event:', event.key)}
+        />
       </div>
       {!hiddenWidgets.has('eventTimeline') && (
         <div className={styles.eventTimeline}>
@@ -356,24 +393,36 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         </div>
       )}
       {!hiddenWidgets.has('userOverview') && (
-        <div className={styles.userOverview}><UserOverviewCard data={userOverviewDataState} total={userOverviewTotalState} onExpand={() => console.log('Navigate to user details')} /></div>
+        <div className={styles.userOverview}>
+          <UserOverviewCard
+            data={userOverviewDataState}
+            total={userOverviewTotalState}
+            isLoading={userOverviewLoading}
+            onExpand={() => console.log('Navigate to user details')}
+          />
+        </div>
       )}
       {!hiddenWidgets.has('productOverview') && (
-        <div className={styles.productOverview}><ProductOverviewCard categories={productOverviewCategoriesState} /></div>
+        <div className={styles.productOverview}>
+          <ProductOverviewCard categories={productOverviewCategoriesState} isLoading={productOverviewLoading} />
+        </div>
       )}
       {!hiddenWidgets.has('userDemographics') && (
         <div className={styles.userDemographics}>
           <UserDemographicsCard
             categories={userDemographicsCategoriesState}
             summary={userDemographicsSummaryState}
+            isLoading={demographicsLoading}
           />
         </div>
       )}
       {!hiddenWidgets.has('eventSeverity') && (
-        <div className={styles.eventSeverity}><EventSeverityHistogramCard /></div>
+        <div className={styles.eventSeverity}><EventSeverityHistogramCard isLoading={overviewLoading} /></div>
       )}
       {/* <div className={styles.eventSeverity}><EventSeverityCard /></div> */}
-      <div className={styles.eventTime}><EventTimeHeatmapCard range={range} /></div>
+      <div className={styles.eventTime}>
+        <EventTimeHeatmapCard range={range} />
+      </div>
 
     </main>
   )

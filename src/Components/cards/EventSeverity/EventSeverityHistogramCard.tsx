@@ -14,6 +14,7 @@ import styles from './EventSeverityHistogramCard.module.scss';
 interface EventSeverityHistogramCardProps {
   bars?: SeverityHistogramBar[];
   summary?: EventSeverityHistogramSummary;
+  isLoading?: boolean;
 }
 
 function InfoIcon() {
@@ -38,7 +39,19 @@ function InfoIcon() {
 export default function EventSeverityHistogramCard({
   bars = eventSeverityHistogramBars,
   summary = eventSeverityHistogramSummary,
+  isLoading = false,
 }: EventSeverityHistogramCardProps) {
+  const placeholderBars: SeverityHistogramBar[] = [
+    { id: 'low', bucket: 'low', value: 18 },
+    { id: 'medium', bucket: 'medium', value: 12 },
+    { id: 'high', bucket: 'high', value: 9 },
+  ]
+
+  const displayBars = isLoading ? placeholderBars : bars
+  const displaySummary = isLoading
+    ? { count: 0, labelLine1: 'Loading', labelLine2: '...' }
+    : summary
+
   return (
     <div className={styles.card}>
       <header className={styles.header}>
@@ -51,11 +64,11 @@ export default function EventSeverityHistogramCard({
       </header>
 
       <div className={styles.total}>
-        <span className={styles.totalValue}>{summary.count}</span>
+        <span className={styles.totalValue}>{displaySummary.count}</span>
         <span className={styles.totalLabel}>
-          {summary.labelLine1}
+          {displaySummary.labelLine1}
           <br />
-          {summary.labelLine2}
+          {displaySummary.labelLine2}
         </span>
       </div>
 
@@ -72,7 +85,7 @@ export default function EventSeverityHistogramCard({
         ))}
       </div>
 
-      <EventSeverityHistogramChart bars={bars} />
+      <EventSeverityHistogramChart bars={displayBars} />
     </div>
   );
 }

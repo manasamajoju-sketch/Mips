@@ -73,6 +73,7 @@ export default function SparklineChart<T extends { x: string }>({
             d={line.path}
             stroke={line.color}
             fill="none"
+            pathLength="1"
             className={styles['sparkline-chart__line']}
           />
         ))}

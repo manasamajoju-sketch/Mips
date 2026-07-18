@@ -61,9 +61,11 @@ export default function EventTimeHeatmapCard({
 }: EventTimeHeatmapCardProps) {
   const [rows, setRows] = useState<HeatmapRow[]>(fallbackRows);
   const [summary, setSummary] = useState<EventTimeHeatmapSummary>(fallbackSummary);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
+    setIsLoading(true);
 
     dashboardService.getEventTimeHeatmap(range)
       .then((response: unknown) => {
@@ -77,12 +79,27 @@ export default function EventTimeHeatmapCard({
         if (!isMounted) return;
         setRows(fallbackRows);
         setSummary(fallbackSummary);
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
       });
 
     return () => {
       isMounted = false;
     };
   }, [range]);
+
+  const displayedSummary = isLoading
+    ? {
+        mostCommonRange: '--',
+        rangeLabelLine1: 'Loading',
+        rangeLabelLine2: 'event heatmap...',
+        highlightNote: 'Fetching heatmap data…',
+      }
+    : summary;
+
+  const displayedRows = isLoading ? fallbackRows : rows;
 
   return (
     <div className={styles.card}>
@@ -93,16 +110,16 @@ export default function EventTimeHeatmapCard({
 
       <div className={styles.topRow}>
         <div className={styles.summary}>
-          <span className={styles.summaryValue}>{summary.mostCommonRange}</span>
+          <span className={styles.summaryValue}>{displayedSummary.mostCommonRange}</span>
           <span className={styles.summaryLabel}>
-            {summary.rangeLabelLine1}
+            {displayedSummary.rangeLabelLine1}
             <br />
-            {summary.rangeLabelLine2}
+            {displayedSummary.rangeLabelLine2}
           </span>
         </div>
         <div className={styles.note}>
           <AlertIcon />
-          <span>{summary.highlightNote}</span>
+          <span>{displayedSummary.highlightNote}</span>
         </div>
       </div>
 
@@ -115,7 +132,7 @@ export default function EventTimeHeatmapCard({
         ))}
       </div>
 
-      <EventTimeHeatmapChart rows={rows} />
+      <EventTimeHeatmapChart rows={displayedRows} />
     </div>
   );
 }

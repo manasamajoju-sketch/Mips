@@ -13,6 +13,7 @@ import styles from './App.module.scss'
 function App() {
   const [range, setRange] = useState<TimelineRange>('30d')
   const [activePage, setActivePage] = useState<SidebarItem>('home')
+  const [collapsed, setCollapsed] = useState(false)
 
   const renderContent = () => {
     switch (activePage) {
@@ -35,12 +36,14 @@ function App() {
   return (
     <div className={styles.appShell}>
       <Header
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((value) => !value)}
         range={range}
         onRangeChange={setRange}
       />
 
       <div className={styles.body}>
-        <Sidebar activeItem={activePage} onNavigate={setActivePage} />
+        <Sidebar collapsed={collapsed} activeItem={activePage} onNavigate={setActivePage} />
 
         <main className={styles.content}>{renderContent()}</main>
       </div>

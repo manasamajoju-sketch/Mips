@@ -10,14 +10,22 @@ import styles from './ProductOverviewCard.module.scss'
 
 interface ProductOverviewCardProps {
   categories?: ProductOverviewCategory[]
+  isLoading?: boolean
 }
 
-export default function ProductOverviewCard({ categories = productOverviewCategories }: ProductOverviewCardProps) {
+export default function ProductOverviewCard({ categories = productOverviewCategories, isLoading = false }: ProductOverviewCardProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
 
-  const grandMips = categories.reduce((sum, c) => sum + c.mipsProducts, 0)
-  const grandTotal = categories.reduce((sum, c) => sum + c.mipsProducts + c.other, 0)
-  const mipsPercentage = grandTotal > 0 ? Math.round((grandMips / grandTotal) * 100) : 0
+  const placeholderCategories: ProductOverviewCategory[] = [
+    { key: 'cycling', title: 'Cycling', mipsProducts: 18, other: 12, total: 30, delta: 0 },
+    { key: 'moto', title: 'Moto', mipsProducts: 14, other: 10, total: 24, delta: 0 },
+    { key: 'ppe', title: 'PPE', mipsProducts: 10, other: 8, total: 18, delta: 0 },
+  ]
+
+  const renderedCategories = isLoading ? placeholderCategories : categories
+  const grandMips = renderedCategories.reduce((sum, c) => sum + c.mipsProducts, 0)
+  const grandTotal = renderedCategories.reduce((sum, c) => sum + c.mipsProducts + c.other, 0)
+  const mipsPercentage = isLoading ? '--' : grandTotal > 0 ? Math.round((grandMips / grandTotal) * 100) : 0
 
   return (
     <section className={styles.card}>
@@ -50,7 +58,7 @@ export default function ProductOverviewCard({ categories = productOverviewCatego
       </div>
 
       <div className={styles.barList}>
-        {categories.map((category, categoryIndex) => {
+        {renderedCategories.map((category, categoryIndex) => {
           const isActive = hoveredKey === category.key
           const isPositive = category.delta >= 0
 

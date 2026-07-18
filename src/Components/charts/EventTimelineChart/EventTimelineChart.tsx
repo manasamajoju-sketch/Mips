@@ -16,11 +16,28 @@ export interface TimelinePoint {
   [categoryKey: string]: string | number | boolean | undefined;
 }
 
+function buildLoadingPoints(categories: TimelineCategory[], count = 14): TimelinePoint[] {
+  return Array.from({ length: count }, (_, index) => {
+    const point: TimelinePoint = {
+      date: String(index + 1),
+      month: '',
+      highlight: false,
+    };
+
+    categories.forEach((category) => {
+      point[category.key] = 8 + ((index + categories.indexOf(category)) % 3) * 6;
+    });
+
+    return point;
+  });
+}
+
 interface EventTimelineChartProps {
   data: TimelinePoint[];
   categories: TimelineCategory[];
   maxTotal?: number;
   range?: TimelineRange;
+  isLoading?: boolean;
 }
 
 interface DayColumnProps {
@@ -80,14 +97,16 @@ function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: 
   );
 }
 
-export default function EventTimelineChart({ data, categories, maxTotal = MAX_TOTAL, range = '30d' }: EventTimelineChartProps) {
+export default function EventTimelineChart({ data, categories, maxTotal = MAX_TOTAL, range = '30d', isLoading = false }: EventTimelineChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const isMonthlyRange = range === '12m';
   const isNinetyDayRange = range === '90d';
 
+  const renderData = isLoading ? buildLoadingPoints(categories) : data;
+
   const resolvedMaxTotal = Math.max(
     maxTotal,
-    ...data.map((point) => categories.reduce((sum, cat) => sum + (Number(point[cat.key]) || 0), 0)),
+    ...renderData.map((point) => categories.reduce((sum, cat) => sum + (Number(point[cat.key]) || 0), 0)),
     1,
   );
 
@@ -103,7 +122,7 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
           ))}
         </div>
         <div className={styles.plot}>
-          {data.map((point, index) => (
+          {renderData.map((point, index) => (
             <DayColumn
               key={`${point.month}-${point.date}-${index}`}
               point={point}

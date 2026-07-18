@@ -212,6 +212,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
     locations: [],
     breakdown: [],
   })
+  const [isLoading, setIsLoading] = useState(true)
 
   const cleanedFilters = (filtersToClean: Record<string, string>) =>
     Object.entries(filtersToClean).reduce<Record<string, string>>((acc, [key, value]) => {
@@ -295,6 +296,10 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
           breakdown: [],
         })
       })
+      .finally(() => {
+        if (!isMounted) return
+        setIsLoading(false)
+      })
 
     return () => {
       isMounted = false
@@ -355,12 +360,17 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
       <div className={styles['location-overview-card__body']}>
         <div className={styles['location-overview-card__map-col']}>
           <LocationMap locations={config.locations} onLocationClick={handleLocationClick} />
+          {isLoading && (
+            <div className={styles['location-overview-card__loading-overlay']}>
+              <div className={styles['location-overview-card__loading-box']} />
+            </div>
+          )}
         </div>
 
         {!hideSummary && (
           <div className={styles['location-overview-card__side']}>
             <div className={styles['location-overview-card__total']}>
-              <span className={styles['location-overview-card__total-value']}>{config.total}</span>
+              <span className={styles['location-overview-card__total-value']}>{isLoading ? '--' : config.total}</span>
               <span className={styles['location-overview-card__total-label']}>
                 {config.totalLabel.split('\n').map((line) => (
                   <span key={line}>{line}</span>
@@ -368,10 +378,15 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
               </span>
             </div>
 
-            <p className={styles['location-overview-card__subtitle']}>{config.topLabel}</p>
+            <p className={styles['location-overview-card__subtitle']}>{isLoading ? 'Loading locations…' : config.topLabel}</p>
 
             <ul className={styles['location-overview-card__breakdown']}>
-              {config.breakdown.map((item, breakdownIndex) => (
+              {(isLoading ? Array.from({ length: 3 }, (_, idx) => ({
+                key: `loading-${idx}`,
+                title: '',
+                percentage: 0,
+                segments: [],
+              })) : config.breakdown).map((item, breakdownIndex) => (
                 <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
                   <div className={styles['location-overview-card__breakdown-row']}>
                     <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>

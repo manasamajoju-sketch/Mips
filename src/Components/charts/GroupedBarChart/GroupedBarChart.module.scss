@@ -65,6 +65,23 @@
 .yTick {
   font-size: $fs-axis;
   fill: $color-text-muted;
+  opacity: 0;
+  animation: key-fade-in 300ms ease forwards;
+  animation-delay: 120ms;
+}
+
+.categoryLabel {
+  font-family: $font-family-base;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 300;
+  font-stretch: normal;
+  letter-spacing: 0;
+  fill: $color-text-primary;
+  transition: fill 120ms ease;
+  opacity: 0;
+  animation: key-fade-in 300ms ease forwards;
+  animation-delay: 260ms;
 }
 
 .axisTitle {
