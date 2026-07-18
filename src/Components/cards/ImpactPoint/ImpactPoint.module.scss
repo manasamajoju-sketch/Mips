@@ -1,3 +1,5 @@
+@use '@/styles/variables' as *;
+
 .impact-point {
   --impact-point-top-delay: 260ms;
   --impact-point-segments-delay: 480ms;
@@ -13,10 +15,13 @@
   overflow: visible;
 
   &__svg {
+    // Fill the wheel-col container — column is clamped 100–180px wide
+    // so the SVG naturally stays small. On larger screens it expands.
     width: 100%;
     height: 100%;
-    max-width: 180px;
-    max-height: 220px;
+    // Hard cap so it never goes huge on very wide screens
+    max-width: clamp(80px, 12vw, 180px);
+    max-height: clamp(100px, 16vw, 220px);
     overflow: visible;
   }
 
@@ -42,23 +47,15 @@
     }
   }
 
-  &__section--top {
-    animation-delay: var(--impact-point-top-delay);
-  }
-
+  &__section--top                         { animation-delay: var(--impact-point-top-delay); }
   &__section--front,
   &__section--left,
   &__section--right,
-  &__section--back {
-    animation-delay: var(--impact-point-segments-delay);
-  }
+  &__section--back                        { animation-delay: var(--impact-point-segments-delay); }
 
   &__section--clickable {
     cursor: pointer;
-
-    * {
-      cursor: pointer;
-    }
+    * { cursor: pointer; }
   }
 
   &__section-shape {
@@ -72,7 +69,7 @@
   &__label,
   &__percentage {
     font-family: 'Suisse-Mono-Thin', sans-serif !important;
-    font-size: 11px;
+    // font-size in SVG user units — scales with the viewBox automatically
     font-weight: 300;
     stroke-width: 0.4px;
     paint-order: stroke;
@@ -89,9 +86,6 @@
     fill: var(--text-primary);
     stroke: var(--surface);
     stroke-width: 1px;
-    transform: translateY(0);
-    animation: none;
-    will-change: opacity, transform;
   }
 
   &__percentage {
@@ -99,46 +93,29 @@
     transform: translateY(2px);
     fill: var(--text-primary);
     stroke: var(--text-primary);
-    transition:
-      opacity 180ms ease,
-      transform 180ms ease;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  &__percentage--visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
   }
 }
 
+// White text variant when inside a coloured card
 .card.blue {
   .impact-point {
-    &__label {
-      fill: #ffffff;
-      stroke: #ffffff;
-    }
-
-    &__percentage {
-      fill: var(--text-primary) !important;
-      stroke: var(--text-primary) !important;
-    }
+    &__label    { fill: #ffffff; stroke: #ffffff; }
+    &__percentage { fill: var(--text-primary) !important; stroke: var(--text-primary) !important; }
   }
 }
 
 @keyframes impact-point-section-in {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes impact-point-label-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

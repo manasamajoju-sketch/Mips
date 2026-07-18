@@ -64,7 +64,7 @@ function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: 
   // hover/active. Only the pill's width and the label visibility change.
   // Because height is constant, the pill can never grow into the x-axis,
   // regardless of hover state or container size.
-  const pillHeightPct = Math.min((total / maxTotal) * 100, 100);
+  const pillHeightPct = Math.min((total / 10) * 100, 100);
 
   return (
     <div

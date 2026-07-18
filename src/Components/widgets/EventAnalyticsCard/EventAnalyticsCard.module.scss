@@ -5,42 +5,42 @@
   @include card-surface;
   color: $color-white;
   box-shadow: none;
-  padding: 20px 22px;
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.6vw, 22px);
   width: 100%;
-  max-width: 1320px;
-  margin: 0 auto;
   height: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
+  // ── Header ──────────────────────────────────────────────────────────
   &__header {
     @include flex(row, center, space-between);
-    margin-bottom: $space-sm;
+    margin-bottom: clamp(4px, 0.5vh, 10px);
+    flex-shrink: 0;
+    gap: clamp(6px, 0.8vw, 12px);
+    flex-wrap: wrap;
   }
 
   &__title {
     @include flex(row, center, flex-start, $space-sm);
-    font-size: 15.5px;
+    font-size: clamp(11px, 1vw, 15.5px);
     font-weight: 300;
     margin: 0;
+    white-space: nowrap;
   }
 
   &__info-btn {
     @include reset-button;
     @include flex(row, center, center);
-    width: 22px;
-    height: 22px;
+    width: clamp(14px, 1.2vw, 22px);
+    height: clamp(14px, 1.2vw, 22px);
     color: $color-white;
     opacity: 0.85;
+    flex-shrink: 0;
 
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    &:hover {
-      opacity: 1;
-    }
+    svg { width: 100%; height: 100%; }
+    &:hover { opacity: 1; }
   }
 
   &__type-switcher {
@@ -48,51 +48,46 @@
     background: $color-white-12;
     border: 1px solid $color-white-35;
     border-radius: $radius-pill;
-       padding: 0px 20px;
-    min-width: 168px;
+    padding: clamp(2px, 0.3vh, 4px) clamp(10px, 1.2vw, 20px);
+    min-width: clamp(100px, 12vw, 168px);
+    flex-shrink: 0;
   }
 
   &__chevron-btn {
     @include reset-button;
     @include flex(row, center, center);
-    width: 18px;
-    height: 18px;
+    width: clamp(14px, 1.2vw, 18px);
+    height: clamp(14px, 1.2vw, 18px);
     color: $color-white;
     opacity: 0.85;
+    flex-shrink: 0;
 
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    &:hover {
-      opacity: 1;
-    }
+    svg { width: 100%; height: 100%; }
+    &:hover { opacity: 1; }
   }
 
   &__type-label {
-    font-size: $fs-nav;
+    font-size: clamp(10px, 0.9vw, 14px);
     font-weight: 300;
     flex: 1;
     text-align: center;
+    white-space: nowrap;
   }
 
   &__expand-btn {
     @include reset-button;
     @include flex(row, center, center);
-    width: 28px;
-    height: 28px;
+    width: clamp(20px, 1.6vw, 28px);
+    height: clamp(20px, 1.6vw, 28px);
     border-radius: 50%;
     background: $color-border;
     color: $color-text-primary;
     flex-shrink: 0;
-    transition:
-      background 180ms ease,
-      transform 180ms ease;
+    transition: background 180ms ease, transform 180ms ease;
 
     svg {
-      width: 14px;
-      height: 14px;
+      width: clamp(10px, 0.8vw, 14px);
+      height: clamp(10px, 0.8vw, 14px);
     }
 
     &:hover {
@@ -102,52 +97,63 @@
     }
   }
 
+  // ── Summary row ──────────────────────────────────────────────────────
   &__summary {
-    @include flex(row, flex-end, flex-start, $space-md);
+    @include flex(row, flex-end, flex-start, clamp(8px, 1vw, 16px));
     flex-wrap: wrap;
-    margin-bottom: $space-sm;
+    margin-bottom: clamp(4px, 0.5vh, 8px);
+    flex-shrink: 0;
   }
 
   &__metric {
-    @include flex(row, flex-end, flex-start, $space-sm);
+    @include flex(row, flex-end, flex-start, clamp(4px, 0.5vw, 8px));
 
-    &--front {
-      margin-left: auto;
-    }
+    &--front { margin-left: auto; }
   }
 
   &__metric-value {
-    font-size: 32px;
+    font-size: clamp(18px, 2vw, 32px);
     font-weight: 300;
     line-height: 1;
+    white-space: nowrap;
 
     &--sm {
-      font-size: $fs-side-stat;
+      font-size: clamp(14px, 1.4vw, 24px);
       align-self: center;
     }
   }
 
   &__metric-label {
-    font-size: 14px;
+    font-size: clamp(9px, 0.75vw, 13px);
     font-weight: 300;
     line-height: 1.25;
-    padding-bottom: 6px;
+    padding-bottom: clamp(2px, 0.3vh, 6px);
     opacity: 0.95;
   }
 
+  // ── Divider ──────────────────────────────────────────────────────────
   &__divider {
     border: none;
     border-top: 1px solid $color-white-20;
-    margin: $space-xxs 0;
+    margin: clamp(2px, 0.3vh, 6px) 0;
+    flex-shrink: 0;
   }
 
+  // ── Body — fills remaining height ────────────────────────────────────
+  // 4-column: [chart] [gap] [wheel] [stats]
+  // Columns sized with minmax so they shrink on small cards
   &__body {
     display: grid;
-    grid-template-columns: minmax(0, 1.7fr) auto minmax(160px, 200px) minmax(120px, 1fr);
+    grid-template-columns:
+      minmax(0, 1.7fr)
+      minmax(0, 0.05fr)   // invisible spacer column keeps gap out of grid-gap
+      minmax(100px, 180px)
+      minmax(80px, 1fr);
     align-items: stretch;
-    gap: $space-md;
+    gap: clamp(6px, 0.8vw, 14px);
     flex: 1;
     min-height: 0;
+    overflow: hidden;
   }
 
   &__chart-col {
@@ -156,12 +162,11 @@
     grid-column: 1;
     display: flex;
     align-items: stretch;
-    justify-content: center;
   }
 
   &__wheel-col {
     grid-column: 3;
-    padding: 0 $space-md;
+    padding: 0 clamp(4px, 0.5vw, 12px);
     position: relative;
     min-height: 0;
     display: flex;
@@ -171,9 +176,9 @@
     &::before {
       content: '';
       position: absolute;
-      left: -$space-lg;
-      top: 10%;
-      bottom: 10%;
+      left: 0;
+      top: 8%;
+      bottom: 8%;
       width: 1px;
       background: $color-white-20;
     }
@@ -186,83 +191,69 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: $space-xs;
+    justify-content: center;
+    gap: clamp(4px, 0.6vh, 10px);
   }
 
   &__stat-item {
-    @include flex(row, center, flex-start, $space-sm);
+    @include flex(row, center, flex-start, clamp(4px, 0.5vw, 8px));
   }
 
   &__stat-value {
-    font-size: 24px;
+    font-size: clamp(14px, 1.4vw, 24px);
     font-weight: 300;
     line-height: 1;
-    min-width: 44px;
+    min-width: clamp(28px, 2.5vw, 44px);
+    white-space: nowrap;
   }
 
   &__stat-label {
-    font-size: 12px;
+    font-size: clamp(9px, 0.7vw, 12px);
     line-height: 1.2;
     opacity: 0.95;
   }
 
+  // ── Tablet ───────────────────────────────────────────────────────────
   @media (max-width: $bp-tablet) {
     &__body {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
     }
 
-    &__wheel-col {
+    &__chart-col  { grid-column: 1 / -1; }
+    &__wheel-col  {
       grid-column: 1;
-      padding: $space-lg 0;
-
-      &::before {
-        display: none;
-      }
+      grid-row: 2;
+      padding: 0;
+      &::before { display: none; }
     }
+    &__stat-list  { grid-column: 2; grid-row: 2; }
 
-    &__stat-list {
-      grid-column: 1;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: $space-lg;
-    }
-
-    &__summary {
-      gap: $space-lg;
-    }
-
-    &__metric--front {
-      margin-left: 0;
-    }
+    &__summary    { gap: clamp(8px, 2vw, 20px); }
+    &__metric--front { margin-left: 0; }
   }
 
+  // ── Mobile ───────────────────────────────────────────────────────────
   @media (max-width: $bp-mobile) {
     padding: $space-md;
 
-    &__title {
-      font-size: 16px;
-    }
-
-    &__metric-value {
-      font-size: 40px;
-    }
-
-    &__header {
-      flex-wrap: wrap;
-      gap: $space-sm;
-    }
-
-    &__summary {
-      gap: $space-sm;
-    }
+    &__header { flex-wrap: wrap; }
 
     &__body {
       grid-template-columns: 1fr;
-      gap: $space-lg;
+      grid-template-rows: auto;
     }
 
-    &__wheel-col {
-      padding: 0;
+    &__chart-col,
+    &__wheel-col,
+    &__stat-list { grid-column: 1; }
+
+    &__wheel-col { padding: 0; }
+
+    &__stat-list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: $space-lg;
     }
   }
 }
