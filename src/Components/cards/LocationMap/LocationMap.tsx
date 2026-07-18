@@ -17,6 +17,12 @@ const DEFAULT_CENTER = { lat: 20, lng: 0 }
 // wrapped multiple times side by side.
 const WORLD_BOUNDS: google.maps.LatLngBoundsLiteral = { north: 95, south: -95, west: -180, east: 180 }
 
+function boundsFromLocations(locations: MapLocation[]): google.maps.LatLngBounds {
+  const bounds = new google.maps.LatLngBounds()
+  locations.forEach((location) => bounds.extend({ lat: location.lat, lng: location.lng }))
+  return bounds
+}
+
 // Builds the same conic-gradient ring the reference project uses for its
 // DOM-based donut markers (CSS conic-gradient, not an SVG/canvas chart).
 function getBreakdownConicGradient(breakdown: MapLocation['breakdown']): string {
@@ -63,7 +69,15 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<google.maps.Map | null>(null)
   const overlaysRef = useRef<google.maps.OverlayView[]>([])
+  const locationsRef = useRef<MapLocation[]>(locations)
   const { isLoaded, error } = useGoogleMapsScript(GOOGLE_MAPS_API_KEY)
+
+  // Keep a ref in sync so the resize observer below (which only runs when
+  // the *container* changes, not the data) always re-fits against the
+  // latest marker set rather than whatever was passed in on mount.
+  useEffect(() => {
+    locationsRef.current = locations
+  }, [locations])
 
   // Create the map once the script is ready.
   useEffect(() => {
@@ -72,7 +86,12 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
     mapRef.current = new google.maps.Map(containerRef.current, {
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
-      minZoom: 2,
+      // Was 2, which needs ~1024px of width to render a full-width world
+      // without exceeding WORLD_BOUNDS. This card's map column is often
+      // only 300-650px wide, so at minZoom:2 the map had no way to zoom out
+      // far enough to actually fit — it just overflowed/clipped instead.
+      // 1 gives fitBounds room to shrink to whatever width it's given.
+      minZoom: 1,
       maxZoom: 4,
       restriction: {
         latLngBounds: WORLD_BOUNDS,
@@ -80,11 +99,44 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
       },
       disableDefaultUI: true,
       zoomControl: true,
+      zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_TOP,
+      },
       gestureHandling: 'greedy',
       keyboardShortcuts: false,
       styles: LOCATION_MAP_STYLE,
       backgroundColor: '#ffffff',
     })
+  }, [isLoaded])
+
+  // Google Maps sizes its canvas from the container's dimensions *at the
+  // moment the map is created* and otherwise only reacts to `window`
+  // resize — not to the container itself changing size. Any layout change
+  // that resizes the map's own wrapper (a header row gaining/losing height,
+  // a sidebar toggling, a responsive breakpoint) without an explicit
+  // `resize` trigger leaves the map rendered at its old size: tiles stop
+  // partway through the new container, which reads as the map being
+  // "cropped". Watching the container directly (rather than only window)
+  // catches every one of those cases, not just a browser-window resize.
+  useEffect(() => {
+    if (!isLoaded || !containerRef.current) return
+    const map = mapRef.current
+    const container = containerRef.current
+    if (!map) return
+
+    const observer = new ResizeObserver(() => {
+      google.maps.event.trigger(map, 'resize')
+
+      const currentLocations = locationsRef.current
+      if (currentLocations.length > 0) {
+        map.fitBounds(boundsFromLocations(currentLocations), 48)
+      } else {
+        map.setCenter(DEFAULT_CENTER)
+      }
+    })
+
+    observer.observe(container)
+    return () => observer.disconnect()
   }, [isLoaded])
 
   // Draw donut markers as custom OverlayView DOM elements, positioned via
@@ -98,8 +150,6 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
     overlaysRef.current = []
 
     if (locations.length === 0) return
-
-    const bounds = new google.maps.LatLngBounds()
 
     locations.forEach((location) => {
       const position = { lat: location.lat, lng: location.lng }
@@ -133,13 +183,12 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
 
       overlay.setMap(map)
       overlaysRef.current.push(overlay)
-      bounds.extend(position)
     })
 
     // Re-frame to the new marker set (e.g. after the Events/Users toggle
     // swaps locations) — fitBounds respects minZoom/maxZoom, so it can't
     // collapse to the broken near-zero zoom that caused the repeat-world bug.
-    map.fitBounds(bounds, 48)
+    map.fitBounds(boundsFromLocations(locations), 48)
   }, [isLoaded, locations])
 
   if (error) {
@@ -155,6 +204,9 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
       <div className={styles.canvas} ref={containerRef} />
       {!isLoaded && <div className={styles.loading}>Loading map…</div>}
 
+      {/* Rendered as a static row below the canvas (not overlaid on top of
+          it) so an arbitrary number of categories can never cover/crop the
+          map — it scrolls horizontally instead of wrapping to extra lines. */}
       <div className={styles.legend}>
         {Array.from(
           locations.reduce((legendMap, location) => {

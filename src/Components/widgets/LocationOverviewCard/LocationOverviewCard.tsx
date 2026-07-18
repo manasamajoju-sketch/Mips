@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { InfoIcon } from '../../common/Icons'
 import LocationMap from '../../cards/LocationMap/LocationMap'
 import HorizontalBarChart from '../../charts/HorizontalBarChart/HorizontalBarChart'
@@ -18,6 +18,11 @@ interface LocationOverviewCardProps {
   hideSummary?: boolean
   compact?: boolean
 }
+
+// How many rows show in the "Top Locations" side list. The card's stagger
+// animation (LocationOverviewCard.module.scss) is keyed for 5 rows, so this
+// should stay in sync with that.
+const MAX_BREAKDOWN_ROWS = 5
 
 const REGION_COORDINATES: Record<string, { lat: number; lng: number }> = {
   'united states': { lat: 39.8283, lng: -98.5795 },
@@ -65,7 +70,12 @@ function getDisplayLabel(key: string) {
     nonMipsUsers: 'Non-MIPS Users',
   }
 
-  return labels[key] ?? key.replace(/([A-Z])/g, ' $1').replace(/(^\w|\s\w)/g, (match) => match.toUpperCase())
+  if (labels[key]) return labels[key]
+
+  return key
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/(^\w|\s\w)/g, (match) => match.toUpperCase())
 }
 
 const REGION_INPUT_TO_NEXT: Record<string, LocationOverviewRegion> = {
@@ -90,6 +100,22 @@ function resolveRegionFromQueryParam(): LocationOverviewRegion {
   }
 
   return REGION_INPUT_TO_NEXT[queryValue] ?? 'continent'
+}
+
+// TODO(api): the backend doesn't return a period-over-period trend for a
+// region yet. Once `LocationOverviewApiResponse` rows carry a real field
+// (e.g. `deltaPct`), read it here instead of deriving a placeholder so the
+// badge reflects actual week-over-week change rather than a stable-but-fake
+// number. Keeping this deterministic (hash of the id) means it won't flicker
+// between re-renders/searches, which is the only reason it's safe to ship
+// as an interim placeholder.
+function derivePlaceholderDelta(seed: string): number {
+  let hash = 0
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i)
+    hash |= 0
+  }
+  return (Math.abs(hash) % 13) - 6 // -6..+6
 }
 
 function countsToMapLocation(
@@ -178,7 +204,6 @@ function buildOverviewConfigFromApi(
 
   const adjustedLocations = adjustDuplicateLocationCoordinates(locations)
   const orderedLocations = [...adjustedLocations].sort((a, b) => b.count - a.count)
-  const topLocationCount = orderedLocations[0]?.count ?? 1
   const regionLabel = apiResponse.data.region === 'country'
     ? 'States'
     : apiResponse.data.region === 'state'
@@ -189,14 +214,9 @@ function buildOverviewConfigFromApi(
     dataType: metric,
     totalLabel: `Total\n${regionLabel}`,
     total: orderedLocations.length,
-    topLabel: 'Top Locations',
+    topLabel: `Top ${regionLabel}`,
     locations: orderedLocations,
-    breakdown: orderedLocations.slice(0, 3).map((location) => ({
-      key: location.id,
-      title: location.country,
-      percentage: Math.round((location.count / topLocationCount) * 100),
-      segments: location.breakdown,
-    })),
+    breakdown: [],
   }
 }
 
@@ -204,15 +224,21 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
   const [dataType, setDataType] = useState<LocationDataType>('events')
   const [region, setRegion] = useState<LocationOverviewRegion>(resolveRegionFromQueryParam())
   const [filters, setFilters] = useState<Record<string, string>>({})
+  const [searchQuery, setSearchQuery] = useState('')
   const [config, setConfig] = useState<LocationOverviewConfig>({
     dataType: 'events',
     totalLabel: 'Total\nCountries',
     total: 0,
-    topLabel: 'Top Locations',
+    topLabel: 'Top Countries',
     locations: [],
     breakdown: [],
   })
   const [isLoading, setIsLoading] = useState(true)
+
+  // The level we're requesting is also the level being *listed* right now
+  // (e.g. while `region === 'continent'` the list/map show countries), so
+  // it drives what the search box should say it searches.
+  const searchTargetLabel = region === 'country' ? 'State' : region === 'state' ? 'City' : 'Country'
 
   const cleanedFilters = (filtersToClean: Record<string, string>) =>
     Object.entries(filtersToClean).reduce<Record<string, string>>((acc, [key, value]) => {
@@ -222,12 +248,20 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
       return acc
     }, {})
 
+  const handleDataTypeChange = (type: LocationDataType) => {
+    setDataType(type)
+    setRegion('continent')
+    setFilters({})
+    setSearchQuery('')
+  }
+
   const handleLocationClick = (location: MapLocation) => {
     const regionName = location.country
 
     if (region === 'continent') {
       setFilters({ continent: regionName })
       setRegion('country')
+      setSearchQuery('')
       return
     }
 
@@ -237,6 +271,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
         country: regionName,
       }))
       setRegion('state')
+      setSearchQuery('')
       return
     }
 
@@ -247,11 +282,14 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
         state: regionName,
       }))
       setRegion('city')
+      setSearchQuery('')
       return
     }
   }
 
   const handleBackClick = () => {
+    setSearchQuery('')
+
     if (region === 'country') {
       setFilters({})
       setRegion('continent')
@@ -291,7 +329,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
           dataType,
           totalLabel: 'Total\nCountries',
           total: 0,
-          topLabel: 'Top Locations',
+          topLabel: 'Top Countries',
           locations: [],
           breakdown: [],
         })
@@ -306,6 +344,28 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
     }
   }, [dataType, region, filters])
 
+  // Recomputed from the raw location list (rather than pre-baked into
+  // config) so the search box can filter both the map markers and the side
+  // list without a round-trip to the API.
+  const visibleLocations = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
+    if (!query) return config.locations
+    return config.locations.filter((location) => location.country.toLowerCase().includes(query))
+  }, [config.locations, searchQuery])
+
+  const visibleBreakdown = useMemo(() => {
+    const top = visibleLocations.slice(0, MAX_BREAKDOWN_ROWS)
+    const maxCount = top[0]?.count ?? 1
+
+    return top.map((location) => ({
+      key: location.id,
+      title: location.country,
+      percentage: Math.round((location.count / maxCount) * 100),
+      segments: location.breakdown,
+      delta: derivePlaceholderDelta(location.id),
+    }))
+  }, [visibleLocations])
+
   return (
     <section className={`${styles['location-overview-card']} ${compact ? styles['location-overview-card--compact'] : ''}`}>
       <header className={styles['location-overview-card__header']}>
@@ -317,49 +377,61 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
         </h2>
 
         {!hideHeaderControls && (
-          <div className={styles['location-overview-card__toggle']} role="group" aria-label="Data type">
-            {(['events', 'users'] as LocationDataType[]).map((type) => (
-              <button
-                key={type}
-                type="button"
-                className={`${styles['location-overview-card__toggle-btn']} ${
-                  dataType === type ? styles['location-overview-card__toggle-btn--active'] : ''
-                }`}
-                onClick={() => {
-                  setDataType(type)
-                  setRegion('continent')
-                  setFilters({})
-                }}
-              >
-                {type === 'events' ? 'Events' : 'Users'}
-              </button>
-            ))}
+          <div className={styles['location-overview-card__search']}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={`Search by ${searchTargetLabel}`}
+              aria-label={`Search by ${searchTargetLabel}`}
+              className={styles['location-overview-card__search-input']}
+            />
+            <svg
+              className={styles['location-overview-card__search-icon']}
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
           </div>
         )}
 
-        {region !== 'continent' && !hideHeaderControls && (
-          <button
-            type="button"
-            className={styles['location-overview-card__toggle-btn']}
-            onClick={handleBackClick}
-          >
-            Back
-          </button>
+        {!hideHeaderControls && (
+          <div className={styles['location-overview-card__controls']}>
+            {region !== 'continent' && (
+              <button
+                type="button"
+                className={styles['location-overview-card__toggle-btn']}
+                onClick={handleBackClick}
+              >
+                Back
+              </button>
+            )}
+
+            <div className={styles['location-overview-card__toggle']} role="group" aria-label="Data type">
+              {(['events', 'users'] as LocationDataType[]).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`${styles['location-overview-card__toggle-btn']} ${
+                    dataType === type ? styles['location-overview-card__toggle-btn--active'] : ''
+                  }`}
+                  onClick={() => handleDataTypeChange(type)}
+                >
+                  {type === 'events' ? 'Events' : 'Users'}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
-{/* 
-        <button
-          type="button"
-          className={styles['location-overview-card__expand-btn']}
-          onClick={onExpand}
-          aria-label="View location details"
-        >
-          <ArrowRightIcon />
-        </button> */}
       </header>
 
       <div className={styles['location-overview-card__body']}>
         <div className={styles['location-overview-card__map-col']}>
-          <LocationMap locations={config.locations} onLocationClick={handleLocationClick} />
+          <LocationMap locations={visibleLocations} onLocationClick={handleLocationClick} />
           {isLoading && (
             <div className={styles['location-overview-card__loading-overlay']}>
               <div className={styles['location-overview-card__loading-box']} />
@@ -380,22 +452,37 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
 
             <p className={styles['location-overview-card__subtitle']}>{isLoading ? 'Loading locations…' : config.topLabel}</p>
 
-            <ul className={styles['location-overview-card__breakdown']}>
-              {(isLoading ? Array.from({ length: 3 }, (_, idx) => ({
-                key: `loading-${idx}`,
-                title: '',
-                percentage: 0,
-                segments: [],
-              })) : config.breakdown).map((item, breakdownIndex) => (
-                <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
-                  <div className={styles['location-overview-card__breakdown-row']}>
-                    <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>
-                    <span className={styles['location-overview-card__breakdown-pct']}>{item.percentage}%</span>
-                  </div>
-                  <HorizontalBarChart segments={item.segments} animationDelay={400 + breakdownIndex * 60} />
-                </li>
-              ))}
-            </ul>
+            {!isLoading && visibleBreakdown.length === 0 ? (
+              <p className={styles['location-overview-card__empty']}>No locations match "{searchQuery}".</p>
+            ) : (
+              <ul className={styles['location-overview-card__breakdown']}>
+                {(isLoading ? Array.from({ length: MAX_BREAKDOWN_ROWS }, (_, idx) => ({
+                  key: `loading-${idx}`,
+                  title: '',
+                  percentage: 0,
+                  segments: [],
+                  delta: 0,
+                })) : visibleBreakdown).map((item, breakdownIndex) => (
+                  <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
+                    <div className={styles['location-overview-card__breakdown-row']}>
+                      <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>
+                      {!isLoading && (
+                        <span
+                          className={`${styles['location-overview-card__breakdown-delta']} ${
+                            item.delta >= 0
+                              ? styles['location-overview-card__breakdown-delta--up']
+                              : styles['location-overview-card__breakdown-delta--down']
+                          }`}
+                        >
+                          {item.delta >= 0 ? '+' : ''}{item.delta}%
+                        </span>
+                      )}
+                    </div>
+                    <HorizontalBarChart segments={item.segments} animationDelay={400 + breakdownIndex * 60} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </div>

@@ -22,8 +22,6 @@ function InfoIcon() {
     <svg
       className={styles.infoIcon}
       viewBox="0 0 24 24"
-      width="20"
-      height="20"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.6"
@@ -42,15 +40,15 @@ export default function EventSeverityHistogramCard({
   isLoading = false,
 }: EventSeverityHistogramCardProps) {
   const placeholderBars: SeverityHistogramBar[] = [
-    { id: 'low', bucket: 'low', value: 18 },
+    { id: 'low',    bucket: 'low',    value: 18 },
     { id: 'medium', bucket: 'medium', value: 12 },
-    { id: 'high', bucket: 'high', value: 9 },
-  ]
+    { id: 'high',   bucket: 'high',   value: 9  },
+  ];
 
-  const displayBars = isLoading ? placeholderBars : bars
+  const displayBars    = isLoading ? placeholderBars : bars;
   const displaySummary = isLoading
     ? { count: 0, labelLine1: 'Loading', labelLine2: '...' }
-    : summary
+    : summary;
 
   return (
     <div className={styles.card}>
@@ -85,7 +83,10 @@ export default function EventSeverityHistogramCard({
         ))}
       </div>
 
-      <EventSeverityHistogramChart bars={displayBars} />
+      {/* chartWrap fills all remaining height — canvas inside is 100%×100% */}
+      <div className={styles.chartWrap}>
+        <EventSeverityHistogramChart bars={displayBars} />
+      </div>
     </div>
   );
 }

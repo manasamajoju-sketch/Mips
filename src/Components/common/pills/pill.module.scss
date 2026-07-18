@@ -7,9 +7,10 @@
 
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  // Padding scales with viewport so pills don't overflow on small cards
+  padding: clamp(2px, 0.3vh, 5px) clamp(6px, 0.6vw, 10px);
   border-radius: $radius-pill;
-  font-size: $fs-axis;
+  font-size: clamp(8px, 0.65vw, 11px);
   font-weight: 300;
   line-height: 1.2;
   white-space: nowrap;

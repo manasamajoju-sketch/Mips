@@ -2,12 +2,16 @@
 
 .sparkline-chart {
   width: 100%;
+  height: 100%;       // fill the sparkline-wrap flex container
+  display: flex;
+  flex-direction: column;
 
   &__key {
     display: flex;
     align-items: center;
     gap: $space-md;
     margin-bottom: $space-xs;
+    flex-shrink: 0;
   }
 
   &__key-item {
@@ -25,9 +29,11 @@
     flex-shrink: 0;
   }
 
+  // SVG fills all remaining height in the flex column
   &__svg {
     width: 100%;
-    height: 100px;
+    flex: 1;
+    min-height: 0;
     display: block;
     overflow: visible;
   }

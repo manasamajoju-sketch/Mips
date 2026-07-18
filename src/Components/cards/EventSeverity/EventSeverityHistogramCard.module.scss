@@ -4,96 +4,115 @@
 .card {
   background: $color-surface;
   border-radius: $radius-card;
-  padding: 20px 22px;
+  padding: 14px 16px 10px;
   font-family: $font-family-base;
-  // box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+
+  // Flex column: header → total → legend → chart fills the rest
   display: flex;
   flex-direction: column;
+  gap: 0;
   overflow: hidden;
-
-  > :last-child {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
 }
 
+// ── Header ────────────────────────────────────────────────────────────
 .header {
-  @include flex(row, center, space-between, 6px);
-  margin-bottom: 6px;
-  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  margin-bottom: 4px;
 }
 
 .title {
-  @include flex(row, center, flex-start, 6px);
-  font-size: 15.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: clamp(12px, 1.1vw, 15px);
   font-weight: 300;
   color: $color-text-primary;
   margin: 0;
+  white-space: nowrap;
 }
 
 .infoBtn {
   @include reset-button;
-  @include flex(row, center, center);
-  width: 14px;
-  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: $color-accent-teal;
+  flex-shrink: 0;
 
   svg {
-    width: 100%;
-    height: 100%;
+    // Icon scales with card width via clamp
+    width: clamp(12px, 1vw, 16px);
+    height: clamp(12px, 1vw, 16px);
   }
 }
 
+// ── Total ─────────────────────────────────────────────────────────────
 .total {
-  @include flex(row, flex-end, flex-start, 6px);
-  margin-bottom: 6px;
-  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+  margin-bottom: 4px;
 }
 
 .totalValue {
-  font-size: 32px;
+  font-size: clamp(20px, 2.2vw, 32px);
   font-weight: 300;
   line-height: 1;
   color: $color-text-primary;
 }
 
 .totalLabel {
-  font-size: 11px;
+  font-size: clamp(9px, 0.7vw, 11px);
   color: $color-text-secondary;
   padding-bottom: 3px;
+  line-height: 1.35;
 }
 
+// ── Legend ────────────────────────────────────────────────────────────
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 6px 10px;
+  flex-shrink: 0;
+  margin-bottom: 6px;
 }
 
 .legendItem {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 4px;
 }
 
 .legendDot {
-  width: 10px;
-  height: 10px;
+  width: clamp(6px, 0.6vw, 10px);
+  height: clamp(6px, 0.6vw, 10px);
   border-radius: 50%;
-  display: inline-block;
   flex-shrink: 0;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .legendText {
-  font-size: 10px;
+  font-size: clamp(8px, 0.65vw, 10px);
   line-height: 1.4;
   color: $color-text-primary;
 }
 
 .legendRange {
   color: $color-text-muted;
+}
+
+// ── Chart — takes all remaining height ───────────────────────────────
+// The canvas inside fills 100% of this via its own rule
+.chartWrap {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  position: relative;
 }
