@@ -21,5 +21,7 @@ export interface TopEvent {
   severity: 'Low' | 'Medium' | 'High'
   tags: TopEventTag[]
   type?: 'impact' | 'gyro'
+  hicValue?: number
+  bricValue?: number
   data: TopEventSparklinePoint[]
 }

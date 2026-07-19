@@ -1,4 +1,4 @@
-export type EventCategoryKey = 'sos' | 'active' | 'passive' | 'others';
+export type EventCategoryKey = 'sos' | 'active' | 'passive' | 'others' | 'moto' | 'construction';
 
 export interface EventCategoryLabel {
   key: EventCategoryKey;

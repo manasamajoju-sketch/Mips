@@ -1,5 +1,5 @@
 import { EVENT_CATEGORY_COLORS } from '../Constants/eventOverviewData'
-import type { TopEvent } from '../types/topEvents'
+import type { TopEvent, TopEventTag } from '../types/topEvents'
 import type { TopEventsApiEvent } from '../types/topEventsApi'
 
 function formatDate(dateString: string) {
@@ -18,53 +18,67 @@ function formatTime(dateString: string) {
   }).toLowerCase()
 }
 
-function isImpactTopEvent(event: TopEventsApiEvent) {
-  return event.eventType === 'major_impact' || event.eventType === 'impact' || event.eventType === 'offline_event'
+// event.eventType is NOT a reliable impact/gyro signal — the `type`
+// parameter, known from the call site (which typed request produced this
+// event), is the correct source of truth.
+function getRawMetricValue(event: TopEventsApiEvent, type: 'impact' | 'gyro'): number {
+  return (type === 'impact' ? event.grmsMax : event.irmsMax) ?? 0
 }
 
-function getMetricValue(event: TopEventsApiEvent) {
-  return isImpactTopEvent(event) ? event.grmsMax : event.irmsMax
+// Rounds the metric to at most 1 decimal place so the big number never
+// overflows the card — e.g. 417.0834847185873 -> 417.1, 0 -> 0.
+function roundMetricValue(value: number): number {
+  if (!Number.isFinite(value)) return 0
+  return Math.round(value * 10) / 10
 }
 
-export function selectTopEventForType(events: TopEventsApiEvent[], type: 'impact' | 'gyro'): TopEventsApiEvent | null {
-  const filteredEvents = events.filter((event) =>
-    type === 'impact'
-      ? isImpactTopEvent(event)
-      : event.eventType === 'gyro'
-  )
+export function selectTopEventForType(
+  events: TopEventsApiEvent[],
+  type: 'impact' | 'gyro',
+): TopEventsApiEvent | null {
+  if (events.length === 0) return null
 
-  if (filteredEvents.length > 0) {
-    return filteredEvents.reduce<TopEventsApiEvent | null>((max, current) => {
-      if (!max) return current
-      return getMetricValue(current) > getMetricValue(max) ? current : max
-    }, null)
+  return events.reduce<TopEventsApiEvent | null>((max, current) => {
+    if (!max) return current
+    return getRawMetricValue(current, type) > getRawMetricValue(max, type) ? current : max
+  }, null)
+}
+
+// Fixed per-type tag sets, matching the reference design:
+// Impact (left card)  → SOS, Construction
+// Gyro   (right card) → Active, Moto
+function getTagsForType(type: 'impact' | 'gyro'): TopEventTag[] {
+  if (type === 'impact') {
+    return [
+      { text: 'SOS', color: EVENT_CATEGORY_COLORS.sos },
+      { text: 'Construction', color: EVENT_CATEGORY_COLORS.construction },
+    ]
   }
 
-  return events[0] ?? null
+  return [
+    { text: 'Active', color: EVENT_CATEGORY_COLORS.active },
+    { text: 'Moto', color: EVENT_CATEGORY_COLORS.moto },
+  ]
 }
 
-export function mapTopEventsApiEventToTopEvent(event: TopEventsApiEvent): TopEvent {
-  const isImpact = isImpactTopEvent(event)
+export function mapTopEventsApiEventToTopEvent(
+  event: TopEventsApiEvent,
+  type: 'impact' | 'gyro',
+): TopEvent {
+  const isImpact = type === 'impact'
 
   return {
     key: event.eventId,
-    metricValue: getMetricValue(event),
+    metricValue: roundMetricValue(getRawMetricValue(event, type)),
     metricSuffix: isImpact ? 'gF' : 'rad/s',
     metricLabel: isImpact ? 'Maximum\nG-Force' : 'Max Rotational\nVelocity',
     date: formatDate(event.createdAt),
     time: formatTime(event.createdAt),
     severity: 'Low',
-    tags: [
-      {
-        text: isImpact ? 'Impact' : 'Gyro',
-        color: isImpact ? EVENT_CATEGORY_COLORS.active : EVENT_CATEGORY_COLORS.passive,
-      },
-      {
-        text: event.vertical,
-        color: EVENT_CATEGORY_COLORS.sos,
-      },
-    ],
-    type: isImpact ? 'impact' : 'gyro',
+    tags: getTagsForType(type),
+    type,
+    hicValue: isImpact ? event.grmsMax : undefined,
+    bricValue: isImpact ? event.bric : undefined,
     data: [],
   }
 }

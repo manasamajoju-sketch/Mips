@@ -58,21 +58,24 @@
   display: flex;
 }
 
+@media (max-width: $bp-laptop) {
+  .dashboardPage {
+    gap: $space-md;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'event-overview event-analytics'
+      'location-overview top-events'
+      'event-timeline event-timeline'
+      'user-overview product-overview'
+      'user-demographics event-severity'
+      'event-time event-time';
+  }
+}
+
 @media (max-width: $bp-tablet) {
   .dashboardPage {
     gap: $space-md;
     grid-template-columns: 1fr;
-    grid-template-rows:
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto;
     grid-template-areas:
       'event-overview'
       'event-analytics'
@@ -92,17 +95,6 @@
     padding: $space-md;
     gap: $space-md;
     grid-template-columns: 1fr;
-    grid-template-rows:
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto
-      auto;
     grid-template-areas:
       'event-overview'
       'event-analytics'

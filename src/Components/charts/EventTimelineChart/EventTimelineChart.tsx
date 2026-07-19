@@ -43,13 +43,12 @@ interface EventTimelineChartProps {
 interface DayColumnProps {
   point: TimelinePoint;
   categories: TimelineCategory[];
-  maxTotal: number;
   isActive: boolean;
   onHover: () => void;
   onLeave: () => void;
 }
 
-function DayColumn({ point, categories, maxTotal, isActive, onHover, onLeave }: DayColumnProps) {
+function DayColumn({ point, categories, isActive, onHover, onLeave }: DayColumnProps) {
   const categoryValues = categories.map((cat) => ({
     ...cat,
     value: Number(point[cat.key]) || 0,
@@ -127,7 +126,6 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
               key={`${point.month}-${point.date}-${index}`}
               point={point}
               categories={categories}
-              maxTotal={resolvedMaxTotal}
               isActive={hoveredIndex === index}
               onHover={() => setHoveredIndex(index)}
               onLeave={() => setHoveredIndex(null)}

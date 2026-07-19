@@ -13,6 +13,8 @@ export const EVENT_CATEGORY_COLORS: Record<EventCategoryKey, string> = {
   active: '#7DDBEA',
   passive: '#14A6BE',
   others: '#17364A',
+  moto: '#00A8B5',        // teal — adjust to match your existing 'passive'/moto pill color
+  construction: '#FFE566',
 };
 
 export const EVENT_CATEGORY_LABELS: EventCategoryLabel[] = [

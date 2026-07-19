@@ -65,14 +65,6 @@
   display: flex;
 }
 
-.totalRotationalEvents {
-  grid-area: total-rotational-events;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-}
-
 .allEvents {
   grid-area: all-events;
   min-width: 0;
@@ -81,48 +73,30 @@
   display: flex;
 }
 
-@media (max-width: $bp-tablet) {
+@media (max-width: $bp-laptop) {
   .eventsPage {
     gap: $space-md;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows:
-      auto
-      auto
-      auto
-      auto
-        auto
-        auto;
-      grid-template-areas:
-        'event-overview event-overview'
-        'event-analytics event-analytics'
-        'location-overview location-overview'
-        'top-g-force-events top-g-force-events'
-        'total-rotational-events event-time'
-        'all-events all-events';
-    }
+    grid-template-areas:
+      'event-overview event-analytics'
+      'location-overview top-g-force-events'
+      'impact-duration total-rotational-events'
+      'all-events all-events';
   }
+}
 
-  @media (max-width: $bp-mobile) {
-    .eventsPage {
-      padding: $space-md;
-      gap: $space-md;
-      grid-template-columns: 1fr;
-      grid-template-rows:
-        auto
-        auto
-        auto
-        auto
-        auto
-        auto
-        auto
-        auto;
-      grid-template-areas:
-        'event-overview'
-        'event-analytics'
-        'location-overview'
-        'top-g-force-events'
-        'total-rotational-events'
-        'event-time'
-        'all-events';
-    }
+@media (max-width: $bp-tablet) {
+  .eventsPage {
+    padding: $space-md;
+    gap: $space-md;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'event-overview'
+      'event-analytics'
+      'location-overview'
+      'top-g-force-events'
+      'impact-duration'
+      'total-rotational-events'
+      'all-events';
   }
+}

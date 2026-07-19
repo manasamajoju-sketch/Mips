@@ -62,7 +62,6 @@ interface Props {
 }
 
 export default function Dashboard({ range, hideWidgets = [], hideLocationOverviewDetails = false }: Props) {
-  console.log('[Dashboard] render', range)
   const hiddenWidgets = new Set(hideWidgets)
   const [timelineEntries, setTimelineEntries] = useState<EventTimelineEntry[]>([])
   const [timelineLoading, setTimelineLoading] = useState(true)
@@ -247,28 +246,20 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   useEffect(() => {
     let isMounted = true
 
-    console.log('[Dashboard] top events effect start', range)
     Promise.allSettled([
       dashboardService.getTopEvents(range, 'impact'),
       dashboardService.getTopEvents(range, 'gyro'),
     ])
       .then(async (results) => {
-        console.log('[Dashboard] top events settled', results)
-        if (!isMounted) return
-
-        await new Promise((resolve) => setTimeout(resolve, 3000))
-        console.log('[Dashboard] processed events delay completed')
         if (!isMounted) return
 
         const loadEvent = async (result: PromiseSettledResult<unknown>, type: 'impact' | 'gyro') => {
-          console.log('[Dashboard] loadEvent start', type)
           if (result.status !== 'fulfilled') {
             console.warn('[Dashboard] getTopEvents failed for', type, result.reason)
             return null
           }
 
           const topEventsResponse = result.value as import('../../types/topEventsApi').TopEventsApiResponse
-          console.log('[Dashboard] topEventsResponse', type, topEventsResponse)
           const topEvent = selectTopEventForType(topEventsResponse.data, type)
           if (!topEvent) {
             console.warn('[Dashboard] No top event found for', type, topEventsResponse.data)
@@ -276,13 +267,29 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
           }
 
           try {
-            console.log('[Dashboard] Fetching processed events for', type, topEvent.eventId)
             const processedResponse = await dashboardService.getProcessedEvents(topEvent.eventId, type)
-            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data)
-            return { ...mapTopEventsApiEventToTopEvent(topEvent), data: sparklineData }
+            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data, type)
+            if (sparklineData.length < 2) {
+              console.warn('[Dashboard] Sparkline data has fewer than 2 points', type, sparklineData)
+            }
+
+            const mappedTopEvent = mapTopEventsApiEventToTopEvent(topEvent, type)
+           const derivedMetricValue = Math.round(
+  Math.max(
+    0,
+    ...sparklineData.flatMap((point) => [point.xAxis, point.yAxis, point.zAxis].map((value) => Math.abs(value)))
+  ) * 10
+) / 10
+
+            const metricValue = mappedTopEvent.metricValue || derivedMetricValue
+            return {
+              ...mappedTopEvent,
+              data: sparklineData,
+              metricValue,
+            }
           } catch (error) {
             console.error('[Dashboard] Processed events request failed for', type, topEvent.eventId, error)
-            return mapTopEventsApiEventToTopEvent(topEvent)
+            return mapTopEventsApiEventToTopEvent(topEvent, type)
           }
         }
 
@@ -292,8 +299,13 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         ])
 
         const validEvents = mappedEvents.filter((event): event is TopEvent => event !== null)
-        if (validEvents.length > 0) {
-          setTopEvents(validEvents)
+        const orderedEvents = validEvents.slice().sort((a, b) => {
+          const order = { impact: 0, gyro: 1 }
+          return (order[a.type ?? 'gyro'] ?? 2) - (order[b.type ?? 'gyro'] ?? 2)
+        })
+
+        if (orderedEvents.length > 0) {
+          setTopEvents(orderedEvents)
         }
       })
       .catch(() => {
@@ -419,7 +431,6 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       {!hiddenWidgets.has('eventSeverity') && (
         <div className={styles.eventSeverity}><EventSeverityHistogramCard isLoading={overviewLoading} /></div>
       )}
-      {/* <div className={styles.eventSeverity}><EventSeverityCard /></div> */}
       <div className={styles.eventTime}>
         <EventTimeHeatmapCard range={range} />
       </div>

@@ -12,6 +12,6 @@ export function mapProcessedEventDataToSparkline(
   }))
 }
 
-export function mapProcessedEventResponseToSparkline(processed: ProcessedEventData): TopEventSparklinePoint[] {
+export function mapProcessedEventResponseToSparkline(processed: ProcessedEventData, type: string): TopEventSparklinePoint[] {
   return mapProcessedEventDataToSparkline(processed)
 }

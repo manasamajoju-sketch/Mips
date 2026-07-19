@@ -75,5 +75,7 @@ $shadow-card: 0 12px 30px rgba(20, 130, 145, 0.28);
 $shadow-tooltip: 0 4px 10px rgba(0, 0, 0, 0.15);
 
 // Breakpoints
-$bp-tablet: 900px;
-$bp-mobile: 600px;
+$bp-desktop: 1440px;
+$bp-laptop: 1280px;
+$bp-tablet: 1024px;
+$bp-mobile: 768px;

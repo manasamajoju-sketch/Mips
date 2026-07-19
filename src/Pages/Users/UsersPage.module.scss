@@ -58,32 +58,21 @@
   grid-area: userList;
 }
 
-@media (max-width: $bp-tablet) {
+@media (max-width: $bp-laptop) {
   .page {
     gap: $space-md;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: auto auto auto auto auto auto;
     grid-template-areas:
       'hero hero'
       'analytics analytics'
       'location location'
-      'highest highest'
+      'highestLifetime highestImpact'
       'demographics demographics'
       'userList userList';
   }
-
-  .heroCard,
-  .analyticsCard,
-  .locationCard,
-  .highestLifetimeCard,
-  .highestImpactCard,
-  .demographicsCard,
-  .userList {
-    grid-column: 1 / -1;
-  }
 }
 
-@media (max-width: $bp-mobile) {
+@media (max-width: $bp-tablet) {
   .page {
     padding: $space-md;
     gap: $space-md;
@@ -92,7 +81,8 @@
       'hero'
       'analytics'
       'location'
-      'highest'
+      'highestLifetime'
+      'highestImpact'
       'demographics'
       'userList';
   }
