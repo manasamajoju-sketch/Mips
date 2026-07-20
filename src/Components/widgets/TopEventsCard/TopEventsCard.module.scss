@@ -182,7 +182,7 @@
   &__skeleton-line {
     height: clamp(10px, 0.9vh, 14px);
     border-radius: 4px;
-    background: black;
+    background: $color-white;
     animation: skeleton-pulse 1.4s ease-in-out infinite;
   }
 
@@ -190,7 +190,7 @@
     width: 100%;
     height: clamp(40px, 6vh, 70px);
     border-radius: 4px;
-    background:   black;
+    background:  $color-white;
     animation: skeleton-pulse 1.4s ease-in-out infinite;
     margin: clamp(4px, 0.4vh, 8px) 0;
   }
@@ -199,7 +199,7 @@
     height: clamp(16px, 1.4vh, 22px);
     width: clamp(40px, 4vw, 60px);
     border-radius: $radius-pill;
-    background: black;
+    background: $color-white;
     animation: skeleton-pulse 1.4s ease-in-out infinite;
   }
 
