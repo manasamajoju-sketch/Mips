@@ -6,76 +6,92 @@ export interface HorizontalBarSegment {
   label: string
   value: number
   color: string
-  /** Text color used for the inline value label drawn on top of this segment when active */
   textColor?: string
 }
 
 interface HorizontalBarChartProps {
   segments: HorizontalBarSegment[]
   animate?: boolean
-  /** When true, the bar grows taller and reveals each segment's value inline */
   active?: boolean
   valueFormatter?: (value: number) => string
-  /** Delay (ms) before the load-in grow animation starts, so multiple bars in a list can stagger */
   animationDelay?: number
 }
 
-const defaultFormatter = (value: number) => value.toLocaleString()
+const fmt = (v: number) => v.toLocaleString()
 
 export default function HorizontalBarChart({
   segments,
   animate = true,
   active = false,
-  valueFormatter = defaultFormatter,
+  valueFormatter = fmt,
   animationDelay = 0,
 }: HorizontalBarChartProps) {
-  const total = segments.reduce((sum, segment) => sum + segment.value, 0)
-  const lastIndex = segments.length - 1
+  const total = segments.reduce((s, seg) => s + seg.value, 0)
 
-  let cumulativePct = 0
+  // Only segments with actual width participate in edge-rounding.
+  // A zero-value segment (e.g. mipsProducts = 0) must not "claim" the
+  // first/last slot and leave the visible segment square-edged.
+  const visibleIndices = segments
+    .map((seg, idx) => ({ idx, hasWidth: total > 0 && seg.value > 0 }))
+    .filter(v => v.hasWidth)
+    .map(v => v.idx)
+
+  const firstVisibleIdx = visibleIndices[0]
+  const lastVisibleIdx  = visibleIndices[visibleIndices.length - 1]
 
   return (
     <div
-      className={`${styles['horizontal-bar-chart']} ${animate ? styles['horizontal-bar-chart--animate'] : ''} ${
-        active ? styles['horizontal-bar-chart--active'] : ''
-      }`}
+      className={[
+        styles.bar,
+        animate ? styles.barAnimate : '',
+        active  ? styles.barActive  : '',
+      ].filter(Boolean).join(' ')}
     >
-      {segments.map((segment, index) => {
-        const widthPct = total > 0 ? (segment.value / total) * 100 : 0
-        const startPct = cumulativePct
-        cumulativePct += widthPct
-        const isFirst = index === 0
-        const isLast = index === lastIndex
-        const showInlineValue = active && isFirst && widthPct > 18
-        const showBoundaryBadge = active && isLast && !isFirst
+      {segments.map((seg, idx) => {
+        const widthPct = total > 0 ? (seg.value / total) * 100 : 0
+
+        const isFirst = idx === firstVisibleIdx
+        const isLast  = idx === lastVisibleIdx
+
+        const showInline = active && widthPct >= 12
+        const showBadge  = active && widthPct > 0 && widthPct <= 12
+
+        // Skip rendering truly zero-width segments entirely — an empty
+        // div with width:0 can still register in flex layout/edge cases.
+        if (widthPct <= 0) return null
 
         return (
           <div
-            key={segment.key}
-            className={styles['horizontal-bar-chart__segment']}
-            style={
-              {
-                '--segment-width': `${widthPct}%`,
-                '--segment-color': segment.color,
-                animationDelay: `${animationDelay + index * 90}ms`,
-              } as CSSProperties
-            }
-            // title={`${segment.label}: ${segment.value}`}
+            key={seg.key}
+            className={[
+              styles.segment,
+              isFirst ? styles.segmentFirst : '',
+              isLast  ? styles.segmentLast  : '',
+            ].filter(Boolean).join(' ')}
+            style={{
+              '--seg-w':     `${widthPct}%`,
+              '--seg-color': seg.color,
+              animationDelay: `${animationDelay + idx * 80}ms`,
+            } as CSSProperties}
           >
-            {showInlineValue && (
+            {showInline && (
               <span
-                className={styles['horizontal-bar-chart__value']}
-                style={{ color: segment.textColor ?? 'inherit' }}
+                className={styles.inlineValue}
+                style={{ color: seg.textColor ?? '#101828' }}
               >
-                {valueFormatter(segment.value)}
+                {valueFormatter(seg.value)}
               </span>
             )}
-            {showBoundaryBadge && (
+
+            {showBadge && (
               <span
-                className={styles['horizontal-bar-chart__badge']}
-                style={{ left: `${startPct}%`, background: segment.color, color: segment.textColor ?? 'inherit' }}
+                className={styles.badge}
+                style={{
+                  background: seg.color,
+                  color:      seg.textColor ?? '#101828',
+                }}
               >
-                {valueFormatter(segment.value)}
+                {valueFormatter(seg.value)}
               </span>
             )}
           </div>

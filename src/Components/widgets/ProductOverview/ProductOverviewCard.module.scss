@@ -2,28 +2,29 @@
 @use '@/styles/mixins' as *;
 @use '@/styles/animations';
 
+// Card occupies 1 col × 1 row of the 6-col / 3-row dashboard grid
 .card {
   background: $color-surface;
   border-radius: $radius-card;
-  padding: 20px 22px;
+  padding: clamp(10px, 1.3vh, 16px) clamp(10px, 1.3vw, 16px);
   font-family: $font-family-base;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   height: 100%;
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  gap: clamp(3px, 0.4vh, 5px);
   overflow: hidden;
 }
 
-.header {
-  margin-bottom: 6px;
-  flex: 0 0 auto;
-}
+// ── Header ────────────────────────────────────────────────────────────
+.header { flex-shrink: 0; }
 
 .title {
-  @include flex(row, center, flex-start, 6px);
-  font-size: 15.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(12px, 1.05vw, 15.5px);
   font-weight: 300;
   color: $color-text-primary;
   margin: 0;
@@ -31,25 +32,27 @@
 
 .infoBtn {
   @include reset-button;
-  @include flex(row, center, center);
-  width: 14px;
-  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(13px, 1.1vw, 18px);
+  height: clamp(13px, 1.1vw, 18px);
   color: $color-accent-teal;
+  flex-shrink: 0;
 
-  svg {
-    width: 100%;
-    height: 100%;
-  }
+  svg { width: 100%; height: 100%; }
 }
 
+// ── Big % total ───────────────────────────────────────────────────────
 .total {
-  @include flex(row, flex-end, flex-start, 6px);
-  margin-bottom: 6px;
-  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(3px, 0.3vw, 6px);
+  flex-shrink: 0;
 }
 
 .totalValue {
-  font-size: 32px;
+  font-size: clamp(22px, 2.4vw, 36px);
   font-weight: 300;
   line-height: 1;
   color: $color-text-primary;
@@ -58,84 +61,82 @@
 .totalLabel {
   display: flex;
   flex-direction: column;
-  font-size: 9px;
+  font-size: clamp(8px, 0.65vw, 10px);
   color: $color-text-secondary;
-  line-height: 1.2;
-  padding-bottom: 2px;
+  line-height: 1.25;
+  padding-bottom: 3px;
 }
 
+// ── Legend — 4 items in one row ───────────────────────────────────────
 .legend {
-  @include flex(row, center, flex-start, 8px);
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.6vw, 10px);
   flex-wrap: wrap;
-  margin-bottom: 8px;
-  flex: 0 0 auto;
+  flex-shrink: 0;
 }
 
 .legendItem {
-  @include flex(row, center, flex-start, 6px);
-  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(8px, 0.65vw, 10px);
   color: $color-text-primary;
+  white-space: nowrap;
   opacity: 0;
-  transform: translateY(4px);
-  animation: key-fade-in 750ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: key-fade-in 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  &:nth-child(1) {
-    animation-delay: 350ms;
-  }
-
-  &:nth-child(2) {
-    animation-delay: 600ms;
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) { animation-delay: #{200 + ($i - 1) * 120}ms; }
   }
 }
 
 .legendDot {
-  width: 8px;
-  height: 8px;
+  width: clamp(6px, 0.55vw, 8px);
+  height: clamp(6px, 0.55vw, 8px);
   border-radius: 50%;
   flex-shrink: 0;
 }
 
+// ── Bar list — fills remaining height ─────────────────────────────────
 .barList {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: clamp(1px, 0.3vh, 4px);
   overflow: hidden;
 }
 
+// Each row: label line + bar. On hover the row grows.
 .barRow {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   flex: 1 1 0;
-  justify-content: center;
   min-height: 0;
+  justify-content: center;
   transition: flex-grow 200ms ease;
+  cursor: pointer;
 }
 
-.barRowActive {
-  flex-grow: 2.6;
-}
+.barRowActive { flex-grow: 2.5; }
 
 .barLabelRow {
-  @include flex(row, center, flex-start, 6px);
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .barLabel {
-  font-size: 10px;
+  font-size: clamp(9px, 0.75vw, 11px);
   color: $color-text-primary;
 }
 
 .delta {
-  font-size: 10px;
+  font-size: clamp(9px, 0.75vw, 11px);
   font-weight: 300;
 }
 
-.deltaUp {
-  color: $color-delta-positive-good;
-}
-
-.deltaDown {
-  color: $color-delta-negative-bad;
-}
+.deltaUp   { color: $color-delta-positive-good; }
+.deltaDown { color: $color-delta-negative-bad; }

@@ -1,76 +1,98 @@
 @use '@/styles/variables' as *;
 
-.horizontal-bar-chart {
+// ── Bar track ─────────────────────────────────────────────────────────
+.bar {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
-  height: 8px;
+  min-width: 0;
+  height: clamp(6px, 1vh, 10px);
   border-radius: $radius-pill;
   overflow: visible;
   background: $color-border;
   transition: height 180ms ease;
-
-  &--active {
-    height: 34px;
-  }
-
-  &__segment {
-    position: relative;
-    height: 100%;
-    width: var(--segment-width, 0%);
-    background: var(--segment-color, $color-accent-teal);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-
-    &:first-child {
-      border-top-left-radius: $radius-pill;
-      border-bottom-left-radius: $radius-pill;
-    }
-
-    &:last-child {
-      border-top-right-radius: $radius-pill;
-      border-bottom-right-radius: $radius-pill;
-    }
-  }
-
-  &--animate &__segment {
-    animation: horizontal-bar-chart-in 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    transform-origin: left;
-    transform: scaleX(0);
-  }
-
-  &__value {
-    padding-left: 12px;
-    font-size: 13px;
-    font-weight: 300;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__badge {
-    position: absolute;
-    top: 50%;
-    transform: translate(2px, -50%);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 30px;
-    height: 24px;
-    padding: 0 8px;
-    border-radius: $radius-pill;
-    font-size: 12px;
-    font-weight: 300;
-    white-space: nowrap;
-    box-shadow: $shadow-tooltip;
-    z-index: 1;
-  }
+  cursor: pointer;
 }
 
-@keyframes horizontal-bar-chart-in {
-  to {
-    transform: scaleX(1);
-  }
+.barActive {
+  height: clamp(26px, 3.2vh, 38px);
+}
+
+// ── Segment ───────────────────────────────────────────────────────────
+.segment {
+  position: relative;
+  height: 100%;
+  width: var(--seg-w, 0%);
+  min-width: 0;
+  background: var(--seg-color);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+.segmentFirst {
+  border-top-left-radius:    $radius-pill;
+  border-bottom-left-radius: $radius-pill;
+}
+
+.segmentLast {
+  border-top-right-radius:    $radius-pill;
+  border-bottom-right-radius: $radius-pill;
+}
+
+.barAnimate .segment {
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: bar-grow-in 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+// ── Inline value (inside left segment) ───────────────────────────────
+.inlineValue {
+  position: absolute;
+  left: clamp(8px, 1vw, 14px);
+  font-size: clamp(11px, 0.9vw, 14px);
+  font-weight: 300;
+  white-space: nowrap;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  animation: fade-in 180ms ease 160ms forwards;
+}
+
+// ── Badge (flush inside right edge of narrow segments) ─────────────────
+.badge {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(24px, 2.2vw, 34px);
+  height: clamp(20px, 2.4vh, 28px);
+  padding: 0 clamp(5px, 0.5vw, 8px);
+  border-radius: $radius-pill;
+  font-size: clamp(10px, 0.8vw, 13px);
+  font-weight: 300;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: $shadow-tooltip;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  animation: fade-in 180ms ease 160ms forwards;
+}
+
+@keyframes bar-grow-in {
+  to { transform: scaleX(1); }
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
 }

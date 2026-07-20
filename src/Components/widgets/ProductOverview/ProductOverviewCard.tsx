@@ -13,19 +13,50 @@ interface ProductOverviewCardProps {
   isLoading?: boolean
 }
 
-export default function ProductOverviewCard({ categories = productOverviewCategories, isLoading = false }: ProductOverviewCardProps) {
+export default function ProductOverviewCard({
+  categories = productOverviewCategories,
+  isLoading = false,
+}: ProductOverviewCardProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
 
   const placeholderCategories: ProductOverviewCategory[] = [
-    { key: 'cycling', title: 'Cycling', mipsProducts: 18, other: 12, total: 30, delta: 0 },
-    { key: 'moto', title: 'Moto', mipsProducts: 14, other: 10, total: 24, delta: 0 },
-    { key: 'ppe', title: 'PPE', mipsProducts: 10, other: 8, total: 18, delta: 0 },
+    { key: 'ppe',     title: 'PPE',     mipsProducts: 1234, other: 34,  total: 1268, delta: 5  },
+    { key: 'cycling', title: 'Cycling', mipsProducts: 180,  other: 80,  total: 260,  delta: -5 },
+    { key: 'moto',    title: 'Moto',    mipsProducts: 180,  other: 80,  total: 260,  delta: 5 },
+    { key: 'others',  title: 'Others',  mipsProducts: 80,   other: 120, total: 200,  delta: -5 },
   ]
 
+  const normalizeCategory = (cat: ProductOverviewCategory) => {
+    const segmentSum = cat.mipsProducts + cat.other
+    const total = cat.total > 0 ? cat.total : segmentSum
+
+    if (total < segmentSum) {
+      return {
+        ...cat,
+        other: Math.max(0, total - cat.mipsProducts),
+        total,
+      }
+    }
+
+    return { ...cat, total }
+  }
+
   const renderedCategories = isLoading ? placeholderCategories : categories
-  const grandMips = renderedCategories.reduce((sum, c) => sum + c.mipsProducts, 0)
-  const grandTotal = renderedCategories.reduce((sum, c) => sum + c.mipsProducts + c.other, 0)
-  const mipsPercentage = isLoading ? '--' : grandTotal > 0 ? Math.round((grandMips / grandTotal) * 100) : 0
+  const normalizedCategories = renderedCategories.map(normalizeCategory)
+  const grandMips  = normalizedCategories.reduce((s, c) => s + c.mipsProducts, 0)
+  const grandTotal = normalizedCategories.reduce((s, c) => s + c.total, 0)
+  const mipsPct    = isLoading ? '--' : grandTotal > 0 ? Math.round((grandMips / grandTotal) * 100) : 0
+
+  // Legend items matching reference image — 4 items
+  const legendItems = [
+    { label: 'MIPS',     color: productOverviewSegmentColors.mipsProducts },
+    { label: 'Non-MIPS', color: productOverviewSegmentColors.other },
+    { label: 'Unknown',  color: productOverviewSegmentColors.unknown },
+    { label: 'Others',   color: productOverviewSegmentColors.others },
+  ]
+
+  const getRestValue = (cat: ProductOverviewCategory) =>
+    Math.max(0, cat.total - cat.mipsProducts - cat.other)
 
   return (
     <section className={styles.card}>
@@ -38,62 +69,74 @@ export default function ProductOverviewCard({ categories = productOverviewCatego
         </h2>
       </header>
 
+      {/* Big % + label */}
       <div className={styles.total}>
-        <span className={styles.totalValue}>{mipsPercentage}%</span>
+        <span className={styles.totalValue}>{mipsPct}%</span>
         <span className={styles.totalLabel}>
           <span>MIPS</span>
           <span>Products</span>
         </span>
       </div>
 
+      {/* 4-item legend */}
       <div className={styles.legend}>
-        <span className={styles.legendItem}>
-          <span className={styles.legendDot} style={{ background: productOverviewSegmentColors.mipsProducts }} />
-          MIPS Products
-        </span>
-        <span className={styles.legendItem}>
-          <span className={styles.legendDot} style={{ background: productOverviewSegmentColors.other }} />
-          Non-MIPS Products
-        </span>
+        {legendItems.map(({ label, color }) => (
+          <span key={label} className={styles.legendItem}>
+            <span className={styles.legendDot} style={{ background: color }} />
+            {label}
+          </span>
+        ))}
       </div>
 
+      {/* Bar list */}
       <div className={styles.barList}>
-        {renderedCategories.map((category, categoryIndex) => {
-          const isActive = hoveredKey === category.key
-          const isPositive = category.delta >= 0
+        {normalizedCategories.map((cat, idx) => {
+          const isActive   = hoveredKey === cat.key
+          const isPositive = cat.delta >= 0
 
           return (
             <div
+              key={cat.key}
               className={`${styles.barRow} ${isActive ? styles.barRowActive : ''}`}
-              key={category.key}
-              onMouseEnter={() => setHoveredKey(category.key)}
-              onMouseLeave={() => setHoveredKey((prev) => (prev === category.key ? null : prev))}
+              onMouseEnter={() => setHoveredKey(cat.key)}
+              onMouseLeave={() => setHoveredKey(p => p === cat.key ? null : p)}
             >
               <span className={styles.barLabelRow}>
-                <span className={styles.barLabel}>{category.title}</span>
+                <span className={styles.barLabel}>{cat.title}</span>
                 <span className={`${styles.delta} ${isPositive ? styles.deltaUp : styles.deltaDown}`}>
-                  {isPositive ? '+' : ''}
-                  {category.delta}%
+                  {isPositive ? '+' : ''}{cat.delta}%
                 </span>
               </span>
+
               <HorizontalBarChart
                 active={isActive}
-                animationDelay={200 + categoryIndex * 160}
+                animationDelay={180 + idx * 140}
                 segments={[
                   {
-                    key: `${category.key}-mips`,
-                    label: 'MIPS Products',
-                    value: category.mipsProducts,
-                    color: productOverviewSegmentColors.mipsProducts,
+                    key:       `${cat.key}-mips`,
+                    label:     'MIPS Products',
+                    value:     cat.mipsProducts,
+                    color:     productOverviewSegmentColors.mipsProducts,
                     textColor: '#101828',
                   },
                   {
-                    key: `${category.key}-other`,
-                    label: 'Non-MIPS Products',
-                    value: category.other,
-                    color: productOverviewSegmentColors.other,
+                    key:       `${cat.key}-other`,
+                    label:     'Non-MIPS Products',
+                    value:     cat.other,
+                    color:     productOverviewSegmentColors.other,
                     textColor: '#101828',
                   },
+                  ...(
+                    getRestValue(cat) > 0 ? [
+                      {
+                        key:       `${cat.key}-rest`,
+                        label:     'Unknown Products',
+                        value:     getRestValue(cat),
+                        color:     productOverviewSegmentColors.unknown,
+                        textColor: '#101828',
+                      },
+                    ] : []
+                  ),
                 ]}
               />
             </div>
