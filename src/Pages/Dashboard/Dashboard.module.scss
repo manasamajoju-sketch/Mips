@@ -1,19 +1,24 @@
 @use '@/styles/variables' as *;
 
-.dashboardPage {
+.dashboardScrollWrapper {
   height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.dashboardPage {
+  height: auto;
+  min-height: 100%;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(280px, auto));
   gap: 8px;
-  // padding: 77px 10px 25px 72px;
-  overflow: hidden;
   box-sizing: border-box;
 
   grid-template-areas:
     'event-overview event-overview event-overview event-analytics event-analytics event-analytics'
-    
     'location-overview location-overview location-overview top-events top-events event-timeline'
     'user-overview product-overview user-demographics event-severity event-time event-time';
 }
@@ -21,40 +26,70 @@
 .eventOverview {
   grid-area: event-overview;
   min-width: 0;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 280px;
   display: flex;
 }
 
 .eventAnalytics {
   grid-area: event-analytics;
   min-width: 0;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 280px;
   display: flex;
 }
 
 .locationOverview {
   grid-area: location-overview;
   min-width: 0;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 280px;
   display: flex;
 }
 
 .topEvents {
   grid-area: top-events;
   min-width: 0;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 280px;
   display: flex;
 }
 
 .eventTimeline {
   grid-area: event-timeline;
   min-width: 0;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 280px;
+  display: flex;
+}
+
+.userOverview {
+  grid-area: user-overview;
+  min-width: 0;
+  min-height: 280px;
+  display: flex;
+}
+
+.productOverview {
+  grid-area: product-overview;
+  min-width: 0;
+  min-height: 280px;
+  display: flex;
+}
+
+.userDemographics {
+  grid-area: user-demographics;
+  min-width: 0;
+  min-height: 280px;
+  display: flex;
+}
+
+.eventSeverity {
+  grid-area: event-severity;
+  min-width: 0;
+  min-height: 280px;
+  display: flex;
+}
+
+.eventTime {
+  grid-area: event-time;
+  min-width: 0;
+  min-height: 280px;
   display: flex;
 }
 
@@ -62,6 +97,7 @@
   .dashboardPage {
     gap: $space-md;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(6, minmax(260px, auto));
     grid-template-areas:
       'event-overview event-analytics'
       'location-overview top-events'
@@ -76,6 +112,7 @@
   .dashboardPage {
     gap: $space-md;
     grid-template-columns: 1fr;
+    grid-template-rows: repeat(10, minmax(240px, auto));
     grid-template-areas:
       'event-overview'
       'event-analytics'
@@ -95,6 +132,7 @@
     padding: $space-md;
     gap: $space-md;
     grid-template-columns: 1fr;
+    grid-template-rows: repeat(10, minmax(220px, auto));
     grid-template-areas:
       'event-overview'
       'event-analytics'
@@ -107,43 +145,4 @@
       'event-severity'
       'event-time';
   }
-}
-.userOverview {
-  grid-area: user-overview;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-}
-
-.productOverview {
-  grid-area: product-overview;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-}
-
-.userDemographics {
-  grid-area: user-demographics;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-}
-
-.eventSeverity {
-  grid-area: event-severity;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-}
-
-.eventTime {
-  grid-area: event-time;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
 }

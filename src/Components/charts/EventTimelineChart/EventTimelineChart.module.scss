@@ -52,7 +52,8 @@
   min-width: 0;
   gap: clamp(1px, 0.4cqw, 2px);
   padding-bottom: 4px;
-  overflow: hidden; // hard boundary — nothing rendered inside can ever cross into .xAxis below
+  overflow-x: hidden; // columns never spill into neighbors horizontally
+  overflow-y: visible; // an expanded/hovered bar is allowed to grow above the plot's normal top edge
 }
 
 .col {
@@ -73,8 +74,8 @@
 }
 
 .pill {
-  // height is set inline as a % and is IDENTICAL whether active or not —
-  // only max-width (below) changes on hover, never height.
+  // Baseline: height is a fixed % of the .plot box, identical for every
+  // render until hovered — this is the "true to data" resting state.
   width: 82%;
   max-width: clamp(4px, 1.8cqw, 8px);
   min-width: 2px;
@@ -82,8 +83,8 @@
   display: flex;
   flex-direction: column;
   border-radius: 6px;
-  overflow: hidden; // segment labels can never bleed past the pill's own box
-  transition: max-width 150ms ease, min-width 150ms ease, filter 150ms ease;
+  overflow: hidden;
+  transition: max-width 150ms ease, min-width 150ms ease, height 180ms cubic-bezier(0.16, 1, 0.3, 1), filter 150ms ease;
   transform-origin: bottom center;
   opacity: 0;
   animation: timeline-pill-grow-in 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -96,29 +97,45 @@
 }
 
 .pillActive {
-  // Only widens for label legibility — height is untouched.
-  max-width: clamp(14px, 5.5cqw, 26px);
-  min-width: clamp(12px, 4.8cqw, 22px);
-  filter: drop-shadow(0 1px 2px rgba(16, 24, 40, 0.25));
+  max-width: clamp(26px, 8cqw, 40px);
+  min-width: clamp(22px, 7cqw, 34px);
+  overflow: visible;
+  filter: drop-shadow(0 2px 6px rgba(16, 24, 40, 0.28));
+  gap: 3px;
+  z-index: 5;
 }
 
+// Resting segment (not hovered) — flex-proportional, no label, no gap.
 .segment {
   width: 100%;
   flex-shrink: 0;
   min-height: 1px;
+  overflow: hidden;
+}
+.segmentActive {
+  position: relative;
+  width: 100%;
+  flex-shrink: 0;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; // if the label doesn't fit this segment's own height, it clips — never spills out
+  transition: height 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .segmentLabel {
-  color: $color-white;
-  font-size: clamp(7px, 1.8cqw, 9px);
-  font-weight: 300;
+  font-size: clamp(10px, 2.2cqw, 12px);
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
-  text-shadow: 0 1px 1px rgba(16, 24, 40, 0.35);
+}
+
+.segmentLabelDark {
+  color: $color-text-primary; // dark text for light-colored segments
+}
+
+.segmentLabelLight {
+  color: $color-white; // light text for dark-colored segments
 }
 
 .xAxis {
@@ -157,7 +174,7 @@
 .tickWeekLabel {
   display: block;
   font-size: clamp(7px, 1.7cqw, 9px);
-  font-weight:300;
+  font-weight: 300;
   color: $color-text-primary;
   line-height: 1.1;
 }
@@ -165,18 +182,16 @@
 .tickMonthLabel {
   display: block;
   font-size: clamp(8px, 1.9cqw, 10px);
-  font-weight:300;
+  font-weight: 300;
   color: $color-text-primary;
   line-height: 1.1;
 }
 
 @container eventTimelineChart (max-width: 340px) {
   .yAxis, .yAxisSpacer { width: 20px; }
-  .segmentLabel { font-size: 8px; }
 }
 
 @container eventTimelineChart (max-width: 260px) {
-  .segmentLabel { display: none; } // too little room for both bar and legible number — bar wins
   .yAxis, .yAxisSpacer { width: 16px; }
 }
 

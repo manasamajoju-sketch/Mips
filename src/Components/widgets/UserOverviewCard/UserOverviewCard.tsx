@@ -16,10 +16,11 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
     { category: 'Cycling', mipsUsers: 16, total: 24, usersWithEvents: 8 },
     { category: 'Moto', mipsUsers: 14, total: 21, usersWithEvents: 6 },
     { category: 'PPE', mipsUsers: 12, total: 18, usersWithEvents: 5 },
+     { category: 'others', mipsUsers: 12, total: 18, usersWithEvents: 5 },
   ]
   const chartData = isLoading ? placeholderData : data
   const displayTotal = isLoading ? '--' : total
-console.log('[UserOverviewCard] chartData', chartData)
+
   return (
     <section className={styles.card}>
       <header className={styles.header}>
@@ -45,11 +46,8 @@ console.log('[UserOverviewCard] chartData', chartData)
       <GroupedBarChart
         data={chartData}
         series={userOverviewStacks}
-        xAxisLabel="Vertical"
-        yAxisLabel="Users"
-        defaultActiveCategory="Cycling"
-        showAxisLines
         showGridLines={false}
+        showBottomAxisLine={false}
         formatYTick={(value) => String(Math.round(value)).padStart(2, '0')}
       />
     </section>

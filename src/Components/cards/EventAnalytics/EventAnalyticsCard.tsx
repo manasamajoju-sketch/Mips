@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import GForceTrendChart from '../../charts/GForceTrendChart/GForceTrendChart';
 import ImpactZoneChart from '../../charts/ImpactZoneChart/ImpactZoneChart';
 import {
@@ -27,6 +28,10 @@ export default function EventAnalyticsCard({
   zoneSegments = impactZoneSegments,
   zoneStats = impactZoneStats,
 }: EventAnalyticsCardProps) {
+  // Shared between the chart and the stat list below it: hovering a wedge,
+  // a compass label, or a stat-list row all highlight the same zone.
+  const [hoveredZoneKey, setHoveredZoneKey] = useState<string | null>(null);
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -65,13 +70,27 @@ export default function EventAnalyticsCard({
         <div className={styles.verticalDivider} />
 
         <div className={styles.zoneColumn}>
-          <ImpactZoneChart segments={zoneSegments} centerLabel={summary.centerLabel} />
+         tsx
+<ImpactZoneChart
+  segments={zoneSegments}
+  centerLabel={summary.centerLabel}
+  hoveredKey={hoveredZoneKey}
+  onHoverChange={setHoveredZoneKey}
+/>
 
           <div className={styles.statList}>
             {zoneStats.map((stat) => {
               const [line1, line2] = stat.label.split('\n');
+              const isHovered = hoveredZoneKey === stat.key;
               return (
-                <div className={styles.listStat} key={stat.key}>
+                <div
+                  className={isHovered ? styles.listStatHighlight : styles.listStat}
+                  key={stat.key}
+                  onMouseEnter={() => setHoveredZoneKey(stat.key)}
+                  onMouseLeave={() =>
+                    setHoveredZoneKey((prev) => (prev === stat.key ? null : prev))
+                  }
+                >
                   <span className={styles.listStatValue}>{stat.count}</span>
                   <span className={styles.listStatLabel}>
                     {line1}{line2}

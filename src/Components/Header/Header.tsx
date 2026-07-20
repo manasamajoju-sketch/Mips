@@ -1,6 +1,7 @@
-import Pill from '../common/pills/pill'
 import TimelineButton, { type TimelineRange } from '../common/TimelineButton/TimelineButton'
 import { MenuIcon } from '../common/Icons'
+import QuinLogo from '../../assets/Quin Logo.svg'
+import MipsLogo from '../../assets/Mips Logo.png'
 import styles from './Header.module.scss'
 
 interface Props {
@@ -23,14 +24,14 @@ export default function Header({ collapsed, onToggle, range, onRangeChange }: Pr
       </button>
 
       <div className={styles.brand}>
-        <span className={styles.brandMark}>quin</span>
+        <img src={QuinLogo} alt="Quin logo" className={styles.brandLogo} />
       </div>
 
       <div className={styles.spacer} />
 
       <TimelineButton value={range} onChange={onRangeChange} />
 
-      <Pill text="Mips" color="#eef23f" textColor="#1c1c1c" />
+      <img src={MipsLogo} alt="Mips logo" className={styles.mipsLogo} />
     </header>
   )
 }

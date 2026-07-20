@@ -242,7 +242,17 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+.listStat,
+.listStatHighlight {
+  cursor: pointer;
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
 
+.listStatHighlight {
+  // e.g. slightly emphasize the row — tweak to match your design system
+  opacity: 1;
+  font-weight: 600;
+}
   // ── Height-based compaction (mirrors EventOverviewCard's pattern) ──
 
   @container eventAnalyticsCard (max-height: 300px) {

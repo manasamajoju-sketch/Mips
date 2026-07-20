@@ -32,99 +32,184 @@
   flex-shrink: 0;
 }
 
-.svg {
-  width: 100%;
-  height: 100%;
+.body {
   flex: 1 1 auto;
   min-height: 0;
-  display: block;
-  overflow: visible;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
 }
 
-.bar {
-  opacity: 0;
-  transform: scaleY(0);
-  transform-box: fill-box;
-  transform-origin: bottom;
-  animation: barIn 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: width 200ms ease, x 200ms ease;
+.yAxisTitle {
+  flex: 0 0 auto;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: $font-family-base;
+  font-size: 10px;
+  font-weight: 300;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plotGrid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  column-gap: 8px;
+}
+
+.yAxis {
+  position: relative;
+  min-width: 26px;
+}
+
+.yTickLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transform: translateY(50%);
+  text-align: right;
+  font-size: $fs-axis;
+  color: $color-text-muted;
+  white-space: nowrap;
+}
+
+.plotArea {
+  position: relative;
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.25);
+  min-height: 0;
+}
+
+.plotAreaWithLeftAxis {
+  border-left: 1.5px solid rgba(0, 0, 0, 0.25);
 }
 
 .gridLine {
-  stroke: $color-border;
-  stroke-width: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: $color-border;
   opacity: 0.65;
 }
 
-// Made bolder/darker than the border color so both axis lines are clearly
-// visible against the card background, matching a typical axis-line weight.
-.axisLine {
-  stroke: rgba(0, 0, 0, 0.25);
-  stroke-width: 1.5;
+.gridSpacer {
+  min-width: 26px;
 }
 
-.yTick {
-  font-size: $fs-axis;
-  fill: $color-text-muted;
-  opacity: 0;
-  animation: key-fade-in 300ms ease forwards;
-  animation-delay: 120ms;
+.groups {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 0 2px;
 }
 
-.categoryLabel {
-  font-family: $font-family-base;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 300;
-  font-stretch: normal;
-  letter-spacing: 0;
-  fill: $color-text-primary;
-  transition: fill 120ms ease;
-  opacity: 0;
-  animation: key-fade-in 300ms ease forwards;
-  animation-delay: 260ms;
-}
-
-.axisTitle {
-  font-family: $font-family-base;
-  font-size: 11px;
-  font-weight: 300;
-  fill: $color-text-secondary;
-}
-
-.valueLabel {
-  font-size: 13px;
-  font-weight: 300;
-  animation: valueIn 150ms ease forwards;
-}
-
-.categoryLabelActive {
-  fill: $color-text-primary;
-  font-weight: 300;
-}
-
-.categoryHit {
+.group {
+  flex: 1 1 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   cursor: pointer;
 }
 
-@keyframes barIn {
-  from {
-    opacity: 0;
-    transform: scaleY(0);
-  }
+.bars {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+}
 
-  to {
-    opacity: 1;
-    transform: scaleY(1);
-  }
+.barWrap {
+  position: relative;
+  height: 100%;
+  width: 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bars {
+  transition: gap 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.barsActive {
+  gap: 3px;
+}
+
+.barsActive .barWrap {
+  width: 30px;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 4px;
+  transition: height 260ms cubic-bezier(0.16, 1, 0.3, 1), width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 150ms ease;
+}
+
+.valueBadge {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  z-index: 2;
+  font-family: $font-family-base;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: valueIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.labelsRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 0 2px;
+  margin-top: 8px;
+}
+
+.categoryLabel {
+  flex: 1 1 0;
+  text-align: center;
+  font-family: $font-family-base;
+  font-size: 12px;
+  font-weight: 300;
+  color: $color-text-secondary;
+  transition: color 120ms ease, font-weight 120ms ease;
+}
+
+.categoryLabelActive {
+  color: $color-text-primary;
+  font-weight: 600;
+}
+
+.xAxisTitle {
+  flex: 0 0 auto;
+  text-align: center;
+  font-family: $font-family-base;
+  font-size: 10px;
+  font-weight: 300;
+  color: $color-text-muted;
+  margin-top: 4px;
 }
 
 @keyframes valueIn {
   from {
     opacity: 0;
+    transform: translate(-50%, 65%);
   }
-
   to {
     opacity: 1;
+    transform: translate(-50%, 50%);
   }
 }

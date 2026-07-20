@@ -60,9 +60,7 @@
     flex-direction: column;
     gap: clamp(4px, 0.5vh, 8px);
     cursor: pointer;
-    transition: box-shadow 160ms ease;
-
-    &:hover { box-shadow: 0 3px 10px rgba(16, 24, 40, 0.12); }
+    transition: none;
   }
 
   // ── Metric row ───────────────────────────────────────────────────────

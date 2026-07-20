@@ -107,6 +107,11 @@
   position: absolute;
   left: 50%;
   width: 10px;
+  // A percentage as small as 4% can compute to just a couple of pixels tall,
+  // which makes the rounded corners overlap into a squished blob and pushes
+  // the label text outside the box. Enforcing a minimum pixel height keeps
+  // every segment — no matter how small its share — a legible little capsule.
+  min-height: 22px;
   border-radius: 4px;
   display: flex;
   align-items: center;

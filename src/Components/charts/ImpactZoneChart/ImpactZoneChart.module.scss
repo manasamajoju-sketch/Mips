@@ -6,10 +6,13 @@
   height: 100%; // fills .eac-wheelcol's real height instead of a width-derived clamp
 }
 
-.center {
+.center,
+.centerHighlight {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  display: flex; align-items: center; justify-content: center; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   max-width: 46%; text-align: center;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .centerLabel {
@@ -19,6 +22,8 @@
 
 .zoneLabel {
   position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
   font-size: clamp(8px, 6cqh, 13px);
   font-weight: 500; color: #fff; white-space: nowrap;
   display: flex; align-items: center; gap: 4px;
@@ -27,10 +32,24 @@
 .zoneValue {
   font-weight: 600; color: #0b6c7a; background: #fff; border-radius: 10px;
   padding: 2px 6px; font-size: clamp(7px, 5cqh, 12px);
+  opacity: 0;
+  animation: zone-value-in 150ms ease forwards;
 }
 
-.cell { fill: rgba(255, 255, 255, 0.5); }
-.cellHighlight { fill: rgba(255, 255, 255, 0.95); }
+.cell {
+  fill: rgba(255, 255, 255, 0.5);
+  transition: fill 150ms ease;
+}
+
+.cellHighlight {
+  fill: rgba(255, 255, 255, 0.95);
+  transition: fill 150ms ease;
+}
+
+@keyframes zone-value-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 @container impactZoneChart (max-height: 90px) {
   .zoneLabel span:not(.zoneValue) { display: none; }

@@ -360,81 +360,82 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
     }
   }, [range, selectedAnalyticsVertical])
 
-  return (
-    <main className={styles.dashboardPage}>
-      <div className={styles.eventOverview}>
-        <EventOverviewCard
-          isLoading={overviewLoading}
-          summary={overviewSummary}
-          chartData={overviewChartData}
-          severityChartData={severityChartDataState}
-          range={range}
-          onExpand={() => console.log('Navigate to event details')}
-        />
-      </div>
-
-      <div className={styles.eventAnalytics}>
-        <EventAnalyticsCard
-          data={eventAnalyticsData}
-          eventTypes={['Cycling', 'Moto', 'PPE']}
-          window={range}
-          onEventTypeChange={(type) => setSelectedAnalyticsVertical(type)}
-          onExpand={() => console.log('Expand event analytics')}
-        />
-      </div>
-
-      <div className={styles.locationOverview}>
-        <LocationOverviewCard
-          onExpand={() => console.log('Navigate to location details')}
-          hideHeaderControls={hideLocationOverviewDetails}
-          hideSummary={hideLocationOverviewDetails}
-          compact={hideLocationOverviewDetails}
-        />
-      </div>
-
-      <div className={styles.topEvents}>
-        <TopEventsCard
-          events={topEvents}
-          isLoading={topEventsLoading}
-          onEventClick={(event) => console.log('Navigate to event:', event.key)}
-        />
-      </div>
-      {!hiddenWidgets.has('eventTimeline') && (
-        <div className={styles.eventTimeline}>
-          <EventTimelineCard entries={timelineEntries} isLoading={timelineLoading} />
-        </div>
-      )}
-      {!hiddenWidgets.has('userOverview') && (
-        <div className={styles.userOverview}>
-          <UserOverviewCard
-            data={userOverviewDataState}
-            total={userOverviewTotalState}
-            isLoading={userOverviewLoading}
-            onExpand={() => console.log('Navigate to user details')}
+return (
+    <div className={styles.dashboardScrollWrapper}>
+      <main className={styles.dashboardPage}>
+        <div className={styles.eventOverview}>
+          <EventOverviewCard
+            isLoading={overviewLoading}
+            summary={overviewSummary}
+            chartData={overviewChartData}
+            severityChartData={severityChartDataState}
+            range={range}
+            onExpand={() => console.log('Navigate to event details')}
           />
         </div>
-      )}
-      {!hiddenWidgets.has('productOverview') && (
-        <div className={styles.productOverview}>
-          <ProductOverviewCard categories={productOverviewCategoriesState} isLoading={productOverviewLoading} />
-        </div>
-      )}
-      {!hiddenWidgets.has('userDemographics') && (
-        <div className={styles.userDemographics}>
-          <UserDemographicsCard
-            categories={userDemographicsCategoriesState}
-            summary={userDemographicsSummaryState}
-            isLoading={demographicsLoading}
+
+        <div className={styles.eventAnalytics}>
+          <EventAnalyticsCard
+            data={eventAnalyticsData}
+            eventTypes={['Cycling', 'Moto', 'PPE']}
+            window={range}
+            onEventTypeChange={(type) => setSelectedAnalyticsVertical(type)}
+            onExpand={() => console.log('Expand event analytics')}
           />
         </div>
-      )}
-      {!hiddenWidgets.has('eventSeverity') && (
-        <div className={styles.eventSeverity}><EventSeverityHistogramCard isLoading={overviewLoading} /></div>
-      )}
-      <div className={styles.eventTime}>
-        <EventTimeHeatmapCard range={range} />
-      </div>
 
-    </main>
+        <div className={styles.locationOverview}>
+          <LocationOverviewCard
+            onExpand={() => console.log('Navigate to location details')}
+            hideHeaderControls={hideLocationOverviewDetails}
+            hideSummary={hideLocationOverviewDetails}
+            compact={hideLocationOverviewDetails}
+          />
+        </div>
+
+        <div className={styles.topEvents}>
+          <TopEventsCard
+            events={topEvents}
+            isLoading={topEventsLoading}
+            onEventClick={(event) => console.log('Navigate to event:', event.key)}
+          />
+        </div>
+        {!hiddenWidgets.has('eventTimeline') && (
+          <div className={styles.eventTimeline}>
+            <EventTimelineCard entries={timelineEntries} isLoading={timelineLoading} />
+          </div>
+        )}
+        {!hiddenWidgets.has('userOverview') && (
+          <div className={styles.userOverview}>
+            <UserOverviewCard
+              data={userOverviewDataState}
+              total={userOverviewTotalState}
+              isLoading={userOverviewLoading}
+              onExpand={() => console.log('Navigate to user details')}
+            />
+          </div>
+        )}
+        {!hiddenWidgets.has('productOverview') && (
+          <div className={styles.productOverview}>
+            <ProductOverviewCard categories={productOverviewCategoriesState} isLoading={productOverviewLoading} />
+          </div>
+        )}
+        {!hiddenWidgets.has('userDemographics') && (
+          <div className={styles.userDemographics}>
+            <UserDemographicsCard
+              categories={userDemographicsCategoriesState}
+              summary={userDemographicsSummaryState}
+              isLoading={demographicsLoading}
+            />
+          </div>
+        )}
+        {!hiddenWidgets.has('eventSeverity') && (
+          <div className={styles.eventSeverity}><EventSeverityHistogramCard isLoading={overviewLoading} /></div>
+        )}
+        <div className={styles.eventTime}>
+          <EventTimeHeatmapCard range={range} />
+        </div>
+      </main>
+    </div>
   )
 }
