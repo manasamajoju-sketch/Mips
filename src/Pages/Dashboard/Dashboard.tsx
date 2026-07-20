@@ -268,7 +268,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
 
           try {
             const processedResponse = await dashboardService.getProcessedEvents(topEvent.eventId, type)
-            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data, type)
+            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data)
             if (sparklineData.length < 2) {
               console.warn('[Dashboard] Sparkline data has fewer than 2 points', type, sparklineData)
             }

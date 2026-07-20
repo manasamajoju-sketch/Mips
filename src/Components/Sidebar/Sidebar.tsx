@@ -18,7 +18,7 @@ const navItems: Array<{ key: SidebarItem; label: string; icon: typeof HomeIcon }
   // { key: 'components', label: 'Components', icon: ComponentsIcon },
 ]
 
-export default function Sidebar({ collapsed, activeItem, onNavigate }: Props) {
+export default function Sidebar({ activeItem, onNavigate }: Props) {
   return (
     <aside className={`${styles.sidebar} ${styles.collapsed}`}>
       <nav className={styles.tabs}>

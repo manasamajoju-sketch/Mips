@@ -55,7 +55,7 @@ export default function TopEventsCard({
                 </div>
               </div>
             ))
-          : events.map((event, index) => (
+          : events.map((event) => (
               <div
                 className={styles['top-events-card__section']}
                 key={event.key}
