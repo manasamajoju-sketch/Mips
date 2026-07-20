@@ -5,7 +5,6 @@ export interface GroupedBarSeries<T> {
   key: keyof T
   label: string
   color: string
-  /** Text color used for the inline value label revealed on hover */
   textColor?: string
 }
 
@@ -17,20 +16,28 @@ interface GroupedBarChartProps<T extends { category: string }> {
   yAxisLabel?: string
   defaultActiveCategory?: string
   showAxisLines?: boolean
+  showBottomAxisLine?: boolean
   showGridLines?: boolean
   formatYTick?: (value: number) => string
 }
 
 const VIEW_W = 640
-const VIEW_H = 240
-const PAD_LEFT = 52
+const VIEW_H = 260
+// Increased from 52/46 to leave dedicated room for the y-axis title
+// (rotated, sits left of the tick numbers) and x-axis title (sits below
+// the category labels) so they no longer overlap the tick/category text.
+const PAD_LEFT = 66
 const PAD_RIGHT = 14
 const PAD_TOP = 12
-const PAD_BOTTOM = 46
+const PAD_BOTTOM = 56
 const GROUP_GAP = 18
 const BAR_GAP = 4
-/** Bars sit at this fraction of their full slot width until their group is hovered */
 const NARROW_RATIO = 0.45
+
+// Vertical gap reserved between the category-name row and the x-axis
+// title row underneath it.
+const CATEGORY_LABEL_OFFSET = 18
+const X_AXIS_TITLE_OFFSET = 38
 
 function niceMax(value: number) {
   if (value <= 0) return 1
@@ -46,6 +53,7 @@ export default function GroupedBarChart<T extends { category: string }>({
   yAxisLabel,
   defaultActiveCategory,
   showAxisLines = false,
+  showBottomAxisLine = true,
   showGridLines = true,
   formatYTick = (value) => String(Math.round(value)),
 }: GroupedBarChartProps<T>) {
@@ -74,7 +82,6 @@ export default function GroupedBarChart<T extends { category: string }>({
       const bars = series.map((s, barIndex) => {
         const value = Number(item[s.key]) || 0
         const barHeight = plotH * (value / yMax)
-        // Center the (possibly narrower) bar within its full-width slot so it grows outward evenly.
         const slotX = groupX + barIndex * (fullBarWidth + BAR_GAP)
         const x = slotX + (fullBarWidth - barWidth) / 2
         const y = PAD_TOP + (plotH - barHeight)
@@ -112,7 +119,6 @@ export default function GroupedBarChart<T extends { category: string }>({
       <svg
         className={styles.svg}
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        // preserveAspectRatio="xMinYMin meet"
         preserveAspectRatio="none"
         role="img"
         aria-label="Grouped bar chart"
@@ -136,11 +142,23 @@ export default function GroupedBarChart<T extends { category: string }>({
           </>
         )}
 
+        {!showAxisLines && showBottomAxisLine && (
+          <line
+            className={styles.axisLine}
+            x1={PAD_LEFT}
+            x2={VIEW_W - PAD_RIGHT}
+            y1={PAD_TOP + plotH}
+            y2={PAD_TOP + plotH}
+          />
+        )}
+
+        {/* Y-axis title — positioned in the reserved left margin, clear of
+            the tick numbers which sit at PAD_LEFT - 8. */}
         {yAxisLabel && (
           <text
             className={styles.axisTitle}
             x={-(PAD_TOP + plotH / 2)}
-            y={14}
+            y={12}
             textAnchor="middle"
             transform="rotate(-90)"
           >
@@ -148,11 +166,14 @@ export default function GroupedBarChart<T extends { category: string }>({
           </text>
         )}
 
+        {/* X-axis title — positioned below the category-name row, using
+            the dedicated bottom padding rather than a fixed VIEW_H offset,
+            so it scales correctly with PAD_BOTTOM. */}
         {xAxisLabel && (
           <text
             className={styles.axisTitle}
             x={PAD_LEFT + plotW / 2}
-            y={VIEW_H - 6}
+            y={PAD_TOP + plotH + X_AXIS_TITLE_OFFSET}
             textAnchor="middle"
           >
             {xAxisLabel}
@@ -203,7 +224,6 @@ export default function GroupedBarChart<T extends { category: string }>({
               </g>
             ))}
 
-            {/* Larger invisible hit-area behind the label so hovering near the text is enough */}
             <rect
               className={styles.categoryHit}
               x={group.x - GROUP_GAP / 2}
@@ -217,7 +237,7 @@ export default function GroupedBarChart<T extends { category: string }>({
             <text
               className={`${styles.categoryLabel} ${group.isHovered ? styles.categoryLabelActive : ''}`}
               x={group.x + group.width / 2}
-              y={PAD_TOP + plotH + 18}
+              y={PAD_TOP + plotH + CATEGORY_LABEL_OFFSET}
               textAnchor="middle"
               pointerEvents="none"
             >

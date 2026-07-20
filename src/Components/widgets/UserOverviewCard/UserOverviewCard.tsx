@@ -19,7 +19,7 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
   ]
   const chartData = isLoading ? placeholderData : data
   const displayTotal = isLoading ? '--' : total
-
+console.log('[UserOverviewCard] chartData', chartData)
   return (
     <section className={styles.card}>
       <header className={styles.header}>
@@ -40,20 +40,15 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
           <span className={styles.totalValue}>{displayTotal}</span>
           <span className={styles.totalLabel}>Users</span>
         </div>
-
-        {/* <button type="button" className={styles.eventFilter} aria-label="Filter by all events">
-          <ChevronLeftIcon />
-          <span>All Events</span>
-          <ChevronRightIcon />
-        </button> */}
       </div>
 
       <GroupedBarChart
         data={chartData}
         series={userOverviewStacks}
-        // xAxisLabel="Vertical"
-        // yAxisLabel="Users"
+        xAxisLabel="Vertical"
+        yAxisLabel="Users"
         defaultActiveCategory="Cycling"
+        showAxisLines
         showGridLines={false}
         formatYTick={(value) => String(Math.round(value)).padStart(2, '0')}
       />

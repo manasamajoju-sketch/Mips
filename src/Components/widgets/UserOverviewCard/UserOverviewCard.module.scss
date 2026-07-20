@@ -17,7 +17,9 @@
 
   > :last-child {
     flex: 1 1 auto;
-    min-height: 0;
+    min-height: 180px; // prevents the chart from being squashed into a
+                        // too-short box, which was compressing the axis
+                        // title/tick text together
   }
 }
 

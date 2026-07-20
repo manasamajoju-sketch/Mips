@@ -106,10 +106,16 @@ export default function EventSeverityHistogramChart({ bars }: EventSeverityHisto
       ctx.roundRect(bx, by, barW, bh, [radius, radius, 0, 0]);
       ctx.fill();
 
-      // X-axis label — use xAxisLabel if provided, else bucket name
-      const xLabel = bar.xAxisLabel ?? bar.bucket ?? String(i + 1);
-      ctx.fillStyle = LABEL_COLOR;
-      ctx.fillText(xLabel, bx + barW / 2, plotY + plotH + 4);
+      // X-axis label — ONLY draw when explicitly provided on the bar.
+      // These act as sparse boundary markers (e.g. 135 / 520 / 900 / 1860),
+      // not a per-bar label. Previously this fell back to the bucket name
+      // ('low'/'medium'/'high') for every bar without an explicit label,
+      // which cluttered the axis — matching the reference means most bars
+      // render with no label at all.
+      if (bar.xAxisLabel) {
+        ctx.fillStyle = LABEL_COLOR;
+        ctx.fillText(bar.xAxisLabel, bx + barW / 2, plotY + plotH + 4);
+      }
     });
   }, [bars]);
 

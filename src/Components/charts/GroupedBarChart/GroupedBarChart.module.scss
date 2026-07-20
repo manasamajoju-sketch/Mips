@@ -6,7 +6,6 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  // min-height: 220px;
 }
 
 .key {
@@ -57,9 +56,11 @@
   opacity: 0.65;
 }
 
+// Made bolder/darker than the border color so both axis lines are clearly
+// visible against the card background, matching a typical axis-line weight.
 .axisLine {
-  stroke: $color-border;
-  stroke-width: 1.2;
+  stroke: rgba(0, 0, 0, 0.25);
+  stroke-width: 1.5;
 }
 
 .yTick {
@@ -95,17 +96,6 @@
   font-size: 13px;
   font-weight: 300;
   animation: valueIn 150ms ease forwards;
-}
-
-.categoryLabel {
-  font-family: $font-family-base;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 300;
-  font-stretch: normal;
-  letter-spacing: 0;
-  fill: $color-text-primary;
-  transition: fill 120ms ease;
 }
 
 .categoryLabelActive {
