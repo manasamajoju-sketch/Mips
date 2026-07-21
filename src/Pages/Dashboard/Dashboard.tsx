@@ -302,13 +302,16 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
 
           try {
             const processedResponse = await dashboardService.getProcessedEvents(topEvent.eventId, type)
-            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data, type)
+            const payload = processedResponse.data
+            const sparklineData = mapProcessedEventResponseToSparkline(payload, type)
             if (sparklineData.length < 2) {
               console.warn('[Dashboard] Sparkline data has fewer than 2 points', type, sparklineData)
             }
 
+            const createdAt =
+              (!Array.isArray(payload) && payload?.createdAt) || topEvent.createdAt
             const mappedTopEvent = mapTopEventsApiEventToTopEvent(topEvent, type, {
-              createdAt: processedResponse.data.createdAt || topEvent.createdAt,
+              createdAt,
             })
             const derivedMetricValue =
               Math.round(

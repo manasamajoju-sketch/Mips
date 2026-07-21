@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import styles from './ImpactPoint.module.scss'
 
 export type ImpactPointSectionKey = 'front' | 'left' | 'top' | 'right' | 'back'
@@ -24,101 +24,33 @@ type Props = {
 }
 
 const defaultSections: ImpactPointSection[] = [
-  {
-    key: 'front',
-    label: 'Front',
-    value: 0,
-  },
-  {
-    key: 'left',
-    label: 'Left',
-    value: 0,
-  },
-  {
-    key: 'top',
-    label: 'Top',
-    value: 0,
-  },
-  {
-    key: 'right',
-    label: 'Right',
-    value: 0,
-  },
-  {
-    key: 'back',
-    label: 'Back',
-    value: 0,
-  },
+  { key: 'front', label: 'Front', value: 0 },
+  { key: 'left', label: 'Left', value: 0 },
+  { key: 'top', label: 'Top', value: 0 },
+  { key: 'right', label: 'Right', value: 0 },
+  { key: 'back', label: 'Back', value: 0 },
 ]
 
 const labelPositions: Record<
   ImpactPointSectionKey,
-  {
-    x: number
-    y: number
-    textAnchor: 'start' | 'middle' | 'end'
-  }
+  { x: number; y: number; textAnchor: 'start' | 'middle' | 'end' }
 > = {
-  front: {
-    x: 51,
-    y: -12,
-    textAnchor: 'middle',
-  },
-  left: {
-    x: -20,
-    y: 67,
-    textAnchor: 'middle',
-  },
-  top: {
-    x: 51,
-    y: 67,
-    textAnchor: 'middle',
-  },
-  right: {
-    x: 124,
-    y: 67,
-    textAnchor: 'middle',
-  },
-  back: {
-    x: 51,
-    y: 140,
-    textAnchor: 'middle',
-  },
+  front: { x: 51, y: -12, textAnchor: 'middle' },
+  left: { x: -20, y: 67, textAnchor: 'middle' },
+  top: { x: 51, y: 67, textAnchor: 'middle' },
+  right: { x: 124, y: 67, textAnchor: 'middle' },
+  back: { x: 51, y: 140, textAnchor: 'middle' },
 }
 
 const percentPositions: Record<
   ImpactPointSectionKey,
-  {
-    x: number
-    y: number
-    textAnchor: 'start' | 'middle' | 'end'
-  }
+  { x: number; y: number; textAnchor: 'start' | 'middle' | 'end' }
 > = {
-  front: {
-    x: 51,
-    y: 20,
-    textAnchor: 'middle',
-  },
-  left: {
-    x: 12,
-    y: 67,
-    textAnchor: 'middle',
-  },
-  top: {
-    x: 51,
-    y: 67,
-    textAnchor: 'middle',
-  },
-  right: {
-    x: 90,
-    y: 67,
-    textAnchor: 'middle',
-  },
-  back: {
-    x: 51,
-    y: 112,
-    textAnchor: 'middle',
-  },
+  front: { x: 51, y: 20, textAnchor: 'middle' },
+  left: { x: 12, y: 67, textAnchor: 'middle' },
+  top: { x: 51, y: 67, textAnchor: 'middle' },
+  right: { x: 90, y: 67, textAnchor: 'middle' },
+  back: { x: 51, y: 112, textAnchor: 'middle' },
 }
 
 function getSection(sections: ImpactPointSection[], key: ImpactPointSectionKey) {
@@ -127,7 +59,6 @@ function getSection(sections: ImpactPointSection[], key: ImpactPointSectionKey) 
 
 function getPercentLabel(value?: number) {
   if (value == null) return ''
-
   return `${Math.round(value)}%`
 }
 
@@ -142,6 +73,8 @@ function ImpactPoint({
   variant = 'default',
   onSectionClick,
 }: Props) {
+  const [hoveredKey, setHoveredKey] = useState<ImpactPointSectionKey | null>(null)
+
   const resolvedSections = defaultSections.map((section) => ({
     ...section,
     ...sections.find((item) => item.key === section.key),
@@ -154,19 +87,18 @@ function ImpactPoint({
     const sectionColor = section?.color || fillColor
     const sectionHoverColor = section?.hoverColor || hoverFillColor
     const isClickable = Boolean(onSectionClick)
+    const isActive = hoveredKey === key
 
-    const commonProps = {
-      className: styles['impact-point__section-shape'],
-      style: {
-        '--impact-point-section-color': sectionColor,
-        '--impact-point-section-hover-color': sectionHoverColor,
-      } as CSSProperties,
-    }
+    const shapeStyle = {
+      '--impact-point-section-color': sectionColor,
+      '--impact-point-section-hover-color': sectionHoverColor,
+    } as CSSProperties
 
     const sectionClassName = [
       styles['impact-point__section'],
       styles[`impact-point__section--${key}`],
       isClickable ? styles['impact-point__section--clickable'] : '',
+      isActive ? styles['impact-point__section--active'] : '',
     ]
       .filter(Boolean)
       .join(' ')
@@ -174,6 +106,10 @@ function ImpactPoint({
     return (
       <g
         className={sectionClassName}
+        onMouseEnter={() => setHoveredKey(key)}
+        onMouseLeave={() => setHoveredKey((current) => (current === key ? null : current))}
+        onFocus={() => setHoveredKey(key)}
+        onBlur={() => setHoveredKey((current) => (current === key ? null : current))}
         onClick={onSectionClick && section ? () => onSectionClick(section) : undefined}
         role={isClickable ? 'button' : undefined}
         tabIndex={isClickable ? 0 : undefined}
@@ -188,10 +124,30 @@ function ImpactPoint({
             : undefined
         }
       >
+        {/* Invisible wider stroke expands the hover target across the whole zone. */}
         {type === 'ellipse' ? (
-          <ellipse {...commonProps} cx="50.9664" cy="66.7006" rx="27.1402" ry="32.4359" />
+          <ellipse
+            className={styles['impact-point__section-hit']}
+            cx="50.9664"
+            cy="66.7006"
+            rx="27.1402"
+            ry="32.4359"
+          />
         ) : (
-          <path {...commonProps} d={path} />
+          <path className={styles['impact-point__section-hit']} d={path} />
+        )}
+
+        {type === 'ellipse' ? (
+          <ellipse
+            className={styles['impact-point__section-shape']}
+            style={shapeStyle}
+            cx="50.9664"
+            cy="66.7006"
+            rx="27.1402"
+            ry="32.4359"
+          />
+        ) : (
+          <path className={styles['impact-point__section-shape']} style={shapeStyle} d={path} />
         )}
 
         {showLabels && (
@@ -207,7 +163,9 @@ function ImpactPoint({
 
         {showPercentOnHover && section?.value != null && (
           <text
-            className={`${styles['impact-point__percentage']} ${alwaysShowPercent ? styles['impact-point__percentage--visible'] : ''}`}
+            className={`${styles['impact-point__percentage']} ${
+              isActive || alwaysShowPercent ? styles['impact-point__percentage--visible'] : ''
+            }`}
             x={percentPosition.x}
             y={percentPosition.y}
             textAnchor={percentPosition.textAnchor}

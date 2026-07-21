@@ -11,6 +11,7 @@ import {
 } from '../../../Constants/eventOverviewData';
 import type { EventOverviewSummary, EventOverviewView } from '../../../types/event';
 import styles from './EventOverviewCard.module.scss';
+import { InfoIcon } from '../../common/Icons';
 
 interface EventOverviewCardProps {
   summary?: EventOverviewSummary;
@@ -72,20 +73,14 @@ export default function EventOverviewCard({
 
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.title}>
-          <span>Event Overview</span>
-          <i className="ti ti-info-circle" aria-hidden="true" />
-        </div>
-        <button
-          type="button"
-          className={styles.expand}
-          onClick={onExpand}
-          aria-label="View event overview details"
-        >
-          <i className="ti ti-arrow-right" aria-hidden="true" />
-        </button>
-      </div>
+     <header className={styles.header}>
+        <h2 className={styles.title}>
+          Event Overview
+          <button type="button" className={styles.infoBtn} aria-label="More information">
+            <InfoIcon />
+          </button>
+        </h2>
+      </header>
 
       <div className={styles.stats}>
         <button

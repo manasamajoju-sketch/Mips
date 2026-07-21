@@ -6,7 +6,6 @@ import {
   topEventsSparklineSeries,
   topEventsSparklineSeriesGyro,
   topEventsSparklineSeriesImpact,
-  resolveTopEventSparklineData,
 } from '../../../Constants/topEventsMock'
 import type { TopEvent } from '../../../types/topEvents'
 import styles from './TopEventsCard.module.scss'
@@ -68,11 +67,9 @@ export default function TopEventsCard({
                   : event.type === 'impact'
                     ? topEventsSparklineSeriesImpact
                     : topEventsSparklineSeries
-              const chartData = resolveTopEventSparklineData(
-                event.data,
-                event.type,
-                event.metricValue,
-              )
+              // Always plot this event's processed response — never a shared
+              // template, so impact and gyro charts stay visually distinct.
+              const chartData = event.data ?? []
               const secondaryLabel = event.type === 'gyro' ? 'BrIC Value' : 'HIC Value'
               const secondaryValue = formatSecondaryValue(
                 event.type === 'gyro' ? event.bricValue : event.hicValue,

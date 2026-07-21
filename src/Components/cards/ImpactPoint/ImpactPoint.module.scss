@@ -1,9 +1,8 @@
 @use '@/styles/variables' as *;
 
 .impact-point {
-  --impact-point-top-delay: 260ms;
-  --impact-point-segments-delay: 480ms;
-  --impact-point-label-delay: 780ms;
+  --impact-point-top-delay: 160ms;
+  --impact-point-segments-delay: 240ms;
 
   width: 100%;
   height: 100%;
@@ -15,11 +14,8 @@
   overflow: visible;
 
   &__svg {
-    // Fill the wheel-col container — column is clamped 100–180px wide
-    // so the SVG naturally stays small. On larger screens it expands.
     width: 100%;
     height: 100%;
-    // Hard cap so it never goes huge on very wide screens
     max-width: clamp(80px, 12vw, 180px);
     max-height: clamp(100px, 16vw, 220px);
     overflow: visible;
@@ -28,33 +24,31 @@
   &__section {
     outline: none;
     opacity: 0;
-    transform: scale(0.96);
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: impact-point-section-in 420ms ease forwards;
-    will-change: opacity, transform;
+    // Opacity-only entrance — avoid leaving a permanent SVG transform layer.
+    animation: impact-point-section-in 280ms ease forwards;
 
     &:hover,
-    &:focus-visible {
+    &:focus-visible,
+    &--active {
       .impact-point__section-shape {
         fill: var(--impact-point-section-hover-color);
       }
 
       .impact-point__percentage {
         opacity: 1;
-        transform: translateY(0);
       }
     }
   }
 
-  &__section--top                         { animation-delay: var(--impact-point-top-delay); }
+  &__section--top { animation-delay: var(--impact-point-top-delay); }
   &__section--front,
   &__section--left,
   &__section--right,
-  &__section--back                        { animation-delay: var(--impact-point-segments-delay); }
+  &__section--back { animation-delay: var(--impact-point-segments-delay); }
 
   &__section--top:hover,
-  &__section--top:focus-visible {
+  &__section--top:focus-visible,
+  &__section--top.impact-point__section--active {
     .impact-point__label {
       opacity: 0;
     }
@@ -62,83 +56,82 @@
 
   &__section--clickable {
     cursor: pointer;
-    * { cursor: pointer; }
+
+    .impact-point__section-shape {
+      cursor: pointer;
+    }
   }
 
   &__section-shape {
+    fill: linear-gradient(160deg, #43cbdb 0%, #35c3d6 100%);
     fill-opacity: 1;
     stroke: #ffffff;
     stroke-width: 1;
-    transition: fill 180ms ease;
+    // Full fill region is hoverable (not just anti-aliased edge pixels).
+    pointer-events: all;
+    transition: fill 70ms linear;
+  }
+
+  &__section-hit {
+    fill: transparent;
+    stroke: transparent;
+    stroke-width: 14;
+    // Catch the full zone fill + a padded edge so % shows anywhere on the segment.
+    pointer-events: all;
   }
 
   &__label,
   &__percentage {
     font-family: $font-family-base;
     font-weight: 300;
-    stroke-width: 0.4px;
-    paint-order: stroke;
     line-height: 1;
     letter-spacing: -0.2px;
     pointer-events: none;
     dominant-baseline: middle;
-    transform-box: fill-box;
-    transform-origin: center;
+    // Skip stroke paint-order on hover hot path — fills alone are enough on teal.
+    stroke: none;
   }
 
   &__label {
     opacity: 1;
     fill: var(--text-primary);
-    stroke: var(--surface);
-    stroke-width: 0.6px;
     font-size: 9px;
+    transition: opacity 70ms linear;
   }
 
   &__percentage {
     opacity: 0;
-    transform: translateY(2px);
     fill: var(--text-primary);
-    stroke: var(--text-primary);
     font-size: 12px;
     font-weight: 400;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 70ms linear;
   }
 
   &__percentage--visible {
     opacity: 1 !important;
-    transform: translateY(0) !important;
   }
 
   &--on-color {
     .impact-point__label {
       fill: #ffffff;
-      stroke: rgba(11, 108, 122, 0.35);
-      stroke-width: 0.4px;
     }
 
     .impact-point__percentage {
       fill: #17364a;
-      stroke: none;
       font-size: 12px;
       font-weight: 400;
     }
   }
 }
 
-// White text variant when inside a coloured card
 .card.blue {
   .impact-point {
-    &__label    { fill: #ffffff; stroke: #ffffff; }
-    &__percentage { fill: var(--text-primary) !important; stroke: var(--text-primary) !important; }
+    &__label { fill: #ffffff; }
+    &__percentage { fill: var(--text-primary) !important; }
   }
 }
 
 @keyframes impact-point-section-in {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-@keyframes impact-point-label-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

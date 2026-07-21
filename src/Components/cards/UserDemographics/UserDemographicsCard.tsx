@@ -9,6 +9,7 @@ import {
   type DemographicCategory,
 } from '../../../types/userDemographics'
 import styles from './UserDemographicsCard.module.scss'
+import { InfoIcon } from '../../common/Icons'
 
 interface UserDemographicsCardProps {
   categories?: DemographicCategory[]
@@ -56,10 +57,13 @@ export default function UserDemographicsCard({
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <div className={styles.title}>
-          <span>User Demographics</span>
-          <i className="ti ti-info-circle" aria-hidden="true" />
-        </div>
+        <h2 className={styles.title}>
+          User Demographics
+              <button type="button" className={styles.infoBtn} aria-label="More information">
+            <InfoIcon />
+          </button>
+          
+        </h2>
         {onExpand && (
           <button
             type="button"

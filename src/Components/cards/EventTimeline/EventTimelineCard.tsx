@@ -1,4 +1,5 @@
 import type { EventTimelineEntry } from '../../../types/eventTimeline';
+import { InfoIcon } from '../../common/Icons';
 import styles from './EventTimelineCard.module.scss';
 
 interface EventTimelineCardProps {
@@ -40,10 +41,14 @@ function TimelineRow({ entry, isLast }: TimelineRowProps) {
 export default function EventTimelineCard({ entries = [], isLoading = false }: EventTimelineCardProps) {
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <span>Event Timeline</span>
-        <i className="ti ti-info-circle" aria-hidden="true" />
-      </div>
+       <header className={styles.header}>
+        <h2 className={styles.title}>
+          Event Timeline
+          <button type="button" className={styles.infoBtn} aria-label="More information">
+            <InfoIcon />
+          </button>
+        </h2>
+      </header>
 
       <div className={styles.timeline}>
         <div className={styles.line} />
