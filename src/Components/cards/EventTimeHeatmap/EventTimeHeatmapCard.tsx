@@ -3,19 +3,35 @@ import EventTimeHeatmapChart from '../../charts/EventTimeHeatmapChart/EventTimeH
 import {
   DENSITY_COLORS,
   DENSITY_LABELS,
-  eventTimeHeatmapSummary as fallbackSummary,
-  heatmapRows as fallbackRows,
 } from '../../../Constants/eventTimeHeatmapData';
-import type { EventTimeHeatmapSummary, HeatmapRow } from '../../../types/eventTimeHeatmap';
+import {
+  DAYS_OF_WEEK,
+  TIME_BLOCKS,
+  mapEventTimeHeatmapResponse,
+  type EventTimeHeatmapApiResponse,
+  type EventTimeHeatmapSummary,
+  type HeatmapRow,
+} from '../../../types/eventTimeHeatmap';
 import { dashboardService } from '../../../Services/dashboardService';
-import { mapEventTimeHeatmapResponse } from '../../../types/eventTimeHeatmap';
-import type { EventTimeHeatmapApiResponse } from '../../../types/eventTimeHeatmap';
 import styles from './EventTimeHeatmapCard.module.scss';
 
 interface EventTimeHeatmapCardProps {
   range?: string;
   title?: string;
 }
+
+const emptyHeatmapRows: HeatmapRow[] = TIME_BLOCKS.map((block) => ({
+  time: block.label,
+  cells: DAYS_OF_WEEK.map(() => null),
+}));
+
+const emptyHeatmapSummary: EventTimeHeatmapSummary = {
+  mostCommonRange: '--',
+  rangeLabelLine1: 'Most Common',
+  rangeLabelLine2: 'Event Time',
+  highlightNote1: 'No heatmap data available',
+  highlightNote2: '',
+};
 
 function InfoIcon() {
   return (
@@ -59,8 +75,8 @@ export default function EventTimeHeatmapCard({
   range = '30d',
   title = 'Event Time Over day & Week',
 }: EventTimeHeatmapCardProps) {
-  const [rows, setRows] = useState<HeatmapRow[]>(fallbackRows);
-  const [summary, setSummary] = useState<EventTimeHeatmapSummary>(fallbackSummary);
+  const [rows, setRows] = useState<HeatmapRow[]>(emptyHeatmapRows);
+  const [summary, setSummary] = useState<EventTimeHeatmapSummary>(emptyHeatmapSummary);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -77,8 +93,8 @@ export default function EventTimeHeatmapCard({
       })
       .catch(() => {
         if (!isMounted) return;
-        setRows(fallbackRows);
-        setSummary(fallbackSummary);
+        setRows(emptyHeatmapRows);
+        setSummary(emptyHeatmapSummary);
       })
       .finally(() => {
         if (!isMounted) return;
@@ -100,7 +116,7 @@ export default function EventTimeHeatmapCard({
       }
     : summary;
 
-  const displayedRows = isLoading ? fallbackRows : rows;
+  const displayedRows = isLoading ? emptyHeatmapRows : rows;
 
   return (
     <div className={styles.card}>

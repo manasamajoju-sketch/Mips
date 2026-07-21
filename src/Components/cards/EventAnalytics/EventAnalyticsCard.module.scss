@@ -1,6 +1,6 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
-@use '@/styles/animations';
+@use '@/styles/animations' as *;
 
 .card {
   @include card-surface;
@@ -70,6 +70,7 @@
   line-height: 1;
   white-space: nowrap;
   color: $color-white;
+  @include value-load-in(140ms);
 }
 
 .statLabel {

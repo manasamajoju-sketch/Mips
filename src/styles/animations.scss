@@ -56,3 +56,11 @@
     opacity: 1;
   }
 }
+
+/// Fade + slight rise for summary / total / metric / stat values on page load.
+@mixin value-load-in($delay: 120ms, $duration: 450ms) {
+  opacity: 0;
+  transform: translateY(4px);
+  animation: key-fade-in $duration cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: $delay;
+}

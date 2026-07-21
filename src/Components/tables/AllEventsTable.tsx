@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { EventRow } from '../../types/eventsTable';
-import { EVENT_TYPE_COLORS, EVENT_TYPE_TEXT_COLORS, allEventsRows } from '../../Constants/eventsTableData';
+import { EVENT_TYPE_COLORS, EVENT_TYPE_TEXT_COLORS } from '../../Constants/eventsTableData';
 import styles from './AllEventsTable.module.scss';
 
 interface AllEventsTableProps {
@@ -37,7 +37,7 @@ function FilterIcon() {
 }
 
 export default function AllEventsTable({
-  rows = allEventsRows,
+  rows = [],
   pageSize = 10,
   onLoadMore,
 }: AllEventsTableProps) {

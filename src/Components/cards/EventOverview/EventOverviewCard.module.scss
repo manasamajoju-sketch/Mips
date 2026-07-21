@@ -1,5 +1,5 @@
 @use '@/styles/variables' as *;
-@use '@/styles/animations';
+@use '@/styles/animations' as *;
 @use '@/styles/mixins' as *;
 
 .card {
@@ -130,6 +130,7 @@
   line-height: 1;
   color: $color-text-primary;
   white-space: nowrap;
+  @include value-load-in(140ms);
 }
 
 .delta {

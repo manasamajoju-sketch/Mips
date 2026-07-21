@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import { type TimelineRange } from '../../Components/common/TimelineButton/TimelineButton'
 import EventAnalyticsCard from '../../Components/widgets/EventAnalyticsCard/EventAnalyticsCard'
-import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
 import EventOverviewCard from '../../Components/cards/EventOverview/EventOverviewCard';
 import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard';
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard';
-import { topEventsMock } from '../../Constants/topEventsMock';
 import { mapTopEventsApiEventToTopEvent, selectTopEventForType } from '../../Utils/topEventsMapper';
 import { mapProcessedEventResponseToSparkline } from '../../Utils/processedEventMapper';
 
@@ -19,7 +17,7 @@ import EventSeverityHistogramCard from '../../Components/cards/EventSeverity/Eve
 import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard';
 import { dashboardService } from '../../Services/dashboardService';
 import { mapLatestEventsToTimelineEntries, type EventTimelineApiEvent, type EventTimelineEntry, type EventTimelineApiResponse } from '../../types/eventTimeline';
-import { eventOverviewFallbackSummary, eventTimelineData, severityTimelineData } from '../../Constants/eventOverviewData';
+import { eventOverviewFallbackSummary } from '../../Constants/eventOverviewData';
 import {
   mapEventOverviewResponse,
   mapEventTimeseriesResponse,
@@ -28,6 +26,8 @@ import {
   type EventOverviewSummary,
   type EventTimeseriesApiResponse,
   type SeverityTimeseriesApiResponse,
+  type EventTimelineDay,
+  type SeverityTimelineWeek,
 } from '../../types/event';
 import {
   mapImpactDirectionResponse,
@@ -35,19 +35,13 @@ import {
   type EventAnalyticsData,
 } from '../../types/eventAnalytics';
 import type { TopEvent } from '../../types/topEvents';
-import type { UserOverviewApiResponse } from '../../types/userOverview';
+import type { UserOverviewApiResponse, UserOverviewCategory } from '../../types/userOverview';
 import type { ProductOverviewApiResponse, ProductOverviewCategory } from '../../types/productOverview';
 import type {
   UserDemographicsApiResponse,
   DemographicCategory,
   DemographicSegment,
 } from '../../types/userDemographics';
-import { productOverviewCategories } from '../../Constants/productOverviewMock';
-import {
-  userOverviewData,
-  userOverviewTotal,
-} from '../../Constants/userOverviewMock';
-import { userDemographicsCategories } from '../../Constants/userDemographicsData';
 
 export type DashboardWidget = 'eventTimeline' | 'userOverview' | 'productOverview' | 'userDemographics' | 'eventSeverity'
 
@@ -55,6 +49,19 @@ interface Props {
   range: TimelineRange
   hideWidgets?: DashboardWidget[]
   hideLocationOverviewDetails?: boolean
+}
+
+const emptyEventAnalytics: EventAnalyticsData = {
+  eventType: 'Cycling',
+  minGForce: 0,
+  maxGForce: 0,
+  frontImpacts: 0,
+  severityThreshold: '',
+  highlightedPoint: { label: '', events: 0 },
+  severityData: [],
+  impactBreakdown: [],
+  activeZone: 'front',
+  activeZonePercent: 0,
 }
 
 export default function Dashboard({ range, hideWidgets = [], hideLocationOverviewDetails = false }: Props) {
@@ -67,15 +74,15 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const [productOverviewLoading, setProductOverviewLoading] = useState(true)
   const [demographicsLoading, setDemographicsLoading] = useState(true)
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
-  const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
-  const [severityChartDataState, setSeverityChartDataState] = useState(severityTimelineData)
-  const [eventAnalyticsData, setEventAnalyticsData] = useState<EventAnalyticsData>(eventAnalyticsMock)
-  const [selectedAnalyticsVertical, setSelectedAnalyticsVertical] = useState<string>(eventAnalyticsMock.eventType)
-  const [topEvents, setTopEvents] = useState<TopEvent[]>(topEventsMock)
-  const [productOverviewCategoriesState, setProductOverviewCategoriesState] = useState<ProductOverviewCategory[]>(productOverviewCategories)
-  const [userOverviewDataState, setUserOverviewDataState] = useState(userOverviewData)
-  const [userOverviewTotalState, setUserOverviewTotalState] = useState(userOverviewTotal)
-  const [userDemographicsCategoriesState, setUserDemographicsCategoriesState] = useState<DemographicCategory[]>(userDemographicsCategories)
+  const [overviewChartData, setOverviewChartData] = useState<EventTimelineDay[]>([])
+  const [severityChartDataState, setSeverityChartDataState] = useState<SeverityTimelineWeek[]>([])
+  const [eventAnalyticsData, setEventAnalyticsData] = useState<EventAnalyticsData>(emptyEventAnalytics)
+  const [selectedAnalyticsVertical, setSelectedAnalyticsVertical] = useState<string>(emptyEventAnalytics.eventType)
+  const [topEvents, setTopEvents] = useState<TopEvent[]>([])
+  const [productOverviewCategoriesState, setProductOverviewCategoriesState] = useState<ProductOverviewCategory[]>([])
+  const [userOverviewDataState, setUserOverviewDataState] = useState<UserOverviewCategory[]>([])
+  const [userOverviewTotalState, setUserOverviewTotalState] = useState(0)
+  const [userDemographicsCategoriesState, setUserDemographicsCategoriesState] = useState<DemographicCategory[]>([])
 
   useEffect(() => {
     console.log('[Dashboard] mount/effect', { range })
@@ -88,6 +95,11 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
         setOverviewLoading(false)
       }
     }
+
+    setOverviewLoading(true)
+    setUserOverviewLoading(true)
+    setProductOverviewLoading(true)
+    setDemographicsLoading(true)
 
     dashboardService.getEventOverview(range)
       .then((response: unknown) => {
@@ -109,7 +121,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .catch(() => {
         if (!isMounted) return
-        setOverviewChartData(eventTimelineData)
+        setOverviewChartData([])
       })
       .finally(resolveOverviewLoading)
 
@@ -121,7 +133,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .catch(() => {
         if (!isMounted) return
-        setSeverityChartDataState(severityTimelineData)
+        setSeverityChartDataState([])
       })
       .finally(resolveOverviewLoading)
 
@@ -195,8 +207,8 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .catch(() => {
         if (!isMounted) return
-        setUserOverviewDataState(userOverviewData)
-        setUserOverviewTotalState(userOverviewTotal)
+        setUserOverviewDataState([])
+        setUserOverviewTotalState(0)
       })
       .finally(() => {
         if (!isMounted) return
@@ -220,7 +232,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .catch(() => {
         if (!isMounted) return
-        setProductOverviewCategoriesState(productOverviewCategories)
+        setProductOverviewCategoriesState([])
       })
       .finally(() => {
         if (!isMounted) return
@@ -265,7 +277,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .catch(() => {
         if (!isMounted) return
-        setUserDemographicsCategoriesState(userDemographicsCategories)
+        setUserDemographicsCategoriesState([])
       })
       .finally(() => {
         if (!isMounted) return
@@ -279,6 +291,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
 
   useEffect(() => {
     let isMounted = true
+    setTopEventsLoading(true)
 
     Promise.allSettled([
       dashboardService.getTopEvents(range, 'impact'),
@@ -346,13 +359,11 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
           return (order[a.type ?? 'gyro'] ?? 2) - (order[b.type ?? 'gyro'] ?? 2)
         })
 
-        if (orderedEvents.length > 0) {
-          setTopEvents(orderedEvents)
-        }
+        setTopEvents(orderedEvents)
       })
       .catch(() => {
         if (!isMounted) return
-        setTopEvents(topEventsMock)
+        setTopEvents([])
       })
       .finally(() => {
         if (!isMounted) return
@@ -388,12 +399,16 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
           setEventAnalyticsData((previous) => ({
             ...previous,
             eventType: selectedAnalyticsVertical,
+            frontImpacts: 0,
+            impactBreakdown: [],
           }))
         })
     } else {
       setEventAnalyticsData((previous) => ({
         ...previous,
         eventType: selectedAnalyticsVertical,
+        frontImpacts: 0,
+        impactBreakdown: [],
       }))
     }
 

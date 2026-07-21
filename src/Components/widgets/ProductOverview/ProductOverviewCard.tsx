@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { InfoIcon } from '../../common/Icons'
 import HorizontalBarChart from '../../charts/HorizontalBarChart/HorizontalBarChart'
-import {
-  productOverviewCategories,
-  productOverviewSegmentColors,
-} from '../../../Constants/productOverviewMock'
+import { productOverviewSegmentColors } from '../../../Constants/productOverviewMock'
 import type { ProductOverviewCategory } from '../../../types/productOverview'
 import styles from './ProductOverviewCard.module.scss'
 
@@ -14,17 +11,10 @@ interface ProductOverviewCardProps {
 }
 
 export default function ProductOverviewCard({
-  categories = productOverviewCategories,
+  categories = [],
   isLoading = false,
 }: ProductOverviewCardProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
-
-  const placeholderCategories: ProductOverviewCategory[] = [
-    { key: 'ppe',     title: 'PPE',     mipsProducts: 1234, other: 34,  total: 1268, delta: 5  },
-    { key: 'cycling', title: 'Cycling', mipsProducts: 180,  other: 80,  total: 260,  delta: -5 },
-    { key: 'moto',    title: 'Moto',    mipsProducts: 180,  other: 80,  total: 260,  delta: 5 },
-    { key: 'others',  title: 'Others',  mipsProducts: 80,   other: 120, total: 200,  delta: -5 },
-  ]
 
   const normalizeCategory = (cat: ProductOverviewCategory) => {
     const segmentSum = cat.mipsProducts + cat.other
@@ -41,8 +31,7 @@ export default function ProductOverviewCard({
     return { ...cat, total }
   }
 
-  const renderedCategories = isLoading ? placeholderCategories : categories
-  const normalizedCategories = renderedCategories.map(normalizeCategory)
+  const normalizedCategories = categories.map(normalizeCategory)
   const grandMips  = normalizedCategories.reduce((s, c) => s + c.mipsProducts, 0)
   const grandTotal = normalizedCategories.reduce((s, c) => s + c.total, 0)
   const mipsPct    = isLoading ? '--' : grandTotal > 0 ? Math.round((grandMips / grandTotal) * 100) : 0

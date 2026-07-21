@@ -2,7 +2,6 @@ import UserDemographicsChart from '../../charts/UserDemographicsChart/UserDemogr
 import {
   GENDER_COLORS,
   GENDER_LABELS,
-  userDemographicsCategories,
 } from '../../../Constants/userDemographicsData'
 import {
   computeNearMedianAgeSummary,
@@ -18,41 +17,13 @@ interface UserDemographicsCardProps {
 }
 
 export default function UserDemographicsCard({
-  categories = userDemographicsCategories,
+  categories = [],
   onExpand,
   isLoading = false,
 }: UserDemographicsCardProps) {
-  const placeholderCategories: DemographicCategory[] = [
-    {
-      id: 'cycling',
-      label: 'Cycling',
-      min: 20,
-      max: 60,
-      segments: [
-        { key: 'female', start: 0, end: 0.3, percentLabel: '30%' },
-        { key: 'male', start: 0.3, end: 0.65, percentLabel: '35%' },
-        { key: 'others', start: 0.65, end: 1, percentLabel: '35%' },
-      ],
-      emphasizeLabel: false,
-    },
-    {
-      id: 'moto',
-      label: 'Moto',
-      min: 25,
-      max: 70,
-      segments: [
-        { key: 'female', start: 0, end: 0.4, percentLabel: '40%' },
-        { key: 'male', start: 0.4, end: 0.75, percentLabel: '35%' },
-        { key: 'others', start: 0.75, end: 1, percentLabel: '25%' },
-      ],
-      emphasizeLabel: false,
-    },
-  ]
-
-  const displayedCategories = isLoading ? placeholderCategories : categories
   const displayedSummary = isLoading
     ? { medianAgeValue: '--', medianAgeLabel: 'Near Median Age' }
-    : computeNearMedianAgeSummary(displayedCategories)
+    : computeNearMedianAgeSummary(categories)
 
   return (
     <div className={styles.card}>
@@ -92,7 +63,7 @@ export default function UserDemographicsCard({
         ))}
       </div>
 
-      <UserDemographicsChart categories={displayedCategories} />
+      <UserDemographicsChart categories={categories} />
     </div>
   )
 }

@@ -116,19 +116,7 @@ function resolveRegionFromQueryParam(): LocationOverviewRegion {
 
 // TODO(api): the backend doesn't return a period-over-period trend for a
 // region yet. Once `LocationOverviewApiResponse` rows carry a real field
-// (e.g. `deltaPct`), read it here instead of deriving a placeholder so the
-// badge reflects actual week-over-week change rather than a stable-but-fake
-// number. Keeping this deterministic (hash of the id) means it won't flicker
-// between re-renders/searches, which is the only reason it's safe to ship
-// as an interim placeholder.
-function derivePlaceholderDelta(seed: string): number {
-  let hash = 0
-  for (let i = 0; i < seed.length; i += 1) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i)
-    hash |= 0
-  }
-  return (Math.abs(hash) % 13) - 6 // -6..+6
-}
+// (e.g. `deltaPct`), read it here so the badge reflects actual change.
 
 function countsToMapLocation(
   id: string,
@@ -450,7 +438,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
       title: location.country,
       count: location.count,
       percentage: Math.max(8, Math.round((location.count / grandTotal) * 100)),
-      delta: derivePlaceholderDelta(location.id),
+      delta: 0,
     }))
   }, [visibleLocations])
 

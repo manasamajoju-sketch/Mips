@@ -1,5 +1,6 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
+@use '@/styles/animations' as *;
 
 .event-analytics-card {
   @include card-surface;
@@ -117,7 +118,8 @@
     line-height: 1;
     white-space: nowrap;
     text-align: left;
-        min-width: 36px;
+    min-width: 36px;
+    @include value-load-in(120ms);
 
     &--sm {
       font-size: 32px;
@@ -207,6 +209,7 @@
     min-width: 36px;
     white-space: nowrap;
     text-align: left;
+    @include value-load-in(200ms);
   }
 
   &__stat-label {

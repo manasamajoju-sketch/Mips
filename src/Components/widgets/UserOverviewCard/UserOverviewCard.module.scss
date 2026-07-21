@@ -1,6 +1,6 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
-@use '@/styles/animations';
+@use '@/styles/animations' as *;
 
 .card {
   background: $color-surface;
@@ -88,10 +88,6 @@
   margin-bottom: 12px;
   flex: 0 0 auto;
   min-height: 40px;
-  opacity: 0;
-  transform: translateY(4px);
-  animation: key-fade-in 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 160ms;
 }
 
 .totalValue {
@@ -99,6 +95,7 @@
   font-weight: 300;
   line-height: 1;
   color: $color-text-primary;
+  @include value-load-in(160ms);
 }
 
 .totalLabel {

@@ -4,9 +4,7 @@ import DeviceAgeTrendChart from '../../charts/DeviceAgeTrendChart/DeviceAgeTrend
 import {
   IMPACT_BUCKET_COLORS,
   IMPACT_BUCKET_LABELS,
-  defaultUserEventAnalytics,
   productOptions,
-  userEventAnalyticsByProduct,
 } from '../../../Constants/userEventAnalyticsData';
 import type { SeverityFilter, UserEventAnalyticsData } from '../../../types/userEventAnalytics';
 import styles from './UsersAnalyticsCard.module.scss';
@@ -15,6 +13,14 @@ interface UserEventAnalyticsCardProps {
   data?: UserEventAnalyticsData;
   products?: string[];
 }
+
+const emptyAnalytics: UserEventAnalyticsData = {
+  productName: 'Cycling',
+  lifetimeStats: { medianEvents: 0, maximumEvents: 0 },
+  deviceAgeStats: { medianAgeLabel: '--', maximumAgeLabel: '--' },
+  impactDistribution: [],
+  trendPoints: [],
+};
 
 function InfoIcon() {
   return (
@@ -39,14 +45,16 @@ export default function UserEventAnalyticsCard({
   data,
   products = productOptions,
 }: UserEventAnalyticsCardProps) {
-  const [productIndex, setProductIndex] = useState(
-    Math.max(products.indexOf(defaultUserEventAnalytics.productName), 0),
-  );
+  const [productIndex, setProductIndex] = useState(0);
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('high');
 
-  const currentProduct = products[productIndex];
-  const analytics =
-    data ?? userEventAnalyticsByProduct[currentProduct] ?? defaultUserEventAnalytics;
+  const currentProduct = products[productIndex] ?? emptyAnalytics.productName;
+  const analytics = data
+    ? data
+    : {
+        ...emptyAnalytics,
+        productName: currentProduct,
+      };
 
   const goToProduct = (offset: number) => {
     setProductIndex((index) => (index + offset + products.length) % products.length);

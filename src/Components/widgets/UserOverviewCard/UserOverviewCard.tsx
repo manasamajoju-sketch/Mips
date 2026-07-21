@@ -1,6 +1,6 @@
 import { InfoIcon, ArrowRightIcon } from '../../common/Icons'
 import GroupedBarChart from '../../charts/GroupedBarChart/GroupedBarChart'
-import { userOverviewData, userOverviewStacks, userOverviewTotal } from '../../../Constants/userOverviewMock'
+import { userOverviewStacks } from '../../../Constants/userOverviewMock'
 import type { UserOverviewCategory } from '../../../types/userOverview'
 import styles from './UserOverviewCard.module.scss'
 
@@ -11,14 +11,13 @@ interface UserOverviewCardProps {
   isLoading?: boolean
 }
 
-export default function UserOverviewCard({ onExpand, data = userOverviewData, total = userOverviewTotal, isLoading = false }: UserOverviewCardProps) {
-  const placeholderData: UserOverviewCategory[] = [
-    { category: 'PPE', mipsUsers: 16, total: 24, usersWithEvents: 8 },
-    { category: 'Cycling', mipsUsers: 14, total: 21, usersWithEvents: 6 },
-    { category: 'Moto', mipsUsers: 12, total: 18, usersWithEvents: 5 },
-    { category: 'Other', mipsUsers: 10, total: 16, usersWithEvents: 4 },
-  ]
-  const chartData = isLoading ? placeholderData : data
+export default function UserOverviewCard({
+  onExpand,
+  data = [],
+  total = 0,
+  isLoading = false,
+}: UserOverviewCardProps) {
+  const chartData = data
   const displayTotal = isLoading ? '--' : total
 
   return (

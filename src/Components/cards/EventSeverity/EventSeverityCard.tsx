@@ -3,8 +3,6 @@ import {
   SEVERITY_AXIS_TICKS,
   SEVERITY_COLORS,
   SEVERITY_LABELS,
-  eventSeverityMetrics,
-  eventSeveritySummary,
 } from '../../../Constants/eventSeverityData';
 import type { EventSeveritySummary, SeverityMetric } from '../../../types/eventSeverity';
 import styles from './EventSeverityCard.module.scss';
@@ -34,8 +32,12 @@ function InfoIcon() {
 }
 
 export default function EventSeverityCard({
-  metrics = eventSeverityMetrics,
-  summary = eventSeveritySummary,
+  metrics = [],
+  summary = {
+    count: 0,
+    labelLine1: 'High Severity Events',
+    labelLine2: '',
+  },
 }: EventSeverityCardProps) {
   return (
     <div className={styles.card}>

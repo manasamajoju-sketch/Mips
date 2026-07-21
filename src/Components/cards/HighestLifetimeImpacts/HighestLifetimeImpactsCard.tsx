@@ -7,8 +7,6 @@ import {
   IMPACT_EVENT_COLORS,
   IMPACT_EVENT_LABELS,
   IMPACT_EVENT_TEXT_COLORS,
-  highestLifetimeImpactRows,
-  highestLifetimeImpactsSummary,
 } from '../../../Constants/highestLifetimeImpactsData';
 import styles from './HighestLifetimeImpactsCard.module.scss';
 
@@ -48,8 +46,14 @@ function AlertIcon() {
 }
 
 export default function HighestLifetimeImpactsCard({
-  rows = highestLifetimeImpactRows,
-  summary = highestLifetimeImpactsSummary,
+  rows = [],
+  summary = {
+    quinId: '--',
+    lifetimeImpacts: '--',
+    peakGForce: '--',
+    sinceFirstImpact: '--',
+    averageDaysNote: '',
+  },
   onViewDevice,
 }: HighestLifetimeImpactsCardProps) {
   return (

@@ -1,25 +1,44 @@
 import { useEffect, useState } from 'react'
 import { type TimelineRange } from '../../Components/common/TimelineButton/TimelineButton'
 import EventAnalyticsCard from '../../Components/widgets/EventAnalyticsCard/EventAnalyticsCard'
-import { eventAnalyticsMock } from '../../Constants/eventAnalyticsMock'
 import EventOverviewCard from '../../Components/cards/EventOverview/EventOverviewCard'
 import LocationOverviewCard from '../../Components/widgets/LocationOverviewCard/LocationOverviewCard'
 import TopEventsCard from '../../Components/widgets/TopEventsCard/TopEventsCard'
-import { topEventsMock, rotationalEventsMock } from '../../Constants/topEventsMock'
 import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard'
 import AllEventsTable from '../../Components/tables/AllEventsTable'
 import { dashboardService } from '../../Services/dashboardService'
-import { eventOverviewFallbackSummary, eventTimelineData } from '../../Constants/eventOverviewData'
-import { mapEventOverviewResponse, mapEventTimeseriesResponse, type EventOverviewApiResponse, type EventOverviewSummary, type EventTimeseriesApiResponse } from '../../types/event'
+import { eventOverviewFallbackSummary } from '../../Constants/eventOverviewData'
+import {
+  mapEventOverviewResponse,
+  mapEventTimeseriesResponse,
+  type EventOverviewApiResponse,
+  type EventOverviewSummary,
+  type EventTimeseriesApiResponse,
+  type EventTimelineDay,
+} from '../../types/event'
+import type { EventAnalyticsData } from '../../types/eventAnalytics'
 import styles from './EventsPage.module.scss'
 
 interface Props {
   range: TimelineRange
 }
 
+const emptyEventAnalytics: EventAnalyticsData = {
+  eventType: 'Cycling',
+  minGForce: 0,
+  maxGForce: 0,
+  frontImpacts: 0,
+  severityThreshold: '',
+  highlightedPoint: { label: '', events: 0 },
+  severityData: [],
+  impactBreakdown: [],
+  activeZone: 'front',
+  activeZonePercent: 0,
+}
+
 export default function EventsPage({ range }: Props) {
   const [overviewSummary, setOverviewSummary] = useState<EventOverviewSummary>(eventOverviewFallbackSummary)
-  const [overviewChartData, setOverviewChartData] = useState(eventTimelineData)
+  const [overviewChartData, setOverviewChartData] = useState<EventTimelineDay[]>([])
 
   useEffect(() => {
     let isMounted = true
@@ -43,7 +62,7 @@ export default function EventsPage({ range }: Props) {
       })
       .catch(() => {
         if (!isMounted) return
-        setOverviewChartData(eventTimelineData)
+        setOverviewChartData([])
       })
 
     return () => {
@@ -64,8 +83,8 @@ export default function EventsPage({ range }: Props) {
 
       <div className={styles.eventAnalytics}>
         <EventAnalyticsCard
-          data={eventAnalyticsMock}
-          eventTypes={['Cycling', 'Running', 'Driving']}
+          data={emptyEventAnalytics}
+          eventTypes={['Cycling', 'Moto', 'PPE']}
           window={range}
           onEventTypeChange={(type) => console.log('Event type changed:', type)}
           onExpand={() => console.log('Expand event analytics')}
@@ -83,7 +102,7 @@ export default function EventsPage({ range }: Props) {
       <div className={styles.topGForceEvents}>
         <TopEventsCard
           title="Top G-Force Events"
-          events={topEventsMock.filter((event) => event.key.startsWith('top-g-force'))}
+          events={[]}
           onEventClick={(event) => console.log('Navigate to event:', event.key)}
         />
       </div>
@@ -91,7 +110,7 @@ export default function EventsPage({ range }: Props) {
       <div className={styles.totalRotationalEvents}>
         <TopEventsCard
           title="Total Rotational Velocity Events"
-          events={rotationalEventsMock}
+          events={[]}
           onEventClick={(event) => console.log('Navigate to event:', event.key)}
         />
       </div>
@@ -101,7 +120,7 @@ export default function EventsPage({ range }: Props) {
       </div>
 
       <div className={styles.allEvents}>
-        <AllEventsTable />
+        <AllEventsTable rows={[]} />
       </div>
     </section>
   )

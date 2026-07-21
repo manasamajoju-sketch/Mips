@@ -1,11 +1,20 @@
 import type { UserProfileData } from '../../types/userProfile';
-import { userProfileMock } from '../../Constants/userProfileData';
 import styles from './UserProfileCard.module.scss';
 
 interface UserProfileCardProps {
   profile?: UserProfileData;
   onBack?: () => void;
 }
+
+const emptyProfile: UserProfileData = {
+  quinId: '--',
+  gender: '--',
+  age: 0,
+  location: '--',
+  memberSinceLabel: '',
+  tags: [],
+  stats: [],
+};
 
 function BackIcon() {
   return (
@@ -64,7 +73,7 @@ function AvatarPlaceholder() {
   );
 }
 
-export default function UserProfileCard({ profile = userProfileMock, onBack }: UserProfileCardProps) {
+export default function UserProfileCard({ profile = emptyProfile, onBack }: UserProfileCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>

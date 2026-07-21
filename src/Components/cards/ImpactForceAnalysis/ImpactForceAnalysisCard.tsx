@@ -1,8 +1,6 @@
 import ImpactForceChart from '../../charts/ImpactForceChart/ImpactForceChart';
 import {
   IMPACT_AXIS_LABELS,
-  impactForcePoints,
-  impactForceSummary,
 } from '../../../Constants/impactForceAnalysisData';
 import type { ImpactForcePoint, ImpactForceSummary } from '../../../types/impactForceAnalysis';
 import styles from './ImpactForceAnalysisCard.module.scss';
@@ -33,8 +31,13 @@ function AlertIcon() {
 }
 
 export default function ImpactForceAnalysisCard({
-  data = impactForcePoints,
-  summary = impactForceSummary,
+  data = [],
+  summary = {
+    maxGForce: '--',
+    maxGForceLabelLine1: 'Max',
+    maxGForceLabelLine2: 'G-Force',
+    percentileNote: '',
+  },
 }: ImpactForceAnalysisCardProps) {
   return (
     <div className={styles.card}>

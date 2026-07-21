@@ -1,5 +1,6 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
+@use '@/styles/animations' as *;
 
 .top-events-card {
   background: $color-surface;
@@ -88,6 +89,7 @@
     line-height: 1;
     color: $color-text-primary;
     white-space: nowrap;
+    @include value-load-in(140ms);
   }
 
   &__metric-suffix {

@@ -2,7 +2,6 @@ import { InfoIcon, ArrowRightIcon } from '../../common/Icons'
 import Pill from '../../common/pills/pill'
 import SparklineChart from '../../charts/SparklineChart/SparklineChart'
 import {
-  topEventsMock,
   topEventsSparklineSeries,
   topEventsSparklineSeriesGyro,
   topEventsSparklineSeriesImpact,
@@ -24,7 +23,7 @@ function formatSecondaryValue(value: number | undefined) {
 
 export default function TopEventsCard({
   title = 'Top Events',
-  events = topEventsMock,
+  events = [],
   onEventClick,
   isLoading = false,
 }: TopEventsCardProps) {

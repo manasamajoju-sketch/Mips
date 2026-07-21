@@ -1,6 +1,6 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
-@use '@/styles/animations';
+@use '@/styles/animations' as *;
 
 .card {
   background: $color-surface;
@@ -69,6 +69,7 @@
   font-weight: 300;
   line-height: 1;
   color: $color-text-primary;
+  @include value-load-in(160ms);
 }
 
 .summaryLabel {

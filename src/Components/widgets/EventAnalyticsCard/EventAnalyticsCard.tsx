@@ -46,8 +46,8 @@ export default function EventAnalyticsCard({
   const selectedTypeIndex = Math.max(eventTypes.indexOf(selectedEventType), 0)
   const activeEventType = eventTypes[selectedTypeIndex] ?? selectedEventType
   const displayedGForceSummary = gForceSummary ?? {
-    minGForce: data.minGForce,
-    maxGForce: data.maxGForce,
+    minGForce: null,
+    maxGForce: null,
   }
 
   const cycleEventType = (direction: -1 | 1) => {
@@ -96,15 +96,15 @@ export default function EventAnalyticsCard({
       .catch(() => {
         if (!isMounted) return
         setGForceSummary({
-          minGForce: data.minGForce,
-          maxGForce: data.maxGForce,
+          minGForce: null,
+          maxGForce: null,
         })
       })
 
     return () => {
       isMounted = false
     }
-  }, [activeEventType, data.maxGForce, data.minGForce, window])
+  }, [activeEventType, window])
 
   const otherImpacts = data.impactBreakdown.filter((b) => b.zone !== 'front')
   const totalImpacts = data.impactBreakdown.reduce((sum, b) => sum + b.impacts, 0) || 1

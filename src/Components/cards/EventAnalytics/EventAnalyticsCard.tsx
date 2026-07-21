@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import GForceTrendChart from '../../charts/GForceTrendChart/GForceTrendChart';
 import ImpactZoneChart from '../../charts/ImpactZoneChart/ImpactZoneChart';
-import {
-  eventAnalyticsSummary,
-  gForceTrendPoints,
-  impactZoneSegments,
-  impactZoneStats,
-} from '../../../Constants/eventAnalyticsData';
 import type {
   EventAnalyticsSummary,
   GForceTrendPoint,
@@ -23,10 +17,15 @@ interface EventAnalyticsCardProps {
 }
 
 export default function EventAnalyticsCard({
-  summary = eventAnalyticsSummary,
-  trendPoints = gForceTrendPoints,
-  zoneSegments = impactZoneSegments,
-  zoneStats = impactZoneStats,
+  summary = {
+    minGForce: '--',
+    maxGForce: '--',
+    centerLabel: '',
+    centerValue: '',
+  },
+  trendPoints = [],
+  zoneSegments = [],
+  zoneStats = [],
 }: EventAnalyticsCardProps) {
   // Shared between the chart and the stat list below it: hovering a wedge,
   // a compass label, or a stat-list row all highlight the same zone.

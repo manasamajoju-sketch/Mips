@@ -1,8 +1,8 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
+@use '@/styles/animations' as *;
 
 .card {
-  background: #12c4d6;
   border-radius: $radius-card;
   padding: 24px 28px;
   font-family: $font-family-base;
@@ -77,6 +77,7 @@
   font-weight: 300;
   line-height: 1;
   white-space: nowrap;
+  @include value-load-in(140ms);
 }
 
 .statLabel {

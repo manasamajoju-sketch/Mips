@@ -1,6 +1,6 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
-@use '@/styles/animations';
+@use '@/styles/animations' as *;
 
 .location-overview-card {
   background: $color-surface;
@@ -190,10 +190,6 @@
     @include flex(row, flex-end, flex-start, $space-sm);
     margin-bottom: 8px;
     flex-shrink: 0;
-    opacity: 0;
-    transform: translateY(4px);
-    animation: key-fade-in 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: 220ms;
   }
 
   &__total-value {
@@ -201,6 +197,7 @@
     font-weight: 300;
     line-height: 1;
     color: $color-text-primary;
+    @include value-load-in(220ms);
   }
 
   &__total-label {
