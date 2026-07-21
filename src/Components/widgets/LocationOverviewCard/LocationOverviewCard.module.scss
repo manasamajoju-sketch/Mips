@@ -239,7 +239,7 @@
     padding: 0 2px 0 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -256,6 +256,7 @@
 
   &__breakdown-item {
     flex-shrink: 0;
+    padding: 6px 0;
     opacity: 0;
     transform: translateY(4px);
     animation: key-fade-in 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -332,15 +333,19 @@
   &__bar-track {
     position: relative;
     width: 100%;
+    // Fixed layout footprint — hover expands the fill visually without
+    // growing the list / card height.
+    height: 10px;
     border-radius: $radius-pill;
     background: rgba($color-accent-teal, 0.1);
     cursor: pointer;
-    transition: height 180ms ease;
   }
 
   &__bar-fill {
-    position: relative;
-    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 10px;
     // Guarantees room for the value label even at the smallest bar width,
     // so the label always sits fully inside the colored fill instead of
     // spilling out past its right edge.
@@ -353,8 +358,17 @@
     overflow: visible;
     opacity: 0;
     transform-origin: left center;
-    transform: scaleX(0.2);
+    transform: translateY(-50%) scaleX(0.2);
+    transition: height 180ms ease;
     animation: location-bar-grow-in 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  &__bar-track--active {
+    z-index: 1;
+
+    .location-overview-card__bar-fill {
+      height: 24px;
+    }
   }
 
   &__bar-value {
@@ -416,10 +430,10 @@
 @keyframes location-bar-grow-in {
   from {
     opacity: 0;
-    transform: scaleX(0.2);
+    transform: translateY(-50%) scaleX(0.2);
   }
   to {
     opacity: 1;
-    transform: scaleX(1);
+    transform: translateY(-50%) scaleX(1);
   }
 }

@@ -567,8 +567,11 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
                       )}
                     </div>
                     <div
-                      className={styles['location-overview-card__bar-track']}
-                      style={{ height: !isLoading && hoveredBarKey === item.key ? 24 : 10 }}
+                      className={`${styles['location-overview-card__bar-track']}${
+                        !isLoading && hoveredBarKey === item.key
+                          ? ` ${styles['location-overview-card__bar-track--active']}`
+                          : ''
+                      }`}
                       tabIndex={isLoading ? undefined : 0}
                       aria-label={isLoading ? undefined : `${item.title}: ${item.count.toLocaleString()}`}
                       onMouseEnter={() => !isLoading && setHoveredBarKey(item.key)}
