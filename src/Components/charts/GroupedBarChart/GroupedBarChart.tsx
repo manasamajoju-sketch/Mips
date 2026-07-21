@@ -107,7 +107,7 @@ export default function GroupedBarChart<T extends { category: string }>({
                       <div className={`${styles.bars} ${isHovered ? styles.barsActive : ''}`}>
                         {series.map((s) => {
                           const value = Number(item[s.key]) || 0
-                          const heightPct = value > 0 ? Math.max((value / yMax) * 100, 6) : 0
+                          const heightPct = value > 0 ? Math.max((value / yMax) * 100, 12) : 0
                           return (
                             <div key={String(s.key)} className={styles.barWrap}>
                               <div
