@@ -98,10 +98,7 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
         strictBounds: true,
       },
       disableDefaultUI: true,
-      zoomControl: true,
-      zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_TOP,
-      },
+      zoomControl: false,
       gestureHandling: 'greedy',
       keyboardShortcuts: false,
       styles: LOCATION_MAP_STYLE,
@@ -149,7 +146,11 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
     overlaysRef.current.forEach((overlay) => overlay.setMap(null))
     overlaysRef.current = []
 
-    if (locations.length === 0) return
+    if (locations.length === 0) {
+      map.setCenter(DEFAULT_CENTER)
+      map.setZoom(DEFAULT_ZOOM)
+      return
+    }
 
     locations.forEach((location) => {
       const position = { lat: location.lat, lng: location.lng }
@@ -161,7 +162,7 @@ export default function LocationMap({ locations, onLocationClick }: LocationMapP
           onLocationClick(location)
         }
         map.panTo(position)
-        map.setZoom(5)
+        map.setZoom(4)
       })
 
       const overlay = new google.maps.OverlayView()

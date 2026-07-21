@@ -25,7 +25,7 @@
   justify-content: space-between;
   align-items: flex-end;
   flex: 0 0 auto;
-  width: clamp(16px, 5.5cqw, 28px);
+  width: clamp(16px, 5.5cqw, 20px);
   padding-bottom: 4px;
   font-size: clamp(8px, 2.2cqw, 10px);
   color: $color-text-muted;
@@ -71,6 +71,22 @@
     outline-offset: 3px;
     z-index: 4;
   }
+}
+
+.colEdgeStart,
+.colEdgeEnd {
+  position: relative;
+  z-index: 9;
+}
+
+// Auto margins pin the expanded pill to the plot edge without changing
+// column centering for resting bars or middle hover states.
+.colEdgeStart .pillActive {
+  margin-left: 1.2rem;
+}
+
+.colEdgeEnd .pillActive {
+  margin-right: 1.2rem;
 }
 
 .pill {

@@ -2,7 +2,7 @@ import { apiClient } from "./apiClient";
 import { ENDPOINTS } from "./endPoints";
 import type { TopEventsApiResponse } from '../types/topEventsApi';
 import type { ProcessedEventsApiResponse } from '../types/processedEventsApi';
-
+import type { EventTimelineApiResponse } from '../types/eventTimeline';
 
 export const dashboardService = {
 
@@ -53,8 +53,10 @@ export const dashboardService = {
     return apiClient(`${ENDPOINTS.locations.overview}?${query.toString()}`)
   },
 
-  getLatestEvents: () =>
-    apiClient(ENDPOINTS.events.latest),
+  getLatestEvents: () => {
+    console.log('[dashboardService] getLatestEvents', ENDPOINTS.events.latest)
+    return apiClient<EventTimelineApiResponse>(ENDPOINTS.events.latest)
+  },
 
   getUserOverview: (window: string = '30d') =>
     apiClient(`${ENDPOINTS.users.overview}?window=${encodeURIComponent(window)}`),

@@ -76,12 +76,22 @@ interface EventTimelineChartProps {
 interface DayColumnProps {
   point: TimelinePoint;
   categories: TimelineCategory[];
+  isFirst: boolean;
+  isLast: boolean;
   isActive: boolean;
   onHover: () => void;
   onLeave: () => void;
 }
 
-function DayColumn({ point, categories, isActive, onHover, onLeave }: DayColumnProps) {
+function DayColumn({
+  point,
+  categories,
+  isFirst,
+  isLast,
+  isActive,
+  onHover,
+  onLeave,
+}: DayColumnProps) {
   const categoryValues = categories.map((cat) => ({
     ...cat,
     value: Number(point[cat.key]) || 0,
@@ -121,9 +131,17 @@ function DayColumn({ point, categories, isActive, onHover, onLeave }: DayColumnP
 
   const activePillHeightPx = Math.min(rawActivePillHeightPx, MAX_ACTIVE_PILL_PX);
 
+  const colClassName = [
+    styles.col,
+    isActive && isFirst ? styles.colEdgeStart : '',
+    isActive && isLast && !isFirst ? styles.colEdgeEnd : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div
-      className={styles.col}
+      className={colClassName}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       onFocus={onHover}
@@ -172,6 +190,7 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
   const isNinetyDayRange = range === '90d';
 
   const renderData = isLoading ? buildLoadingPoints(categories) : data;
+  const lastIndex = renderData.length - 1;
 
   const resolvedMaxTotal = Math.max(
     maxTotal,
@@ -196,6 +215,8 @@ export default function EventTimelineChart({ data, categories, maxTotal = MAX_TO
               key={`${point.month}-${point.date}-${index}`}
               point={point}
               categories={categories}
+              isFirst={index === 0}
+              isLast={index === lastIndex}
               isActive={hoveredIndex === index}
               onHover={() => setHoveredIndex(index)}
               onLeave={() => setHoveredIndex(null)}

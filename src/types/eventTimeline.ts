@@ -7,7 +7,7 @@ export interface EventTimelineLocation {
 
 export interface EventTimelineApiEvent {
   type: string;
-  impactLocation: EventTimelineLocation | string;
+  impactLocation: EventTimelineLocation | string | null;
   isActive: boolean;
   date: string;
 }
@@ -54,10 +54,15 @@ export function mapLatestEventsToTimelineEntries(events: EventTimelineApiEvent[]
     const status: EventTimelineStatus = event.isActive ? 'active' : 'marked_safe';
     const statusLabel = event.isActive ? 'Active' : 'Marked safe';
 
-    const coordinates = typeof event.impactLocation === 'object' ? event.impactLocation : undefined;
+    const coordinates = typeof event.impactLocation === 'object' && event.impactLocation !== null
+      ? event.impactLocation
+      : undefined;
+
     const country = typeof event.impactLocation === 'string'
       ? event.impactLocation
-      : `${event.impactLocation.lat.toFixed(2)}, ${event.impactLocation.lng.toFixed(2)}`;
+      : typeof event.impactLocation === 'object' && event.impactLocation !== null
+        ? `${event.impactLocation.lat.toFixed(2)}, ${event.impactLocation.lng.toFixed(2)}`
+        : 'Unknown location';
 
     return {
       id: `${event.type}-${index}-${event.date}`,

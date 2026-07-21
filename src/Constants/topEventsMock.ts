@@ -2,7 +2,7 @@ import type { TopEvent, TopEventSparklinePoint } from '../types/topEvents'
 import type { SparklineSeries } from '../Components/charts/SparklineChart/SparklineChart'
 import { EVENT_CATEGORY_COLORS } from './eventOverviewData'
 
-const gForcePoints = [
+export const gForceWaveformTemplate: TopEventSparklinePoint[] = [
   [0, 1, 1, 1],
   [10, 4, 3, 2],
   [20, 20, 6, 4],
@@ -16,7 +16,7 @@ const gForcePoints = [
   [100, 10, 3, 2],
 ].map(([x, xAxis, yAxis, zAxis]) => ({ x: `${x}`, xAxis, yAxis, zAxis }))
 
-const rotationalPoints = [
+export const rotationalWaveformTemplate: TopEventSparklinePoint[] = [
   [0, 1, 1, 1],
   [10, 5, 3, 2],
   [20, 19, 6, 3],
@@ -29,6 +29,56 @@ const rotationalPoints = [
   [90, 9, 3, 2],
   [100, 9, 3, 2],
 ].map(([x, xAxis, yAxis, zAxis]) => ({ x: `${x}`, xAxis, yAxis, zAxis }))
+
+const gForcePoints = gForceWaveformTemplate
+const rotationalPoints = rotationalWaveformTemplate
+
+/** True when the series has enough variation to draw a readable curve. */
+export function hasUsableSparklineWaveform(data: TopEventSparklinePoint[]): boolean {
+  if (!data || data.length < 3) return false
+
+  const keys: Array<keyof TopEventSparklinePoint> = ['xAxis', 'yAxis', 'zAxis']
+  return keys.some((key) => {
+    const values = data.map((point) => Math.abs(Number(point[key]) || 0))
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    // Flat / near-constant API stubs (e.g. every sample 0.0001) fail this check.
+    return max - min > Math.max(max * 0.02, 1e-6)
+  })
+}
+
+/**
+ * Scales a reference waveform so its peak matches `metricPeak`, preserving the
+ * X/Y/Z shape from the design reference.
+ */
+export function scaleWaveformTemplate(
+  template: TopEventSparklinePoint[],
+  metricPeak: number,
+): TopEventSparklinePoint[] {
+  const peak = Math.max(
+    1,
+    ...template.flatMap((point) => [point.xAxis, point.yAxis, point.zAxis]),
+  )
+  const target = metricPeak > 0 ? metricPeak : peak
+
+  return template.map((point) => ({
+    x: point.x,
+    xAxis: (point.xAxis / peak) * target,
+    yAxis: (point.yAxis / peak) * target,
+    zAxis: (point.zAxis / peak) * target,
+  }))
+}
+
+export function resolveTopEventSparklineData(
+  data: TopEventSparklinePoint[],
+  type: 'impact' | 'gyro' | undefined,
+  metricValue: number,
+): TopEventSparklinePoint[] {
+  if (hasUsableSparklineWaveform(data)) return data
+
+  const template = type === 'gyro' ? rotationalWaveformTemplate : gForceWaveformTemplate
+  return scaleWaveformTemplate(template, metricValue > 0 ? metricValue : 170)
+}
 
 export const topEventsMock: TopEvent[] = [
   {
@@ -97,15 +147,15 @@ export const rotationalEventsMock: TopEvent[] = [
 ]
 
 export const topEventsSparklineSeriesImpact: SparklineSeries<TopEventSparklinePoint>[] = [
-  { key: 'xAxis', label: 'X Impact', color: '#6fdcea' },
-  { key: 'yAxis', label: 'Y Impact', color: EVENT_CATEGORY_COLORS.passive },
-  { key: 'zAxis', label: 'Z Impact', color: EVENT_CATEGORY_COLORS.others },
+  { key: 'xAxis', label: 'X Axis', color: '#7DDBEA' },
+  { key: 'yAxis', label: 'Y Axis', color: '#14A6BE' },
+  { key: 'zAxis', label: 'Z Axis', color: '#17364A' },
 ]
 
 export const topEventsSparklineSeriesGyro: SparklineSeries<TopEventSparklinePoint>[] = [
-  { key: 'xAxis', label: 'X Rotation', color: '#6fdcea' },
-  { key: 'yAxis', label: 'Y Rotation', color: EVENT_CATEGORY_COLORS.passive },
-  { key: 'zAxis', label: 'Z Rotation', color: EVENT_CATEGORY_COLORS.others },
+  { key: 'xAxis', label: 'X Axis', color: '#7DDBEA' },
+  { key: 'yAxis', label: 'Y Axis', color: '#14A6BE' },
+  { key: 'zAxis', label: 'Z Axis', color: '#17364A' },
 ]
 
 export const topEventsSparklineSeries: SparklineSeries<TopEventSparklinePoint>[] = topEventsSparklineSeriesImpact

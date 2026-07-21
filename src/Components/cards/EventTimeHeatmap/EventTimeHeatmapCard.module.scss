@@ -5,8 +5,8 @@
   border-radius: $radius-card;
   padding: 20px 22px;
   font-family: $font-family-base;
-  // box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   height: 100%;
+  min-height: 340px;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -23,30 +23,33 @@
   color: $color-text-primary;
   margin-bottom: 6px;
   flex: 0 0 auto;
+  min-height: 22px;
 }
 
 .infoIcon {
   color: $color-accent-teal;
   flex-shrink: 0;
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
 }
 
 .topRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: 12px;
+  margin-bottom: 12px;
   flex: 0 0 auto;
+  min-height: auto;
+  flex-wrap: nowrap;
 }
 
 .summary {
   display: flex;
-  align-items: baseline;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
   min-width: 0;
+  flex: 0 1 auto;
 }
 
 .summaryValue {
@@ -55,27 +58,50 @@
   line-height: 1;
   color: $color-text-primary;
   white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 4px;
 }
 
 .summaryLabel {
-  font-size: 10px;
-  color: $color-text-primary;
-  line-height: 1.15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0;
+  font-size: 14px;
+  color: $color-text-secondary;
+  line-height: 1.2;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .note {
   display: flex;
   align-items: flex-start;
   gap: 4px;
-  font-size: 9px;
+  font-size: 12px;
   color: $color-accent-teal;
-  max-width: 240px;
+  flex: 0 1 auto;
   min-width: 0;
+  max-width: 55%;
+  justify-content: flex-end;
+  text-align: right;
+  white-space: normal;
+  line-height: 1.25;
+  overflow: visible;
+
+  span {
+    display: block;
+    text-align: right;
+    line-height: 1.25;
+    overflow: visible;
+    text-overflow: unset;
+    white-space: normal;
+  }
 }
 
 .alertIcon {
   flex-shrink: 0;
-  margin-top: 1px;
   width: 12px;
   height: 12px;
 }
@@ -84,10 +110,12 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 6px;
-  font-size: 9px;
+  margin-bottom: 12px;
+  font-size: 12px;
   color: $color-text-secondary;
   flex: 0 0 auto;
+  align-items: center;
+  min-height: 18px;
 }
 
 .legendItem {
@@ -97,8 +125,8 @@
 }
 
 .legendDot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;

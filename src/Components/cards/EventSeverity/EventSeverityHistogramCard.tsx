@@ -75,15 +75,14 @@ export default function EventSeverityHistogramCard({
           <span className={styles.legendItem} key={key}>
             <span className={styles.legendDot} style={{ background: SEVERITY_BUCKET_COLORS[key] }} />
             <span className={styles.legendText}>
-              {label}
-              <br />
+              <span>{label}</span>
               <span className={styles.legendRange}>{rangeLabel}</span>
             </span>
           </span>
         ))}
       </div>
 
-      {/* chartWrap fills all remaining height — canvas inside is 100%×100% */}
+      {/* chartWrap fills all remaining height */}
       <div className={styles.chartWrap}>
         <EventSeverityHistogramChart bars={displayBars} />
       </div>

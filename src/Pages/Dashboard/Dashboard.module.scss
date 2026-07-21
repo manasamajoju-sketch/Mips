@@ -13,7 +13,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(3, minmax(280px, auto));
+  grid-template-rows: repeat(3, minmax(340px, auto));
   gap: 8px;
   box-sizing: border-box;
 
@@ -97,7 +97,7 @@
   .dashboardPage {
     gap: $space-md;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(6, minmax(260px, auto));
+    grid-template-rows: repeat(6, minmax(320px, auto));
     grid-template-areas:
       'event-overview event-analytics'
       'location-overview top-events'
@@ -112,7 +112,7 @@
   .dashboardPage {
     gap: $space-md;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(10, minmax(240px, auto));
+    grid-template-rows: repeat(10, minmax(280px, auto));
     grid-template-areas:
       'event-overview'
       'event-analytics'
@@ -132,7 +132,7 @@
     padding: $space-md;
     gap: $space-md;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(10, minmax(220px, auto));
+    grid-template-rows: repeat(10, minmax(260px, auto));
     grid-template-areas:
       'event-overview'
       'event-analytics'

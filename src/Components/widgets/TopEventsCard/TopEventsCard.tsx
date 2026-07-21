@@ -6,6 +6,7 @@ import {
   topEventsSparklineSeries,
   topEventsSparklineSeriesGyro,
   topEventsSparklineSeriesImpact,
+  resolveTopEventSparklineData,
 } from '../../../Constants/topEventsMock'
 import type { TopEvent } from '../../../types/topEvents'
 import styles from './TopEventsCard.module.scss'
@@ -15,6 +16,11 @@ interface TopEventsCardProps {
   events?: TopEvent[]
   onEventClick?: (event: TopEvent) => void
   isLoading?: boolean
+}
+
+function formatSecondaryValue(value: number | undefined) {
+  if (value == null || !Number.isFinite(value)) return '000'
+  return String(Math.round(value)).padStart(3, '0')
 }
 
 export default function TopEventsCard({
@@ -55,70 +61,100 @@ export default function TopEventsCard({
                 </div>
               </div>
             ))
-          : events.map((event) => (
-              <div
-                className={styles['top-events-card__section']}
-                key={event.key}
-                onClick={() => onEventClick?.(event)}
-              >
-                {/* ── Metric ── */}
-                <div className={styles['top-events-card__metric']}>
-                  <span className={styles['top-events-card__metric-value']}>
-                    {event.metricValue}
-                    <span className={styles['top-events-card__metric-suffix']}>{event.metricSuffix}</span>
-                  </span>
-                  <span className={styles['top-events-card__metric-label']}>
-                    {event.metricLabel.split('\n').map((line) => (
-                      <span key={line}>{line}</span>
-                    ))}
-                  </span>
-                </div>
+          : events.map((event) => {
+              const series =
+                event.type === 'gyro'
+                  ? topEventsSparklineSeriesGyro
+                  : event.type === 'impact'
+                    ? topEventsSparklineSeriesImpact
+                    : topEventsSparklineSeries
+              const chartData = resolveTopEventSparklineData(
+                event.data,
+                event.type,
+                event.metricValue,
+              )
+              const secondaryLabel = event.type === 'gyro' ? 'BrIC Value' : 'HIC Value'
+              const secondaryValue = formatSecondaryValue(
+                event.type === 'gyro' ? event.bricValue : event.hicValue,
+              )
 
-                {/* ── Meta ── */}
-                <div className={styles['top-events-card__meta']}>
-                  <div className={styles['top-events-card__meta-group']}>
-                    <span className={styles['top-events-card__meta-value']}>{event.date}</span>
-                    <span className={styles['top-events-card__meta-value']}>{event.time}</span>
-                  </div>
-                  <div className={`${styles['top-events-card__meta-group']} ${styles['top-events-card__meta-group--end']}`}>
-                    <span className={styles['top-events-card__meta-label']}>Severity</span>
-                    <span className={`${styles['top-events-card__severity']} ${styles[`top-events-card__severity--${event.severity.toLowerCase()}`]}`}>
-                      {event.severity}
+              return (
+                <div
+                  className={styles['top-events-card__section']}
+                  key={event.key}
+                  onClick={() => onEventClick?.(event)}
+                >
+                  <div className={styles['top-events-card__metric']}>
+                    <span className={styles['top-events-card__metric-value']}>
+                      {event.metricValue}
+                      <span className={styles['top-events-card__metric-suffix']}>{event.metricSuffix}</span>
+                    </span>
+                    <span className={styles['top-events-card__metric-label']}>
+                      {event.metricLabel.split('\n').map((line) => (
+                        <span key={line}>{line}</span>
+                      ))}
                     </span>
                   </div>
-                </div>
 
-                {/* ── Sparkline — fills remaining height ── */}
-                <div className={styles['top-events-card__sparkline-wrap']}>
-                  <SparklineChart
-                    data={event.data}
-                    series={
-                      event.type === 'gyro'
-                        ? topEventsSparklineSeriesGyro
-                        : event.type === 'impact'
-                          ? topEventsSparklineSeriesImpact
-                          : topEventsSparklineSeries
-                    }
-                  />
-                </div>
-
-                {/* ── Bottom row ── */}
-                <div className={styles['top-events-card__bottom-row']}>
-                  <div className={styles['top-events-card__tags']}>
-                    {event.tags.map((tag) => (
-                      <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
+                  <div className={styles['top-events-card__axis-legend']}>
+                    {series.map((item) => (
+                      <span key={String(item.key)} className={styles['top-events-card__axis-item']}>
+                        <span
+                          className={styles['top-events-card__axis-dot']}
+                          style={{ backgroundColor: item.color }}
+                        />
+                        {item.label}
+                      </span>
                     ))}
                   </div>
-                  <button
-                    type="button"
-                    className={styles['top-events-card__section-arrow-btn']}
-                    aria-label={`View ${event.metricLabel.replace(/\n/g, ' ')} details`}
-                  >
-                    <ArrowRightIcon />
-                  </button>
+
+                  <div className={styles['top-events-card__meta']}>
+                    <div className={styles['top-events-card__meta-group']}>
+                      <span className={styles['top-events-card__meta-value']}>
+                        {event.date} {event.time}
+                      </span>
+                    </div>
+                    <div className={`${styles['top-events-card__meta-group']} ${styles['top-events-card__meta-group--end']}`}>
+                      <span className={styles['top-events-card__meta-label']}>
+                        {secondaryLabel}: {secondaryValue}
+                      </span>
+                      <span className={styles['top-events-card__meta-label']}>
+                        Severity:{' '}
+                        <span
+                          className={`${styles['top-events-card__severity']} ${styles[`top-events-card__severity--${event.severity.toLowerCase()}`]}`}
+                        >
+                          {event.severity}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles['top-events-card__sparkline-wrap']}>
+                    <SparklineChart
+                      data={chartData}
+                      series={series}
+                      dateTimeLabel={`${event.date} ${event.time}`}
+                      valueUnit={event.metricSuffix}
+                    />
+                  </div>
+
+                  <div className={styles['top-events-card__bottom-row']}>
+                    <div className={styles['top-events-card__tags']}>
+                      {event.tags.map((tag) => (
+                        <Pill key={tag.text} text={tag.text} color={tag.color} textColor={tag.textColor} />
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className={styles['top-events-card__section-arrow-btn']}
+                      aria-label={`View ${event.metricLabel.replace(/\n/g, ' ')} details`}
+                    >
+                      <ArrowRightIcon />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
       </div>
     </section>
   )

@@ -2,46 +2,102 @@
 
 .sparkline-chart {
   width: 100%;
-  height: 100%;       // fill the sparkline-wrap flex container
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+}
 
-  &__key {
-    display: flex;
-    align-items: center;
-    gap: $space-md;
-    margin-bottom: $space-xs;
-    flex-shrink: 0;
-  }
+.sparkline-chart__key {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 18px);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
 
-  &__key-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: $fs-axis;
-    color: $color-text-secondary;
-  }
+.sparkline-chart__key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 300;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
 
-  &__key-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+.sparkline-chart__key-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-  // SVG fills all remaining height in the flex column
-  &__svg {
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    display: block;
-    overflow: visible;
-  }
+.sparkline-chart__plot {
+  position: relative;
+  flex: 1;
+  min-height: 88px;
+  width: 100%;
+  cursor: crosshair;
+}
 
-  &__line {
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
+.sparkline-chart__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 88px;
+  overflow: visible;
+}
+
+.sparkline-chart__tooltip {
+  position: absolute;
+  z-index: 5;
+  min-width: 132px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: $color-surface;
+  box-shadow: $shadow-tooltip;
+  border: 1px solid $color-border;
+  pointer-events: none;
+}
+
+.sparkline-chart__tooltip-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: $color-text-primary;
+  margin-bottom: 4px;
+}
+
+.sparkline-chart__tooltip-duration {
+  font-size: 10px;
+  color: $color-text-secondary;
+  margin-bottom: 6px;
+}
+
+.sparkline-chart__tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.sparkline-chart__tooltip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sparkline-chart__tooltip-label {
+  flex: 1;
+  font-size: 11px;
+  color: $color-text-secondary;
+}
+
+.sparkline-chart__tooltip-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: $color-text-primary;
+  white-space: nowrap;
 }

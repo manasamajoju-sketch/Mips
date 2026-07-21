@@ -4,6 +4,8 @@ import type { TopEventsApiEvent } from '../types/topEventsApi'
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
+  if (Number.isNaN(date.getTime())) return '--/--/--'
+
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   const year = String(date.getFullYear()).slice(-2)
@@ -12,17 +14,27 @@ function formatDate(dateString: string) {
 
 function formatTime(dateString: string) {
   const date = new Date(dateString)
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  }).toLowerCase()
+  if (Number.isNaN(date.getTime())) return '--:--'
+
+  return date
+    .toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+    .replace(/\s/g, '')
+    .toLowerCase()
+}
+
+export function formatTopEventDateTime(dateString: string) {
+  return `${formatDate(dateString)} ${formatTime(dateString)}`
 }
 
 // event.eventType is NOT a reliable impact/gyro signal — the `type`
 // parameter, known from the call site (which typed request produced this
 // event), is the correct source of truth.
 function getRawMetricValue(event: TopEventsApiEvent, type: 'impact' | 'gyro'): number {
-  return (type === 'impact' ? event.grmsMax : event.irmsMax) ?? 0
+  // Impact → linear acceleration (irmsMax); Gyro → rotational (grmsMax).
+  return (type === 'impact' ? event.irmsMax : event.grmsMax) ?? 0
 }
 
 // Rounds the metric to at most 1 decimal place so the big number never
@@ -64,21 +76,23 @@ function getTagsForType(type: 'impact' | 'gyro'): TopEventTag[] {
 export function mapTopEventsApiEventToTopEvent(
   event: TopEventsApiEvent,
   type: 'impact' | 'gyro',
+  options?: { createdAt?: string },
 ): TopEvent {
   const isImpact = type === 'impact'
+  const createdAt = options?.createdAt || event.createdAt
 
   return {
     key: event.eventId,
     metricValue: roundMetricValue(getRawMetricValue(event, type)),
     metricSuffix: isImpact ? 'gF' : 'rad/s',
     metricLabel: isImpact ? 'Maximum\nG-Force' : 'Max Rotational\nVelocity',
-    date: formatDate(event.createdAt),
-    time: formatTime(event.createdAt),
+    date: formatDate(createdAt),
+    time: formatTime(createdAt),
     severity: 'Low',
     tags: getTagsForType(type),
     type,
-    hicValue: isImpact ? event.grmsMax : undefined,
-    bricValue: isImpact ? event.bric : undefined,
+    hicValue: event.hic,
+    bricValue: event.bric,
     data: [],
   }
 }

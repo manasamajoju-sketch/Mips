@@ -95,7 +95,8 @@ export default function EventTimeHeatmapCard({
         mostCommonRange: '--',
         rangeLabelLine1: 'Loading',
         rangeLabelLine2: 'event heatmap...',
-        highlightNote: 'Fetching heatmap data…',
+        highlightNote1: 'Fetching heatmap data…',
+        highlightNote2: '',
       }
     : summary;
 
@@ -118,8 +119,16 @@ export default function EventTimeHeatmapCard({
           </span>
         </div>
         <div className={styles.note}>
-          <AlertIcon />
-          <span>{displayedSummary.highlightNote}</span>
+          <span>
+             <AlertIcon />
+            {displayedSummary.highlightNote1}
+            {displayedSummary.highlightNote2 ? (
+              <>
+                <br />
+                {displayedSummary.highlightNote2}
+              </>
+            ) : null}
+          </span>
         </div>
       </div>
 

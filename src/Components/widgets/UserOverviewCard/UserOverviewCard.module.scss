@@ -13,13 +13,13 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
+
+  min-height: 340px;
 
   > :last-child {
     flex: 1 1 auto;
-    min-height: 180px; // prevents the chart from being squashed into a
-                        // too-short box, which was compressing the axis
-                        // title/tick text together
+    min-height: 180px;
   }
 }
 
@@ -27,6 +27,7 @@
   @include flex(row, center, space-between);
   margin-bottom: 6px;
   flex: 0 0 auto;
+  min-height: 22px;
 }
 
 .title {
@@ -78,10 +79,15 @@
     }
 }
 
-.total {
-  @include flex(row, flex-end, flex-start, 6px);
-  margin-bottom: 6px;
+.summaryRow {
   flex: 0 0 auto;
+}
+
+.total {
+  @include flex(row, flex-end, flex-start, 8px);
+  margin-bottom: 12px;
+  flex: 0 0 auto;
+  min-height: 40px;
   opacity: 0;
   transform: translateY(4px);
   animation: key-fade-in 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -96,7 +102,45 @@
 }
 
 .totalLabel {
-  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 28px;
+  font-size: 14px;
   color: $color-text-secondary;
-  padding-bottom: 3px;
+  line-height: 1.2;
+  padding-bottom: 2px;
+}
+
+.legend {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+  min-height: 18px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 12px;
+  color: $color-text-secondary;
+  line-height: 1.2;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.legendText {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
 }

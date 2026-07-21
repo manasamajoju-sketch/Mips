@@ -13,10 +13,10 @@ interface UserOverviewCardProps {
 
 export default function UserOverviewCard({ onExpand, data = userOverviewData, total = userOverviewTotal, isLoading = false }: UserOverviewCardProps) {
   const placeholderData: UserOverviewCategory[] = [
-    { category: 'Cycling', mipsUsers: 16, total: 24, usersWithEvents: 8 },
-    { category: 'Moto', mipsUsers: 14, total: 21, usersWithEvents: 6 },
-    { category: 'PPE', mipsUsers: 12, total: 18, usersWithEvents: 5 },
-     { category: 'others', mipsUsers: 12, total: 18, usersWithEvents: 5 },
+    { category: 'PPE', mipsUsers: 16, total: 24, usersWithEvents: 8 },
+    { category: 'Cycling', mipsUsers: 14, total: 21, usersWithEvents: 6 },
+    { category: 'Moto', mipsUsers: 12, total: 18, usersWithEvents: 5 },
+    { category: 'Other', mipsUsers: 10, total: 16, usersWithEvents: 4 },
   ]
   const chartData = isLoading ? placeholderData : data
   const displayTotal = isLoading ? '--' : total
@@ -41,6 +41,19 @@ export default function UserOverviewCard({ onExpand, data = userOverviewData, to
           <span className={styles.totalValue}>{displayTotal}</span>
           <span className={styles.totalLabel}>Users</span>
         </div>
+      </div>
+
+      <div className={styles.legend}>
+        {userOverviewStacks.map((stack) => (
+          <span className={styles.legendItem} key={stack.key}>
+            <span className={styles.legendDot} style={{ background: stack.color }} />
+            <span className={styles.legendText}>
+              {stack.label.split('\n').map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </span>
+          </span>
+        ))}
       </div>
 
       <GroupedBarChart

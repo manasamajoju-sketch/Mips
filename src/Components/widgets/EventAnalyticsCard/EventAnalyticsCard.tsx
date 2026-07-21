@@ -118,10 +118,11 @@ export default function EventAnalyticsCard({
       value: (b.impacts / totalImpacts) * 100,
     }))
 
-  // Find the impact with the highest count
-  const maxImpact = data.impactBreakdown.reduce((max, current) => 
-    current.impacts > max.impacts ? current : max
-  , data.impactBreakdown[0] || { zone: 'front', label: 'Front', impacts: 0 })
+  const frontImpact = data.impactBreakdown.find((b) => b.zone === 'front') ?? {
+    zone: 'front' as const,
+    label: 'Front',
+    impacts: 0,
+  }
 
   return (
     <section className={styles['event-analytics-card']}>
@@ -167,29 +168,26 @@ export default function EventAnalyticsCard({
         <div className={styles['event-analytics-card__metric']}>
           <span className={styles['event-analytics-card__metric-value']}>{formatGForce(displayedGForceSummary.minGForce)}</span>
           <span className={styles['event-analytics-card__metric-label']}>
-            Minimum
-            <br />
-            G-Force
+            <span>Minimum</span>
+            <span>G-Force</span>
           </span>
         </div>
 
         <div className={styles['event-analytics-card__metric']}>
           <span className={styles['event-analytics-card__metric-value']}>{formatGForce(displayedGForceSummary.maxGForce)}</span>
           <span className={styles['event-analytics-card__metric-label']}>
-            Maximum
-            <br />
-            G-Force
+            <span>Maximum</span>
+            <span>G-Force</span>
           </span>
         </div>
 
-        <div className={`${styles['event-analytics-card__metric']} ${maxImpact.zone === 'front' ? styles['event-analytics-card__metric--front'] : ''}`}>
-          <span className={styles['event-analytics-card__metric-value--sm']}>
-            {maxImpact.impacts}
+        <div className={`${styles['event-analytics-card__metric']} ${styles['event-analytics-card__metric--front']}`}>
+          <span className={styles['event-analytics-card__metric-value']}>
+            {frontImpact.impacts}
           </span>
           <span className={styles['event-analytics-card__metric-label']}>
-            {maxImpact.label}
-            <br />
-            Impacts
+            <span>Front</span>
+            <span>Impacts</span>
           </span>
         </div>
       </div>
@@ -206,7 +204,13 @@ export default function EventAnalyticsCard({
         </div>
 
         <div className={styles['event-analytics-card__wheel-col']}>
-          <ImpactPoint sections={impactSections} alwaysShowPercent />
+          <ImpactPoint
+            sections={impactSections}
+            variant="onColor"
+            fillColor="rgba(255, 255, 255, 0.5)"
+            hoverFillColor="#ffffff"
+            showPercentOnHover
+          />
         </div>
 
         <ul className={styles['event-analytics-card__stat-list']}>
@@ -214,7 +218,8 @@ export default function EventAnalyticsCard({
             <li key={item.zone} className={styles['event-analytics-card__stat-item']}>
               <span className={styles['event-analytics-card__stat-value']}>{item.impacts}</span>
               <span className={styles['event-analytics-card__stat-label']}>
-                {item.label} Impacts
+                <span>{item.label}</span>
+                <span>Impacts</span>
               </span>
             </li>
           ))}

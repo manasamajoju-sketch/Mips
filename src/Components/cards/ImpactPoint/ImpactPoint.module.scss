@@ -53,13 +53,19 @@
   &__section--right,
   &__section--back                        { animation-delay: var(--impact-point-segments-delay); }
 
+  &__section--top:hover,
+  &__section--top:focus-visible {
+    .impact-point__label {
+      opacity: 0;
+    }
+  }
+
   &__section--clickable {
     cursor: pointer;
     * { cursor: pointer; }
   }
 
   &__section-shape {
-    fill: var(--impact-point-section-color);
     fill-opacity: 1;
     stroke: #ffffff;
     stroke-width: 1;
@@ -68,13 +74,12 @@
 
   &__label,
   &__percentage {
-    font-family: 'Suisse-Mono-Thin', sans-serif !important;
-    // font-size in SVG user units — scales with the viewBox automatically
+    font-family: $font-family-base;
     font-weight: 300;
     stroke-width: 0.4px;
     paint-order: stroke;
     line-height: 1;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.2px;
     pointer-events: none;
     dominant-baseline: middle;
     transform-box: fill-box;
@@ -85,7 +90,8 @@
     opacity: 1;
     fill: var(--text-primary);
     stroke: var(--surface);
-    stroke-width: 1px;
+    stroke-width: 0.6px;
+    font-size: 9px;
   }
 
   &__percentage {
@@ -93,12 +99,29 @@
     transform: translateY(2px);
     fill: var(--text-primary);
     stroke: var(--text-primary);
+    font-size: 12px;
+    font-weight: 400;
     transition: opacity 180ms ease, transform 180ms ease;
   }
 
   &__percentage--visible {
     opacity: 1 !important;
     transform: translateY(0) !important;
+  }
+
+  &--on-color {
+    .impact-point__label {
+      fill: #ffffff;
+      stroke: rgba(11, 108, 122, 0.35);
+      stroke-width: 0.4px;
+    }
+
+    .impact-point__percentage {
+      fill: #17364a;
+      stroke: none;
+      font-size: 12px;
+      font-weight: 400;
+    }
   }
 }
 

@@ -50,7 +50,7 @@ export default function ProductOverviewCard({
   // Legend items matching reference image — 4 items
   const legendItems = [
     { label: 'MIPS',     color: productOverviewSegmentColors.mipsProducts },
-    { label: 'Non-MIPS', color: productOverviewSegmentColors.other },
+    { label: 'Non\nMIPS', color: productOverviewSegmentColors.other },
     { label: 'Unknown',  color: productOverviewSegmentColors.unknown },
     { label: 'Others',   color: productOverviewSegmentColors.others },
   ]

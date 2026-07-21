@@ -18,7 +18,7 @@ import UserDemographicsCard from '../../Components/cards/UserDemographics/UserDe
 import EventSeverityHistogramCard from '../../Components/cards/EventSeverity/EventSeverityHistogramCard';
 import EventTimeHeatmapCard from '../../Components/cards/EventTimeHeatmap/EventTimeHeatmapCard';
 import { dashboardService } from '../../Services/dashboardService';
-import { mapLatestEventsToTimelineEntries, type EventTimelineApiResponse, type EventTimelineEntry } from '../../types/eventTimeline';
+import { mapLatestEventsToTimelineEntries, type EventTimelineApiEvent, type EventTimelineEntry, type EventTimelineApiResponse } from '../../types/eventTimeline';
 import { eventOverviewFallbackSummary, eventTimelineData, severityTimelineData } from '../../Constants/eventOverviewData';
 import {
   mapEventOverviewResponse,
@@ -83,6 +83,7 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const [userDemographicsSummaryState] = useState<UserDemographicsSummary>(userDemographicsSummary)
 
   useEffect(() => {
+    console.log('[Dashboard] mount/effect', { range })
     let isMounted = true
 
     let pendingOverviewRequests = 3
@@ -129,15 +130,53 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
       })
       .finally(resolveOverviewLoading)
 
+    const extractLatestEventsData = (response: unknown): EventTimelineApiEvent[] | undefined => {
+      if (Array.isArray(response)) {
+        return response
+      }
+
+      if (!response || typeof response !== 'object') {
+        return undefined
+      }
+
+      const dataField = (response as { data?: unknown }).data
+      if (Array.isArray(dataField)) {
+        return dataField
+      }
+
+      if (dataField && typeof dataField === 'object') {
+        const nestedData = (dataField as { data?: unknown }).data
+        if (Array.isArray(nestedData)) {
+          return nestedData
+        }
+      }
+
+      return undefined
+    }
+
+    console.log('[Dashboard] calling getLatestEvents')
     setTimelineLoading(true)
     dashboardService.getLatestEvents()
-      .then((response: unknown) => {
+      .then((response: EventTimelineApiResponse | unknown) => {
         if (!isMounted) return
-        const typedResponse = response as EventTimelineApiResponse
-        setTimelineEntries(mapLatestEventsToTimelineEntries(typedResponse.data))
+        console.log('[Dashboard] latest events response', response)
+
+        const data = extractLatestEventsData(response)
+        if (data && data.length > 0) {
+          const entries = mapLatestEventsToTimelineEntries(data)
+          console.log('[Dashboard] latest events mapped', entries.length, data)
+          setTimelineEntries(entries)
+        } else if (data) {
+          console.warn('[Dashboard] latest events response contained no entries', response)
+          setTimelineEntries([])
+        } else {
+          console.warn('[Dashboard] latest events response invalid:', response)
+          setTimelineEntries([])
+        }
       })
-      .catch(() => {
+      .catch((error) => {
         if (!isMounted) return
+        console.error('[Dashboard] getLatestEvents failed', error)
         setTimelineEntries([])
       })
       .finally(() => {
@@ -268,18 +307,23 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
 
           try {
             const processedResponse = await dashboardService.getProcessedEvents(topEvent.eventId, type)
-            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data)
+            const sparklineData = mapProcessedEventResponseToSparkline(processedResponse.data, type)
             if (sparklineData.length < 2) {
               console.warn('[Dashboard] Sparkline data has fewer than 2 points', type, sparklineData)
             }
 
-            const mappedTopEvent = mapTopEventsApiEventToTopEvent(topEvent, type)
-           const derivedMetricValue = Math.round(
-  Math.max(
-    0,
-    ...sparklineData.flatMap((point) => [point.xAxis, point.yAxis, point.zAxis].map((value) => Math.abs(value)))
-  ) * 10
-) / 10
+            const mappedTopEvent = mapTopEventsApiEventToTopEvent(topEvent, type, {
+              createdAt: processedResponse.data.createdAt || topEvent.createdAt,
+            })
+            const derivedMetricValue =
+              Math.round(
+                Math.max(
+                  0,
+                  ...sparklineData.flatMap((point) =>
+                    [point.xAxis, point.yAxis, point.zAxis].map((value) => Math.abs(value)),
+                  ),
+                ) * 10,
+              ) / 10
 
             const metricValue = mappedTopEvent.metricValue || derivedMetricValue
             return {

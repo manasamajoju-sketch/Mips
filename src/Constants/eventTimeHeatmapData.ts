@@ -117,5 +117,6 @@ export const eventTimeHeatmapSummary: EventTimeHeatmapSummary = {
   mostCommonRange: '4-8pm',
   rangeLabelLine1: 'Most Common',
   rangeLabelLine2: 'Event Time',
-  highlightNote: 'Friday had the highest events recorded this month.',
+  highlightNote1: 'Friday had the highest',
+  highlightNote2: 'events recorded this month.',
 };

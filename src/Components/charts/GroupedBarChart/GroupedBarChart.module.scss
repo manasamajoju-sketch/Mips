@@ -6,30 +6,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-}
-
-.key {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
-  flex-wrap: wrap;
-  flex: 0 0 auto;
-}
-
-.keyItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  color: $color-text-secondary;
-}
-
-.keyDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  overflow: visible;
 }
 
 .body {
@@ -57,13 +34,16 @@
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr;
   column-gap: 8px;
 }
 
 .yAxis {
   position: relative;
   min-width: 26px;
+  // Match plotArea height (exclude labels row via plotColumn grid)
+  align-self: stretch;
+  margin-bottom: 28px;
 }
 
 .yTickLabel {
@@ -77,10 +57,18 @@
   white-space: nowrap;
 }
 
+.plotColumn {
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
 .plotArea {
   position: relative;
   border-bottom: 1.5px solid rgba(0, 0, 0, 0.25);
   min-height: 0;
+  overflow: visible;
 }
 
 .plotAreaWithLeftAxis {
@@ -96,21 +84,18 @@
   opacity: 0.65;
 }
 
-.gridSpacer {
-  min-width: 26px;
-}
-
 .groups {
   position: relative;
   height: 100%;
   display: flex;
   align-items: flex-end;
-  gap: 18px;
+  gap: 14px;
   padding: 0 2px;
 }
 
 .group {
   flex: 1 1 0;
+  min-width: 0;
   height: 100%;
   display: flex;
   align-items: flex-end;
@@ -124,25 +109,22 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  gap: 4px;
+  transition: gap 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.barsActive {
   gap: 5px;
 }
 
 .barWrap {
   position: relative;
   height: 100%;
-  width: 8px;
+  width: 4px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.bars {
-  transition: gap 240ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.barsActive {
-  gap: 3px;
+  transition: width 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .barsActive .barWrap {
@@ -151,40 +133,43 @@
 
 .bar {
   width: 100%;
-  border-radius: 4px;
-  transition: height 260ms cubic-bezier(0.16, 1, 0.3, 1), width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition:
+    height 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    width 220ms cubic-bezier(0.16, 1, 0.3, 1),
     background-color 150ms ease;
 }
 
-.valueBadge {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 50%);
-  z-index: 2;
+.barValue {
   font-family: $font-family-base;
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   pointer-events: none;
-  animation: valueIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: valueIn 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .labelsRow {
   display: flex;
   align-items: flex-start;
-  gap: 18px;
-  padding: 0 2px;
-  margin-top: 8px;
+  gap: 14px;
+  padding: 8px 2px 0;
 }
 
 .categoryLabel {
   flex: 1 1 0;
+  min-width: 0;
   text-align: center;
   font-family: $font-family-base;
   font-size: 12px;
   font-weight: 300;
   color: $color-text-secondary;
+  cursor: pointer;
   transition: color 120ms ease, font-weight 120ms ease;
 }
 
@@ -206,10 +191,10 @@
 @keyframes valueIn {
   from {
     opacity: 0;
-    transform: translate(-50%, 65%);
+    transform: scale(0.85);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 50%);
+    transform: scale(1);
   }
 }

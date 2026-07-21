@@ -19,6 +19,7 @@ type Props = {
   showLabels?: boolean
   showPercentOnHover?: boolean
   alwaysShowPercent?: boolean
+  variant?: 'default' | 'onColor'
   onSectionClick?: (section: ImpactPointSection) => void
 }
 
@@ -138,6 +139,7 @@ function ImpactPoint({
   showLabels = true,
   showPercentOnHover = true,
   alwaysShowPercent = false,
+  variant = 'default',
   onSectionClick,
 }: Props) {
   const resolvedSections = defaultSections.map((section) => ({
@@ -210,11 +212,6 @@ function ImpactPoint({
             y={percentPosition.y}
             textAnchor={percentPosition.textAnchor}
             dominantBaseline="central"
-            style={{
-              fill: 'var(--text-primary)',
-              stroke: 'var(--text-primary)',
-              ...(alwaysShowPercent ? { opacity: 1, transform: 'translateY(0)' } : {}),
-            }}
           >
             {getPercentLabel(section.value)}
           </text>
@@ -224,7 +221,15 @@ function ImpactPoint({
   }
 
   return (
-    <div className={[styles['impact-point'], className].filter(Boolean).join(' ')}>
+    <div
+      className={[
+        styles['impact-point'],
+        variant === 'onColor' ? styles['impact-point--on-color'] : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <svg
         className={styles['impact-point__svg']}
         width="102"

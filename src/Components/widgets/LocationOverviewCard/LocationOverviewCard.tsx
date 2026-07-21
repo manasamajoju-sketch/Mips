@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { InfoIcon } from '../../common/Icons'
 import LocationMap from '../../cards/LocationMap/LocationMap'
-import HorizontalBarChart from '../../charts/HorizontalBarChart/HorizontalBarChart'
 import { dashboardService } from '../../../Services/dashboardService'
 import type {
   LocationDataType,
   LocationOverviewApiResponse,
   LocationOverviewConfig,
+  LocationOverviewEventsRow,
   LocationOverviewRegion,
+  LocationOverviewUsersRow,
   MapLocation,
 } from '../../../types/location'
 import styles from './LocationOverviewCard.module.scss'
@@ -47,6 +48,10 @@ function getRegionCoordinates(region: string) {
   return REGION_COORDINATES[region.trim().toLowerCase()]
 }
 
+// Teal-only palette — no yellow / charcoal. Unknown API keys cycle through
+// the same family so map rings and legend stay on-brand.
+const TEAL_PALETTE = ['#7DDBEA', '#43CBDB', '#14A6BE', '#2FB9CC', '#0B8A9A'] as const
+
 function getCategoryColor(key: string) {
   const categoryColors: Record<string, string> = {
     sos: '#F5E642',
@@ -54,10 +59,17 @@ function getCategoryColor(key: string) {
     passive: '#14A6BE',
     others: '#17364A',
     mipsUsers: '#7DDBEA',
-    nonMipsUsers: '#17364A',
+    nonMipsUsers: '#14A6BE',
   }
 
-  return categoryColors[key] ?? '#0B2530'
+  if (categoryColors[key]) return categoryColors[key]
+
+  let hash = 0
+  for (let i = 0; i < key.length; i += 1) {
+    hash = (hash << 5) - hash + key.charCodeAt(i)
+    hash |= 0
+  }
+  return TEAL_PALETTE[Math.abs(hash) % TEAL_PALETTE.length]
 }
 
 function getDisplayLabel(key: string) {
@@ -133,11 +145,11 @@ function countsToMapLocation(
 
   if (!coordinates) return null
 
-  const breakdown = Object.entries(counts)
+  const breakdown = Object.entries(counts ?? {})
     .map(([key, value]) => ({
       key,
       label: getDisplayLabel(key),
-      value,
+      value: Number(value) || 0,
       color: getCategoryColor(key),
     }))
     .filter((slice) => slice.value > 0)
@@ -152,6 +164,52 @@ function countsToMapLocation(
     count: breakdown.reduce((sum, slice) => sum + slice.value, 0),
     breakdown,
   }
+}
+
+function isEventsRow(row: unknown): row is LocationOverviewEventsRow {
+  if (!row || typeof row !== 'object') return false
+  const candidate = row as Record<string, unknown>
+  return (
+    typeof candidate.byType === 'object' &&
+    candidate.byType !== null &&
+    !Array.isArray(candidate.byType)
+  )
+}
+
+function isUsersRow(row: unknown): row is LocationOverviewUsersRow {
+  if (!row || typeof row !== 'object') return false
+  const candidate = row as Record<string, unknown>
+  return (
+    'mipsUsers' in candidate ||
+    'nonMipsUsers' in candidate ||
+    'mips_users' in candidate ||
+    'non_mips_users' in candidate ||
+    'totalUsers' in candidate
+  )
+}
+
+function extractUserCounts(row: LocationOverviewUsersRow | Record<string, unknown>): Record<string, number> {
+  const candidate = row as Record<string, unknown>
+  const mipsUsers = Number(candidate.mipsUsers ?? candidate.mips_users ?? 0) || 0
+  const nonMipsUsers = Number(candidate.nonMipsUsers ?? candidate.non_mips_users ?? 0) || 0
+
+  if (mipsUsers > 0 || nonMipsUsers > 0) {
+    return { mipsUsers, nonMipsUsers }
+  }
+
+  // Some payloads put user splits under byType instead of flat fields.
+  if (typeof candidate.byType === 'object' && candidate.byType !== null) {
+    return Object.entries(candidate.byType as Record<string, number>).reduce<Record<string, number>>(
+      (acc, [key, value]) => {
+        acc[key] = Number(value) || 0
+        return acc
+      },
+      {},
+    )
+  }
+
+  const totalUsers = Number(candidate.totalUsers ?? candidate.total_users ?? 0) || 0
+  return totalUsers > 0 ? { mipsUsers: totalUsers } : {}
 }
 
 function adjustDuplicateLocationCoordinates(locations: MapLocation[]) {
@@ -176,37 +234,61 @@ function adjustDuplicateLocationCoordinates(locations: MapLocation[]) {
   })
 }
 
+function emptyOverviewConfig(dataType: LocationDataType = 'events'): LocationOverviewConfig {
+  return {
+    dataType,
+    totalLabel: 'Total\nCountries',
+    total: 0,
+    topLabel: 'Top Countries',
+    locations: [],
+    breakdown: [],
+  }
+}
+
 function buildOverviewConfigFromApi(
   apiResponse: LocationOverviewApiResponse
 ): LocationOverviewConfig {
-  const metric = apiResponse.data.metric
-  const rows = apiResponse.data.rows
-  const filters = apiResponse.data.filters ?? {}
+  const data = apiResponse?.data
+  const rows = data?.rows
+  if (!data || !Array.isArray(rows)) {
+    return emptyOverviewConfig(data?.metric ?? 'events')
+  }
+
+  const metric = data.metric
+  const filters = data.filters ?? {}
   const fallbackRegions = [filters.state, filters.country, filters.continent].filter(Boolean) as string[]
 
   const locations: MapLocation[] = rows
     .map((row) => {
-      if ('byType' in row) {
+      if (!row || typeof row !== 'object' || !('region' in row) || !row.region) {
+        return null
+      }
+
+      // Prefer metric + field shape over a naive `'byType' in row` check —
+      // users payloads sometimes include a null/empty `byType`, which used
+      // to send Object.entries(null) and crash the toggle.
+      if (metric === 'users' || isUsersRow(row)) {
+        return countsToMapLocation(
+          row.region,
+          row.region,
+          extractUserCounts(row as LocationOverviewUsersRow),
+          fallbackRegions,
+        )
+      }
+
+      if (isEventsRow(row)) {
         return countsToMapLocation(row.region, row.region, row.byType, fallbackRegions)
       }
 
-      return countsToMapLocation(
-        row.region,
-        row.region,
-        {
-          mipsUsers: row.mipsUsers,
-          nonMipsUsers: row.nonMipsUsers,
-        },
-        fallbackRegions
-      )
+      return null
     })
     .filter((location): location is MapLocation => location !== null)
 
   const adjustedLocations = adjustDuplicateLocationCoordinates(locations)
   const orderedLocations = [...adjustedLocations].sort((a, b) => b.count - a.count)
-  const regionLabel = apiResponse.data.region === 'country'
+  const regionLabel = data.region === 'country'
     ? 'States'
-    : apiResponse.data.region === 'state'
+    : data.region === 'state'
     ? 'Cities'
     : 'Countries'
 
@@ -234,6 +316,12 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
     breakdown: [],
   })
   const [isLoading, setIsLoading] = useState(true)
+  // Drives the bar-track grow + value-label reveal directly, rather than
+  // relying on a CSS `:hover` rule that cross-references the value
+  // label's class name by string — that pattern depends on the CSS
+  // Modules loader merging identical local class names across the file,
+  // which isn't guaranteed by every build config.
+  const [hoveredBarKey, setHoveredBarKey] = useState<string | null>(null)
 
   // The level we're requesting is also the level being *listed* right now
   // (e.g. while `region === 'continent'` the list/map show countries), so
@@ -249,6 +337,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
     }, {})
 
   const handleDataTypeChange = (type: LocationDataType) => {
+    setIsLoading(true)
     setDataType(type)
     setRegion('continent')
     setFilters({})
@@ -314,6 +403,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
 
   useEffect(() => {
     let isMounted = true
+    setIsLoading(true)
 
     dashboardService
       .getLocationOverview(dataType, region, '30d', filters)
@@ -325,14 +415,7 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
       })
       .catch(() => {
         if (!isMounted) return
-        setConfig({
-          dataType,
-          totalLabel: 'Total\nCountries',
-          total: 0,
-          topLabel: 'Top Countries',
-          locations: [],
-          breakdown: [],
-        })
+        setConfig(emptyOverviewConfig(dataType))
       })
       .finally(() => {
         if (!isMounted) return
@@ -355,13 +438,18 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
 
   const visibleBreakdown = useMemo(() => {
     const top = visibleLocations.slice(0, MAX_BREAKDOWN_ROWS)
-    const maxCount = top[0]?.count ?? 1
+
+    // Scale each bar against the total across *all* visible locations
+    // (not just the top N), so the width reflects each location's actual
+    // share of total users/events rather than its share relative to
+    // whichever location happens to be #1 in the list.
+    const grandTotal = visibleLocations.reduce((sum, location) => sum + location.count, 0) || 1
 
     return top.map((location) => ({
       key: location.id,
       title: location.country,
-      percentage: Math.round((location.count / maxCount) * 100),
-      segments: location.breakdown,
+      count: location.count,
+      percentage: Math.max(8, Math.round((location.count / grandTotal) * 100)),
       delta: derivePlaceholderDelta(location.id),
     }))
   }, [visibleLocations])
@@ -459,10 +547,10 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
                 {(isLoading ? Array.from({ length: MAX_BREAKDOWN_ROWS }, (_, idx) => ({
                   key: `loading-${idx}`,
                   title: '',
-                  percentage: 0,
-                  segments: [],
+                  count: 0,
+                  percentage: 40,
                   delta: 0,
-                })) : visibleBreakdown).map((item, breakdownIndex) => (
+                })) : visibleBreakdown).map((item) => (
                   <li key={item.key} className={styles['location-overview-card__breakdown-item']}>
                     <div className={styles['location-overview-card__breakdown-row']}>
                       <span className={styles['location-overview-card__breakdown-title']}>{item.title}</span>
@@ -478,7 +566,30 @@ export default function LocationOverviewCard({ hideHeaderControls = false, hideS
                         </span>
                       )}
                     </div>
-                    <HorizontalBarChart segments={item.segments} animationDelay={400 + breakdownIndex * 60} />
+                    <div
+                      className={styles['location-overview-card__bar-track']}
+                      style={{ height: !isLoading && hoveredBarKey === item.key ? 24 : 10 }}
+                      tabIndex={isLoading ? undefined : 0}
+                      aria-label={isLoading ? undefined : `${item.title}: ${item.count.toLocaleString()}`}
+                      onMouseEnter={() => !isLoading && setHoveredBarKey(item.key)}
+                      onMouseLeave={() => setHoveredBarKey((current) => (current === item.key ? null : current))}
+                      onFocus={() => !isLoading && setHoveredBarKey(item.key)}
+                      onBlur={() => setHoveredBarKey((current) => (current === item.key ? null : current))}
+                    >
+                      <div
+                        className={styles['location-overview-card__bar-fill']}
+                        style={{ width: isLoading ? '40%' : `${item.percentage}%` }}
+                      >
+                        {!isLoading && item.count > 0 && (
+                          <span
+                            className={styles['location-overview-card__bar-value']}
+                            style={{ opacity: hoveredBarKey === item.key ? 1 : 0 }}
+                          >
+                            {item.count.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>

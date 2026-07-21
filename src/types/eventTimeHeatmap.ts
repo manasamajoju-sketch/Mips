@@ -16,7 +16,8 @@ export interface EventTimeHeatmapSummary {
   mostCommonRange: string;
   rangeLabelLine1: string;
   rangeLabelLine2: string;
-  highlightNote: string;
+  highlightNote1: string;
+  highlightNote2: string;
 }
 
 export interface CellPosition {
@@ -135,12 +136,14 @@ export function mapEventTimeHeatmapResponse(
 
   const rangeStr = `${displayHour} ${period} - ${displayEndHour} ${endPeriod}`;
 
-  const topDay = response.data.topDay;
+  const topDay = response.data.topDay
+  const topDayName = topDay?.day || 'This period'
   const summary: EventTimeHeatmapSummary = {
     mostCommonRange: rangeStr,
     rangeLabelLine1: 'Most Common',
     rangeLabelLine2: 'Event Time',
-    highlightNote: `${topDay.day} had the highest events recorded this month.`,
+    highlightNote1: `${topDayName} had the highest`,
+    highlightNote2: 'events recorded this month.',
   };
 
   return { rows, summary };

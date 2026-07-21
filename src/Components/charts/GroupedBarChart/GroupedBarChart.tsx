@@ -32,7 +32,6 @@ function niceMax(value: number) {
 export default function GroupedBarChart<T extends { category: string }>({
   data,
   series,
-  showKey = true,
   xAxisLabel,
   yAxisLabel,
   defaultActiveCategory,
@@ -52,19 +51,12 @@ export default function GroupedBarChart<T extends { category: string }>({
 
   const yTicks = [yMax, yMax / 2, 0]
 
+  const clearHover = () => {
+    setHoveredGroup(defaultActiveCategory ?? null)
+  }
+
   return (
     <div className={styles.chart}>
-      {showKey && (
-        <div className={styles.key}>
-          {series.map((s) => (
-            <span key={String(s.key)} className={styles.keyItem}>
-              <span className={styles.keyDot} style={{ backgroundColor: s.color }} />
-              {s.label}
-            </span>
-          ))}
-        </div>
-      )}
-
       <div className={styles.body}>
         {yAxisLabel && <span className={styles.yAxisTitle}>{yAxisLabel}</span>}
 
@@ -86,76 +78,81 @@ export default function GroupedBarChart<T extends { category: string }>({
             </div>
           )}
 
-          <div
-            className={`${styles.plotArea} ${showAxisLines ? styles.plotAreaWithLeftAxis : ''}`}
-            style={{ borderBottom: showBottomAxisLine || showAxisLines ? undefined : 'none' }}
-          >
-            {showGridLines &&
-              yTicks.map((tick) => (
-                <div key={tick} className={styles.gridLine} style={{ bottom: `${(tick / yMax) * 100}%` }} />
-              ))}
-
-            <div className={styles.groups}>
-              {data.map((item) => {
-                const isHovered = hoveredGroup === item.category
-                return (
+          <div className={styles.plotColumn} onMouseLeave={clearHover}>
+            <div
+              className={`${styles.plotArea} ${showAxisLines ? styles.plotAreaWithLeftAxis : ''}`}
+              style={{
+                borderBottom:
+                  showBottomAxisLine || showAxisLines ? undefined : 'none',
+              }}
+            >
+              {showGridLines &&
+                yTicks.map((tick) => (
                   <div
-                    key={item.category}
-                    className={styles.group}
-                    onMouseEnter={() => setHoveredGroup(item.category)}
-                    onMouseLeave={() =>
-                      setHoveredGroup((prev) => (prev === item.category ? defaultActiveCategory ?? null : prev))
-                    }
-                  >
-                    <div className={`${styles.bars} ${isHovered ? styles.barsActive : ''}`}>
-                      {series.map((s) => {
-                        const value = Number(item[s.key]) || 0
-                        const baseHeightPct = value > 0 ? Math.max((value / yMax) * 100, 2) : 0
-                        const heightPct = isHovered ? Math.min(baseHeightPct * 1.15, 100) : baseHeightPct
-                        return (
-                          <div key={String(s.key)} className={styles.barWrap}>
-                            {isHovered && value > 0 && (
-                              <span
-                                className={styles.valueBadge}
-                                style={{
-                                  bottom: `${heightPct / 2}%`,
-                                  color: s.textColor ?? '#f8f8fa',
-                                }}
+                    key={tick}
+                    className={styles.gridLine}
+                    style={{ bottom: `${(tick / yMax) * 100}%` }}
+                  />
+                ))}
+
+              <div className={styles.groups}>
+                {data.map((item) => {
+                  const isHovered = hoveredGroup === item.category
+                  return (
+                    <div
+                      key={item.category}
+                      className={`${styles.group} ${isHovered ? styles.groupActive : ''}`}
+                      onMouseEnter={() => setHoveredGroup(item.category)}
+                    >
+                      <div className={`${styles.bars} ${isHovered ? styles.barsActive : ''}`}>
+                        {series.map((s) => {
+                          const value = Number(item[s.key]) || 0
+                          const heightPct = value > 0 ? Math.max((value / yMax) * 100, 6) : 0
+                          return (
+                            <div key={String(s.key)} className={styles.barWrap}>
+                              <div
+                                className={styles.bar}
+                                style={{ height: `${heightPct}%`, backgroundColor: s.color }}
+                                title={`${s.label}: ${value}`}
                               >
-                                {value}
-                              </span>
-                            )}
-                            <div
-                              className={styles.bar}
-                              style={{ height: `${heightPct}%`, backgroundColor: s.color }}
-                              title={`${s.label}: ${value}`}
-                            />
-                          </div>
-                        )
-                      })}
+                                {isHovered && value > 0 && (
+                                  <span
+                                    className={styles.barValue}
+                                    style={{ color: s.textColor ?? '#101828' }}
+                                  >
+                                    {value}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
+
+            {showCategoryLabels && (
+              <div className={styles.labelsRow}>
+                {data.map((item) => {
+                  const isHovered = hoveredGroup === item.category
+                  return (
+                    <span
+                      key={item.category}
+                      className={`${styles.categoryLabel} ${
+                        isHovered ? styles.categoryLabelActive : ''
+                      }`}
+                      onMouseEnter={() => setHoveredGroup(item.category)}
+                    >
+                      {item.category}
+                    </span>
+                  )
+                })}
+              </div>
+            )}
           </div>
-
-          {showYTicks && <span aria-hidden className={styles.gridSpacer} />}
-
-          {showCategoryLabels && (
-            <div className={styles.labelsRow}>
-              {data.map((item) => (
-                <span
-                  key={item.category}
-                  className={`${styles.categoryLabel} ${
-                    hoveredGroup === item.category ? styles.categoryLabelActive : ''
-                  }`}
-                >
-                  {item.category}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 

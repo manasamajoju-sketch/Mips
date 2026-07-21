@@ -70,8 +70,7 @@ export default function EventAnalyticsCard({
         <div className={styles.verticalDivider} />
 
         <div className={styles.zoneColumn}>
-         tsx
-<ImpactZoneChart
+          <ImpactZoneChart
   segments={zoneSegments}
   centerLabel={summary.centerLabel}
   hoveredKey={hoveredZoneKey}
@@ -93,7 +92,9 @@ export default function EventAnalyticsCard({
                 >
                   <span className={styles.listStatValue}>{stat.count}</span>
                   <span className={styles.listStatLabel}>
-                    {line1}{line2}
+                    {line1}
+                    <br />
+                    {line2}
                   </span>
                 </div>
               );
