@@ -20,67 +20,71 @@ export default function EventTimeHeatmapChart({ rows }: EventTimeHeatmapChartPro
   return (
     <div className={styles.heatmap}>
       <div className={styles.body}>
-        <div className={styles.yAxis}>
+        <div className={styles.yAxis} aria-hidden="true">
           {TIME_AXIS_TICKS.map((tick, index) => (
-            <span key={`${tick}-${index}`}>{tick}</span>
+            <span
+              key={`${tick}-${index}`}
+              className={styles.yTick}
+              style={{ top: `${(index / (TIME_AXIS_TICKS.length - 1)) * 100}%` }}
+            >
+              {tick}
+            </span>
           ))}
         </div>
 
-        <div className={styles.gridWrap}>
-          <div className={styles.grid}>
-            {rows.map((row, rowIndex) => (
-              <div className={styles.row} key={row.time + rowIndex}>
-                {row.cells.map((cell, dayIndex) => {
-                  const isColumnHovered = hoveredDayIndex === dayIndex;
-                  const isCellHovered = hoveredCell?.row === rowIndex && hoveredCell?.day === dayIndex;
-                  const showPill = Boolean(cell) && (isColumnHovered || isCellHovered);
+        <div className={styles.grid}>
+          {rows.map((row, rowIndex) => (
+            <div className={styles.row} key={row.time + rowIndex}>
+              {row.cells.map((cell, dayIndex) => {
+                const isColumnHovered = hoveredDayIndex === dayIndex;
+                const isCellHovered = hoveredCell?.row === rowIndex && hoveredCell?.day === dayIndex;
+                const showPill = Boolean(cell) && (isColumnHovered || isCellHovered);
 
-                  return (
-                    <div
-                      key={dayIndex}
-                      className={styles.cell}
-                      onMouseEnter={() => cell && setHoveredCell({ row: rowIndex, day: dayIndex })}
-                      onMouseLeave={() => setHoveredCell(null)}
-                    >
-                      {cell && showPill && (
-                        <div
-                          className={styles.pill}
-                          style={{
-                            background: DENSITY_COLORS[cell.category],
-                            color: DENSITY_TEXT_COLORS[cell.category],
-                          }}
-                        >
-                          {cell.value}
-                          {isCellHovered && !isColumnHovered && (
-                            <i className={`ti ti-pointer-filled ${styles.cursor}`} aria-hidden="true" />
-                          )}
-                        </div>
-                      )}
-                      {cell && !showPill && (
-                        <div className={styles.dot} style={{ background: DENSITY_COLORS[cell.category] }} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                return (
+                  <div
+                    key={dayIndex}
+                    className={styles.cell}
+                    onMouseEnter={() => cell && setHoveredCell({ row: rowIndex, day: dayIndex })}
+                    onMouseLeave={() => setHoveredCell(null)}
+                  >
+                    {cell && showPill && (
+                      <div
+                        className={styles.pill}
+                        style={{
+                          background: DENSITY_COLORS[cell.category],
+                          color: DENSITY_TEXT_COLORS[cell.category],
+                        }}
+                      >
+                        {cell.value}
+                        {isCellHovered && !isColumnHovered && (
+                          <i className={`ti ti-pointer-filled ${styles.cursor}`} aria-hidden="true" />
+                        )}
+                      </div>
+                    )}
+                    {cell && !showPill && (
+                      <div className={styles.dot} style={{ background: DENSITY_COLORS[cell.category] }} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
 
-          <div className={styles.dayLabels}>
-            {DAYS_OF_WEEK.map((day, index) => (
-              <div
-                key={day}
-                className={`${styles.dayLabel} ${hoveredDayIndex === index ? styles.dayLabelActive : ''}`}
-                onMouseEnter={() => setHoveredDayIndex(index)}
-                onMouseLeave={() => setHoveredDayIndex(null)}
-              >
-                {day}
-                {hoveredDayIndex === index && (
-                  <i className={`ti ti-pointer-filled ${styles.axisCursor}`} aria-hidden="true" />
-                )}
-              </div>
-            ))}
-          </div>
+        <div className={styles.dayLabels}>
+          {DAYS_OF_WEEK.map((day, index) => (
+            <div
+              key={day}
+              className={`${styles.dayLabel} ${hoveredDayIndex === index ? styles.dayLabelActive : ''}`}
+              onMouseEnter={() => setHoveredDayIndex(index)}
+              onMouseLeave={() => setHoveredDayIndex(null)}
+            >
+              {day}
+              {hoveredDayIndex === index && (
+                <i className={`ti ti-pointer-filled ${styles.axisCursor}`} aria-hidden="true" />
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>

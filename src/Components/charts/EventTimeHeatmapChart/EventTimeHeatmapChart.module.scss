@@ -11,47 +11,59 @@
 }
 
 .body {
-  display: flex;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  grid-template-rows: 1fr auto;
   flex: 1 1 auto;
   min-height: 0;
+  column-gap: 4px;
 }
 
+// Y-axis sits only beside the grid (row 1), not the day labels,
+// so its height matches the 6 heatmap rows / 7 horizontal lines.
 .yAxis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
   width: 28px;
-  flex-shrink: 0;
-  height: 100%;
-  padding-right: 4px;
+  min-height: 0;
   font-size: 8px;
   color: $color-text-muted;
-  text-align: right;
+  pointer-events: none;
+}
 
-  span {
-    opacity: 0;
-    animation: key-fade-in 300ms ease forwards;
+.yTick {
+  position: absolute;
+  right: 0;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: right;
+  // Center each label on its matching horizontal grid line.
+  transform: translateY(-50%);
+  opacity: 0;
+  animation: key-fade-in 300ms ease forwards;
+
+  &:first-child {
+    transform: translateY(0);
   }
 
-  @for $i from 1 through 6 {
-    span:nth-child(#{$i}) {
+  &:last-child {
+    transform: translateY(-100%);
+  }
+
+  @for $i from 1 through 7 {
+    &:nth-child(#{$i}) {
       animation-delay: #{40 + ($i - 1) * 40}ms;
     }
   }
 }
 
-.gridWrap {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
 .grid {
+  grid-column: 2;
+  grid-row: 1;
   display: grid;
   grid-template-rows: repeat(6, 1fr);
-  flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
   border-top: 1px solid $color-border;
 }
@@ -102,10 +114,12 @@
 }
 
 .dayLabels {
+  grid-column: 2;
+  grid-row: 2;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   margin-top: 4px;
-  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .dayLabel {

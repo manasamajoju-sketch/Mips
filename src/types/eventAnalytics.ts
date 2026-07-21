@@ -104,10 +104,17 @@ export function mapImpactDirectionResponse(response: ImpactDirectionApiResponse)
 }
 
 export function mapIrmsDistributionResponse(response: IrmsDistributionApiResponse): SeverityPoint[] {
-  return response.data.buckets.map((bucket) => ({
-    label: String(bucket.bucket),
-    events: bucket.count,
-  }))
+  const buckets = response?.data?.buckets
+  if (!Array.isArray(buckets) || buckets.length === 0) return []
+
+  return [...buckets]
+    .filter((bucket) => bucket != null && Number.isFinite(bucket.bucket) && Number.isFinite(bucket.count))
+    .sort((a, b) => a.bucket - b.bucket)
+    .map((bucket) => ({
+      // API `bucket` is the G-force bin upper bound (50, 100, 150, …).
+      label: `${bucket.bucket}G`,
+      events: bucket.count,
+    }))
 }
 
 export interface EventAnalyticsData {

@@ -58,8 +58,8 @@
 .line {
   position: absolute;
   left: 50%;
-  top: 6px;
-  bottom: 22px;
+  top: 30px;
+  bottom: 0px;
   width: 1px;
   background: $color-border;
   transform: translateX(-50%);
@@ -87,7 +87,7 @@
 }
 
 .rowLast {
-  flex: 0 0 auto;
+  // flex: 0 0 auto;
 }
 
 .highlight {
