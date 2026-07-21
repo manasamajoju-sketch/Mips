@@ -1,23 +1,23 @@
-import UserDemographicsChart from '../../charts/UserDemographicsChart/UserDemographicsChart';
+import UserDemographicsChart from '../../charts/UserDemographicsChart/UserDemographicsChart'
 import {
   GENDER_COLORS,
   GENDER_LABELS,
   userDemographicsCategories,
-  userDemographicsSummary,
-} from '../../../Constants/userDemographicsData';
-import type { DemographicCategory, UserDemographicsSummary } from '../../../types/userDemographics';
-import styles from './UserDemographicsCard.module.scss';
+} from '../../../Constants/userDemographicsData'
+import {
+  computeNearMedianAgeSummary,
+  type DemographicCategory,
+} from '../../../types/userDemographics'
+import styles from './UserDemographicsCard.module.scss'
 
 interface UserDemographicsCardProps {
-  categories?: DemographicCategory[];
-  summary?: UserDemographicsSummary;
-  onExpand?: () => void;
-  isLoading?: boolean;
+  categories?: DemographicCategory[]
+  onExpand?: () => void
+  isLoading?: boolean
 }
 
 export default function UserDemographicsCard({
   categories = userDemographicsCategories,
-  summary = userDemographicsSummary,
   onExpand,
   isLoading = false,
 }: UserDemographicsCardProps) {
@@ -46,10 +46,12 @@ export default function UserDemographicsCard({
       ],
       emphasizeLabel: false,
     },
-  ];
+  ]
 
-  const displayedCategories = isLoading ? placeholderCategories : categories;
-  const displayedSummary = isLoading ? { medianAgeValue: '--', medianAgeLabel: 'Loading age' } : summary;
+  const displayedCategories = isLoading ? placeholderCategories : categories
+  const displayedSummary = isLoading
+    ? { medianAgeValue: '--', medianAgeLabel: 'Near Median Age' }
+    : computeNearMedianAgeSummary(displayedCategories)
 
   return (
     <div className={styles.card}>
@@ -72,7 +74,9 @@ export default function UserDemographicsCard({
 
       <div className={styles.summary}>
         <span className={styles.summaryValue}>{displayedSummary.medianAgeValue}</span>
-        <span className={styles.summaryLabel}>{displayedSummary.medianAgeLabel}</span>
+        <span className={styles.summaryLabel}>
+          <span>Median Age</span>
+        </span>
       </div>
 
       <div className={styles.legend}>
@@ -86,5 +90,5 @@ export default function UserDemographicsCard({
 
       <UserDemographicsChart categories={displayedCategories} />
     </div>
-  );
+  )
 }

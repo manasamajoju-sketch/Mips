@@ -39,7 +39,6 @@ import type { UserOverviewApiResponse } from '../../types/userOverview';
 import type { ProductOverviewApiResponse, ProductOverviewCategory } from '../../types/productOverview';
 import type {
   UserDemographicsApiResponse,
-  UserDemographicsSummary,
   DemographicCategory,
   DemographicSegment,
 } from '../../types/userDemographics';
@@ -48,10 +47,7 @@ import {
   userOverviewData,
   userOverviewTotal,
 } from '../../Constants/userOverviewMock';
-import {
-  userDemographicsCategories,
-  userDemographicsSummary,
-} from '../../Constants/userDemographicsData';
+import { userDemographicsCategories } from '../../Constants/userDemographicsData';
 
 export type DashboardWidget = 'eventTimeline' | 'userOverview' | 'productOverview' | 'userDemographics' | 'eventSeverity'
 
@@ -80,7 +76,6 @@ export default function Dashboard({ range, hideWidgets = [], hideLocationOvervie
   const [userOverviewDataState, setUserOverviewDataState] = useState(userOverviewData)
   const [userOverviewTotalState, setUserOverviewTotalState] = useState(userOverviewTotal)
   const [userDemographicsCategoriesState, setUserDemographicsCategoriesState] = useState<DemographicCategory[]>(userDemographicsCategories)
-  const [userDemographicsSummaryState] = useState<UserDemographicsSummary>(userDemographicsSummary)
 
   useEffect(() => {
     console.log('[Dashboard] mount/effect', { range })
@@ -468,7 +463,6 @@ return (
           <div className={styles.userDemographics}>
             <UserDemographicsCard
               categories={userDemographicsCategoriesState}
-              summary={userDemographicsSummaryState}
               isLoading={demographicsLoading}
             />
           </div>

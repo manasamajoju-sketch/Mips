@@ -70,6 +70,6 @@ export const userDemographicsCategories: DemographicCategory[] = [
 ];
 
 export const userDemographicsSummary: UserDemographicsSummary = {
-  medianAgeValue: '23y',
-  medianAgeLabel: 'Median Age',
+  medianAgeValue: '43y',
+  medianAgeLabel: 'Near Median Age',
 };

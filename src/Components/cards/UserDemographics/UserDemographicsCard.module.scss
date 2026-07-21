@@ -86,6 +86,11 @@
   color: $color-text-secondary;
   line-height: 1.2;
   padding-bottom: 2px;
+
+  span {
+    display: block;
+    white-space: nowrap;
+  }
 }
 
 .legend {
