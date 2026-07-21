@@ -26,7 +26,6 @@ export default function EventOverviewCard({
   summary,
   chartData,
   severityChartData,
-  onExpand,
   range,
   isLoading = false,
 }: EventOverviewCardProps) {
